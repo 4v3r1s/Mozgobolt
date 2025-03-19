@@ -45,7 +45,7 @@ const ProductOrder = () => {
   }, [id]);
 
   if (!product) {
-    return <p>Loading product...</p>;
+    return <p>Termék betöltése...</p>;
   }
 
   const { item_name, unit_price, quantity } = product;

@@ -253,7 +253,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
             <li>
-              <a href="#" className="hover:text-gray-200">
+              <a href="/home" className="hover:text-gray-200">
                 KEZDŐLAP
               </a>
             </li>
@@ -263,7 +263,7 @@ export default function Home() {
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200">
+              <a href="/Tutorial" className="hover:text-gray-200">
                 RENDELÉS MENETE
               </a>
             </li>
@@ -283,7 +283,7 @@ export default function Home() {
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200">
+              <a href="/StaticKapcsolat" className="hover:text-gray-200">
                 KAPCSOLAT
               </a>
             </li>
@@ -412,7 +412,7 @@ export default function Home() {
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/StaticKapcsolat" className="hover:underline">
                     Kapcsolat
                   </a>
                 </li>

@@ -4,6 +4,8 @@ import ProductOrder from "./page/order";
 import Home from "./page/orderpage/page";
 import Towns from "./page/StaticRoute/route";
 import Info from "./page/StaticInfo/info";
+import Contact from "./page/StaticKapcsolat/StaticKapcsolat";
+import Tutorial from "./page/StaticTutorial/Tutorial";
 
 function App() {
   return (
@@ -14,6 +16,9 @@ function App() {
         <Route path="/home" element={<Home />} />
         <Route path="/utvonal" element={<Towns />} />
         <Route path="/info" element={<Info />} />
+        <Route path="/contact" element={<Contact />} />
+        <Route path="/StaticKapcsolat" element={<Contact />} />
+        <Route path="/tutorial" element={<Tutorial />} />
       </Routes>
     </Router>
   );

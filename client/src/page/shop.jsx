@@ -63,7 +63,7 @@ const Shop = () => {
               </Col>
             ))
           ) : (
-            <p>Loading products...</p>  
+            <p>Termékek betöltése...</p>  
           )}
         </Row>
       </Content>

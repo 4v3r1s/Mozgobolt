@@ -62,8 +62,8 @@ const ProductOrder = () => {
                 style={{ width: '100%', borderRadius: '10px', marginBottom: '20px' }}
               />
               <Title level={2}>{item_name}</Title>
-              <Paragraph style={{ fontSize: '22px' }}><strong>Price:</strong> ${unit_price}</Paragraph>
-              <Paragraph style={{ fontSize: '18px' }}><strong>Quantity:</strong> {quantity}</Paragraph>
+              <Paragraph style={{ fontSize: '22px' }}><strong>Ár:</strong> ${unit_price}</Paragraph>
+              <Paragraph style={{ fontSize: '18px' }}><strong>Mennyiség:</strong> {quantity}</Paragraph>
               <div style={{ display: 'flex', flexWrap: 'wrap', gap: '20px', marginTop: '20px' }}>
                 <img 
                   alt="additional image 1" 

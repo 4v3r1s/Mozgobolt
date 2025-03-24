@@ -13,4 +13,19 @@ const napi_fogyas = sequelize.define("napi_fogyas", {
   timestamps: false,
 });
 
+// Instead, handle the association in your application logic
+// You won't have foreign key constraints at the database level
+// Kapcsolatok definiálása
+napi_fogyas.associate = function(models) {
+  napi_fogyas.belongsTo(models.Raktar, {
+    foreignKey: 'raktar',
+    targetKey: 'azonosito'
+  });
+  
+  napi_fogyas.belongsTo(models.Termek, {
+    foreignKey: 'termek',
+    targetKey: 'azonosito'
+  });
+};
+
 module.exports = napi_fogyas;

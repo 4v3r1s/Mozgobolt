@@ -14,24 +14,50 @@ export default function Home() {
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
 
-  // Fetch products from API
+  // Fetch products from database API instead of mock API
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://mocki.io/v1/3def6397-c9eb-4f19-b249-b61c2addd7f3");
+        // Az adatbázisból kérjük le a termékeket
+        const response = await fetch("http://localhost:3000/api/products");
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
         const data = await response.json();
-        setProducts(data.products || []);
-        setFilteredProducts(data.products || []);
+        
+        // Átalakítjuk az adatbázisból érkező adatokat a megfelelő formátumra
+        const formattedProducts = data.map(product => ({
+          id: product.azonosito,
+          name: product.nev,
+          price: parseFloat(product.ar),
+          originalPrice: product.akciosar ? parseFloat(product.ar) : null,
+          discount: product.akciosar ? Math.round(((product.ar - product.akciosar) / product.ar) * 100) : 0,
+          discountPrice: product.akciosar ? parseFloat(product.akciosar) : null,
+          description: product.termekleiras,
+          image: product.hivatkozas || "https://via.placeholder.com/300",
+          category: product.csoport,
+          stock: product.keszlet,
+          unit: product.kiszereles,
+          unitPrice: parseFloat(product.egysegnyiar),
+          discountUnitPrice: product.akcios_egysegnyiar ? parseFloat(product.akcios_egysegnyiar) : null,
+          discountEndDate: product.akcio_vege,
+          discountStartDate: product.akcio_eleje,
+          isAdult: product.tizennyolc ? true : false,
+          vat: product.afa_kulcs,
+          size: product.meret,
+          color: product.szin,
+          barcode: product.vonalkod
+        }));
+        
+        setProducts(formattedProducts || []);
+        setFilteredProducts(formattedProducts || []);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
   }, []);
 
@@ -200,9 +226,9 @@ export default function Home() {
             </div>
 
             <div className="flex items-center space-x-3">
-              <Button variant="ghost" size="icon" className="text-white hover:bg-red-600">
+              <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
                 <User className="h-5 w-5" />
-              </Button>
+              </a>
               <Button variant="ghost" size="icon" className="text-white hover:bg-red-600">
                 <Heart className="h-5 w-5" />
               </Button>
@@ -253,7 +279,7 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
             <li>
-              <a href="/home" className="hover:text-gray-200">
+              <a href="/" className="hover:text-gray-200">
                 KEZDŐLAP
               </a>
             </li>
@@ -263,17 +289,17 @@ export default function Home() {
               </a>
             </li>
             <li>
-              <a href="/Tutorial" className="hover:text-gray-200">
+              <a href="/order-process" className="hover:text-gray-200">
                 RENDELÉS MENETE
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200">
+              <a href="/account" className="hover:text-gray-200">
                 FIÓKOM
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200">
+              <a href="/sales" className="hover:text-gray-200">
                 AKCIÓK
               </a>
             </li>
@@ -382,14 +408,14 @@ export default function Home() {
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">PopiShop</h3>
+              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
               <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@popishop.hu</p>
+                <p>Email: info@mozgoshop.hu</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
@@ -420,7 +446,7 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2025 MozgoShop. Minden jog fenntartva.</p>
+            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>

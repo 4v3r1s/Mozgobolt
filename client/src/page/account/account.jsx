@@ -1,0 +1,378 @@
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+
+export default function Account() {
+  const navigate = useNavigate();
+  const [userData, setUserData] = useState({
+    username: "",
+    email: "",
+    newsletter: false,
+    registrationDate: ""
+  });
+  const [loading, setLoading] = useState(true);
+  const [isAuthenticated, setIsAuthenticated] = useState(false);
+
+  const [alert, setAlert] = useState({
+    show: false,
+    message: "",
+    type: "success", // success or error
+  });
+
+  const showAlert = (message, type = "error") => {
+    setAlert({
+      show: true,
+      message,
+      type,
+    });
+
+    // Auto-hide alert after 5 seconds
+    setTimeout(() => {
+      setAlert((prev) => ({ ...prev, show: false }));
+    }, 5000);
+  };
+
+  useEffect(() => {
+    const checkAuth = () => {
+      // Get token from cookie
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+
+      if (!token) {
+        setIsAuthenticated(false);
+        setLoading(false);
+        return false;
+      }
+      
+      setIsAuthenticated(true);
+      return true;
+    };
+
+    const fetchUserData = async () => {
+      try {
+        if (!checkAuth()) return;
+
+        const token = document.cookie
+          .split('; ')
+          .find(row => row.startsWith('token='))
+          ?.split('=')[1];
+
+        const response = await fetch("http://localhost:3000/user/profile", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Token expired or invalid
+            setIsAuthenticated(false);
+            return;
+          }
+          throw new Error("Hiba a felhasználói adatok lekérése során");
+        }
+
+        const data = await response.json();
+        setUserData({
+          username: data.felhasznalonev || "Nincs megadva",
+          email: data.email || "Nincs megadva",
+          newsletter: data.hirlevel || false,
+          registrationDate: data.regisztracio_datum 
+            ? new Date(data.regisztracio_datum).toLocaleDateString('hu-HU') 
+            : "Nincs adat"
+        });
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+        showAlert("Hiba történt az adatok betöltése során.");
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchUserData();
+  }, []);
+
+  const handleLogout = () => {
+    // Clear token cookie
+    document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;";
+    
+    // Show success message
+    showAlert("Sikeres kijelentkezés!", "success");
+    setIsAuthenticated(false);
+    
+    // Redirect to home after short delay
+    setTimeout(() => {
+      navigate('/');
+    }, 1500);
+  };
+
+  const handleLogin = () => {
+    navigate('/login');
+  };
+
+  const navigateToOrders = () => {
+    navigate('/orders');
+  };
+
+  return (
+    <div className="min-h-screen bg-gray-50">
+      {/* Header */}
+      <header className="bg-red-700 text-white">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <h1 className="text-2xl font-bold">MozgoShop</h1>
+            </div>
+            <div className="flex items-center space-x-3">
+              <a href="/" className="text-white hover:bg-red-600 px-4 py-2 rounded">
+                Vissza a főoldalra
+              </a>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      {/* Navigation */}
+      <nav className="bg-red-800 text-white">
+        <div className="container mx-auto px-4">
+          <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
+            <li>
+              <a href="/" className="hover:text-gray-200">
+                KEZDŐLAP
+              </a>
+            </li>
+            <li>
+              <a href="/info" className="hover:text-gray-200">
+                BEMUTATKOZÁS
+              </a>
+            </li>
+            <li>
+              <a href="/Tutorial" className="hover:text-gray-200">
+                RENDELÉS MENETE
+              </a>
+            </li>
+            <li>
+              <a href="/account" className="text-white font-bold border-b-2 border-white">
+                FIÓKOM
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:text-gray-200">
+                AKCIÓK
+              </a>
+            </li>
+            <li>
+              <a href="/utvonal" className="hover:text-gray-200">
+                TELEPÜLÉSEK
+              </a>
+            </li>
+            <li>
+              <a href="/StaticKapcsolat" className="hover:text-gray-200">
+                KAPCSOLAT
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* Main Content */}
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-3xl mx-auto">
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
+            <div className="bg-red-700 text-white py-4 px-6">
+              <h1 className="text-2xl font-bold">Fiókom</h1>
+            </div>
+
+            {alert.show && (
+              <div
+                className={`p-4 mb-4 mx-6 mt-6 rounded-md ${
+                  alert.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
+                } flex justify-between items-center`}
+              >
+                <p>{alert.message}</p>
+                <button
+                  onClick={() => setAlert((prev) => ({ ...prev, show: false }))}
+                  className="text-gray-500 hover:text-gray-700"
+                >
+                  ✕
+                </button>
+              </div>
+            )}
+
+            <div className="p-6 space-y-6">
+              {loading ? (
+                <div className="text-center py-8">
+                  <p className="text-gray-600">Adatok betöltése...</p>
+                </div>
+              ) : !isAuthenticated ? (
+                <div className="text-center py-8 space-y-6">
+                  <div className="space-y-2">
+                    <p className="text-gray-700 text-lg">A fiók megtekintéséhez be kell jelentkezned.</p>
+                    <p className="text-gray-500">Kérjük, jelentkezz be a fiókodba vagy regisztrálj, ha még nem rendelkezel fiókkal.</p>
+                  </div>
+                  
+                  <div className="flex flex-col space-y-3">
+                    <button 
+                      className="w-full bg-red-700 text-white py-2 rounded hover:bg-red-800"
+                      onClick={handleLogin}
+                    >
+                      Bejelentkezés
+                    </button>
+                    <a 
+                      href="/register" 
+                      className="w-full bg-gray-100 text-gray-800 py-2 rounded hover:bg-gray-200 text-center"
+                    >
+                      Regisztráció
+                    </a>
+                  </div>
+                </div>
+              ) : (
+                <>
+                  <div className="space-y-4">
+                    <div className="border-b pb-4">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">Személyes adatok</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Felhasználónév</p>
+                          <p className="font-medium text-lg">{userData.username}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Email cím</p>
+                          <p className="font-medium text-lg">{userData.email}</p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="border-b pb-4">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">Fiók információk</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Regisztráció dátuma</p>
+                          <p className="font-medium text-lg">{userData.registrationDate}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Hírlevél feliratkozás</p>
+                          <p className="font-medium text-lg">
+                            {userData.newsletter ? (
+                              <span className="text-green-600">Feliratkozva</span>
+                            ) : (
+                              <span className="text-gray-600">Nincs feliratkozva</span>
+                            )}
+                          </p>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div className="pt-2">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Fiók műveletek</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button 
+                          className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                          onClick={() => navigate('/profile/edit')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                          Adatok szerkesztése
+                        </button>
+                        <button 
+                          className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                          onClick={navigateToOrders}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+                          </svg>
+                          Rendeléseim
+                        </button>
+                        <button 
+                          className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                          onClick={() => navigate('/wishlist')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
+                          </svg>
+                          Kívánságlistám
+                        </button>
+                        <button 
+                          className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                          onClick={() => navigate('/addresses')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                          </svg>
+                          Címeim
+                        </button>
+                      </div>
+                      
+                      <div className="mt-6">
+                        <button 
+                          className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors flex items-center justify-center"
+                          onClick={handleLogout}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                          </svg>
+                          Kijelentkezés
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+        </div>
+      </main>
+
+      {/* Footer */}
+      <footer className="bg-red-700 text-white mt-12">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
+              <address className="not-italic text-sm">
+                <p>1234 Budapest, Példa utca 123.</p>
+                <p>Email: info@mozgoshop.hu</p>
+                <p>Telefon: +36 1 234 5678</p>
+              </address>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Információk</h3>
+              <ul className="text-sm space-y-2">
+                <li>
+                  <a href="#" className="hover:underline">
+                    Általános Szerződési Feltételek
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:underline">
+                    Adatvédelmi Tájékoztató
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:underline">
+                    Szállítási Információk
+                  </a>
+                </li>
+                <li>
+                  <a href="/StaticKapcsolat" className="hover:underline">
+                    Kapcsolat
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
+            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+          </div>
+        </div>
+      </footer>
+    </div>
+  );
+}

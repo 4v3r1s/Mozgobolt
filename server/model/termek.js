@@ -6,7 +6,14 @@ const Termek = sequelize.define("Termek", {
   nev: { type: DataTypes.STRING(255), allowNull: true },
   ar: { type: DataTypes.DECIMAL(10,2), allowNull: true },
   egysegnyiar: { type: DataTypes.DECIMAL(10,2), allowNull: true },
-  csoport: { type: DataTypes.INTEGER, allowNull: true },
+  csoport: { 
+    type: DataTypes.INTEGER, 
+    allowNull: true,
+    references: {
+      model: 'csoport',
+      key: 'azonosito'
+    }
+  },
   termekleiras: { type: DataTypes.TEXT, allowNull: true },
   kiszereles: { type: DataTypes.STRING(100), allowNull: true },
   keszlet: { type: DataTypes.INTEGER, allowNull: true },
@@ -25,5 +32,17 @@ const Termek = sequelize.define("Termek", {
   tableName: "termek",
   timestamps: false,
 });
+
+Termek.associate = function(models) {
+  Termek.hasMany(models.Rendeles, {
+    foreignKey: 'termek',
+    sourceKey: 'azonosito'
+  });
+  
+  Termek.belongsTo(models.Csoport, {
+    foreignKey: 'csoport',
+    targetKey: 'azonosito'
+  });
+};
 
 module.exports = Termek;

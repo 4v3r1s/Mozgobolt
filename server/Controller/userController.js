@@ -4,12 +4,12 @@ const User = require("../model/user");
 
 const createUser = async (req, res) => {
     try {
-        const { email, jelszo, felhasznalonev, telefonszam, vezeteknev, keresztnev, szuletesidatum, szerep, szamlazasi_nev, szamlazasi_irsz, szamlazasi_telepules, szamlazasi_kozterulet, szamlazasi_hazszam, adoszam, szallitasi_nev, szallitasi_irsz, szallitasi_telepules, szallitasi_kozterulet, szallitasi_hazszam, hirlevel } = req.body;
+        const { email, jelszo, felhasznalonev, hirlevel } = req.body;
         if (!email || !jelszo || !felhasznalonev) {
             return res.status(400).json({ message: "Hiányzó kötelező mezők!" });
         }
         const hashedPassword = await bcrypt.hash(jelszo, 10);
-        const newUser = await User.create({ email, jelszo: hashedPassword, felhasznalonev, telefonszam, vezeteknev, keresztnev, szuletesidatum, szerep, szamlazasi_nev, szamlazasi_irsz, szamlazasi_telepules, szamlazasi_kozterulet, szamlazasi_hazszam, adoszam, szallitasi_nev, szallitasi_irsz, szallitasi_telepules, szallitasi_kozterulet, szallitasi_hazszam, hirlevel });
+        const newUser = await User.create({ email, jelszo: hashedPassword, felhasznalonev, hirlevel });
         res.status(201).json({ message: "Felhasználó sikeresen létrehozva!", user: newUser });
     } catch (error) {
         res.status(500).json({ message: "Hiba a felhasználó létrehozása közben", error });
@@ -20,19 +20,30 @@ const createUser = async (req, res) => {
 // Authenticate User (Login)
 const authenticateUser = async (req, res) => {
     try {
-        const { email, password } = req.body;
-        if (!email || !password) return res.status(400).json({ message: "Missing credentials!" });
+        const { email, jelszo } = req.body;
+        if (!email || !jelszo) {
+            return res.status(400).json({ message: "Hiányzó bejelentkezési adatok!" });
+        }
 
         const user = await User.findOne({ where: { email } });
-        if (!user) return res.status(401).json({ message: "Invalid email or password!" });
+        if (!user) {
+            return res.status(401).json({ message: "Érvénytelen email vagy jelszó!" });
+        }
 
-        const isMatch = await bcrypt.compare(password, user.password);
-        if (!isMatch) return res.status(401).json({ message: "Invalid email or password!" });
+        const isMatch = await bcrypt.compare(jelszo, user.jelszo);
+        if (!isMatch) {
+            return res.status(401).json({ message: "Érvénytelen email vagy jelszó!" });
+        }
 
-        const token = jwt.sign({ userId: user.id, email: user.email }, "secretkey", { expiresIn: "1h" });
-        res.json({ message: "Login successful!", token, user });
+        const token = jwt.sign(
+            { userId: user.id, email: user.email },
+            "secretkey",
+            { expiresIn: "1h" }
+        );
+
+        res.json({ message: "Sikeres bejelentkezés!", token});
     } catch (error) {
-        res.status(500).json({ message: "Error during authentication", error });
+        res.status(500).json({ message: "Hiba a bejelentkezés során", error });
     }
 };
 
@@ -82,5 +93,14 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ message: "Error deleting user", error });
     }
 };
+
+
+
+
+
+
+
+
+
 
 module.exports = { createUser, authenticateUser, getUser, updateUser, deleteUser };

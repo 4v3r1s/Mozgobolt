@@ -66,7 +66,7 @@ export default function Towns() {
               </a>
             </li>
             <li>
-              <a href="/utvonal" className="hover:text-gray-200">
+              <a href="/utvonal" className="text-white font-bold border-b-2 border-white">
                 TELEPÜLÉSEK
               </a>
             </li>

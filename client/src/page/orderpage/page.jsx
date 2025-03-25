@@ -279,9 +279,9 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
             <li>
-              <a href="/" className="hover:text-gray-200">
-                KEZDŐLAP
-              </a>
+               <a href="/" className="text-white font-bold border-b-2 border-white">
+              KEZDŐLAP
+            </a>
             </li>
             <li>
               <a href="/info" className="hover:text-gray-200">

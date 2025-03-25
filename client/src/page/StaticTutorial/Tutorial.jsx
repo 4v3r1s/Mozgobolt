@@ -82,7 +82,7 @@ export default function OrderTutorial() {
               </a>
             </li>
             <li>
-              <a href="/tutorial" className="hover:text-gray-200">
+              <a href="/tutorial" className="text-white font-bold border-b-2 border-white">
                 RENDELÉS MENETE
               </a>
             </li>

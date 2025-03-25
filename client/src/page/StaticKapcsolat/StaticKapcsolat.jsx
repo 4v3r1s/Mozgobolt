@@ -67,7 +67,7 @@ export default function Contact() {
               </a>
             </li>
             <li>
-              <a href="/StaticKapcsolat" className="hover:text-gray-200">
+              <a href="/StaticKapcsolat" className="text-white font-bold border-b-2 border-white">
                 KAPCSOLAT
               </a>
             </li>

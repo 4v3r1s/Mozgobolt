@@ -42,7 +42,7 @@ export default function info() {
               </a>
             </li>
             <li>
-              <a href="/info" className="hover:text-gray-200">
+              <a href="/info" className="text-white font-bold border-b-2 border-white">
                 BEMUTATKOZÁS
               </a>
             </li>

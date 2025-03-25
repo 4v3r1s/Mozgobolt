@@ -5,6 +5,7 @@ import { Link, useNavigate } from "react-router-dom";
 export default function OrderTutorial() {
   const [steps, setSteps] = useState([]);
   const navigate = useNavigate();
+  const [logoAnimated, setLogoAnimated] = useState(false);
 
   useEffect(() => {
     setSteps([
@@ -34,6 +35,13 @@ export default function OrderTutorial() {
         image: "/images/tutorial5.jpg"
       }
     ]);
+    
+    // Animáció indítása késleltetéssel
+    const timer = setTimeout(() => {
+      setLogoAnimated(true);
+    }, 300); // 300ms késleltetés
+    
+    return () => clearTimeout(timer);
   }, []);
 
   const handleShopClick = () => {
@@ -42,20 +50,70 @@ export default function OrderTutorial() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      <header className="bg-red-700 text-white py-4">
-        <div className="container mx-auto text-center">
-          <h1 className="text-2xl font-bold">Rendelési útmutató</h1>
-          <nav className="mt-4">
-            <ul className="flex justify-center space-x-6">
-              <li><Link to="/" className="text-white hover:underline">Főoldal</Link></li>
-              <li><Link to="/utvonal" className="text-white hover:underline">Útvonal</Link></li>
-              <li><Link to="/contact" className="text-white hover:underline">Kapcsolat</Link></li>
-              <li><Link to="/info" className="text-white hover:underline">Információ</Link></li>
-              <li><Link to="/tutorial" className="text-white hover:underline">Rendelési útmutató</Link></li>
-            </ul>
-          </nav>
+      {/* Header - animált MozgoShop felirattal */}
+      <header className="bg-red-700 text-white">
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center overflow-hidden h-10">
+            <a href="/" className="text-white hover:text-gray-200">
+              <h1 
+                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              >
+                MozgoShop
+              </h1>
+            </a>
+          </div>
         </div>
       </header>
+
+      {/* Navigation */}
+      <nav className="bg-red-800 text-white">
+        <div className="container mx-auto px-4">
+          <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
+            <li>
+              <a href="/" className="hover:text-gray-200">
+                KEZDŐLAP
+              </a>
+            </li>
+            <li>
+              <a href="/info" className="hover:text-gray-200">
+                BEMUTATKOZÁS
+              </a>
+            </li>
+            <li>
+              <a href="/tutorial" className="hover:text-gray-200">
+                RENDELÉS MENETE
+              </a>
+            </li>
+            <li>
+              <a href="/account" className="hover:text-gray-200">
+                FIÓKOM
+              </a>
+            </li>
+            <li>
+              <a href="/sales" className="hover:text-gray-200">
+                AKCIÓK
+              </a>
+            </li>
+            <li>
+              <a href="/utvonal" className="hover:text-gray-200">
+                TELEPÜLÉSEK
+              </a>
+            </li>
+            <li>
+              <a href="/StaticKapcsolat" className="hover:text-gray-200">
+                KAPCSOLAT
+              </a>
+            </li>
+          </ul>
+        </div>
+      </nav>
+
+      {/* Rendelési útmutató cím */}
+      <div className="container mx-auto text-center py-6">
+        <h1 className="text-2xl font-bold">Rendelési útmutató</h1>
+      </div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
@@ -124,8 +182,52 @@ export default function OrderTutorial() {
         </div>
       </main>
 
-      <footer className="bg-red-700 text-white mt-12 py-4 text-center">
-        <p className="text-sm">© 2025 MozgoShop. Minden jog fenntartva.</p>
+      {/* Footer */}
+      <footer className="bg-red-700 text-white mt-12">
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
+              <address className="not-italic text-sm">
+                <p>1234 Budapest, Példa utca 123.</p>
+                <p>Email: info@mozgoshop.hu</p>
+                <p>Telefon: +36 1 234 5678</p>
+              </address>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Információk</h3>
+              <ul className="text-sm space-y-2">
+                <li>
+                  <a href="#" className="hover:underline">
+                    Általános Szerződési Feltételek
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:underline">
+                    Adatvédelmi Tájékoztató
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:underline">
+                    Szállítási Információk
+                  </a>
+                </li>
+                <li>
+                  <a href="/StaticKapcsolat" className="hover:underline">
+                    Kapcsolat
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
+            <p>© 2025 MozgoShop. Minden jog fenntartva.</p>
+          </div>
+        </div>
       </footer>
     </div>
   );

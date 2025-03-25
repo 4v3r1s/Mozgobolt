@@ -11,12 +11,22 @@ export default function Account() {
   });
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const [logoAnimated, setLogoAnimated] = useState(false);
 
   const [alert, setAlert] = useState({
     show: false,
     message: "",
     type: "success", // success or error
   });
+
+  // Animáció indítása késleltetéssel
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLogoAnimated(true);
+    }, 300); // 300ms késleltetés
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   const showAlert = (message, type = "error") => {
     setAlert({
@@ -121,19 +131,20 @@ export default function Account() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-red-700 text-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <h1 className="text-2xl font-bold">MozgoShop</h1>
-            </div>
-            <div className="flex items-center space-x-3">
-              <a href="/" className="text-white hover:bg-red-600 px-4 py-2 rounded">
-                Vissza a főoldalra
-              </a>
-            </div>
-          </div>
-        </div>
-      </header>
+  <div className="container mx-auto px-4 py-4">
+    <div className="flex items-center justify-center overflow-hidden h-10">
+      <a href="/" className="text-white hover:text-gray-200">
+        <h1 
+          className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+            logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+          }`}
+        >
+          MozgoShop
+        </h1>
+      </a>
+    </div>
+  </div>
+</header>
 
       {/* Navigation */}
       <nav className="bg-red-800 text-white">
@@ -160,7 +171,7 @@ export default function Account() {
               </a>
             </li>
             <li>
-              <a href="#" className="hover:text-gray-200">
+              <a href="/sales" className="hover:text-gray-200">
                 AKCIÓK
               </a>
             </li>

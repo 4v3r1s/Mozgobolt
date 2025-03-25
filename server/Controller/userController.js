@@ -93,14 +93,27 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ message: "Error deleting user", error });
     }
 };
+// Get Current User Profile
+const getUserProfile = async (req, res) => {
+    try {
+        // The user ID is extracted from the JWT token in the authenticateToken middleware
+        const userId = req.user.userId;
+        
+        const user = await User.findByPk(userId, { 
+            attributes: { 
+                exclude: ["jelszo"] // Exclude password from the response
+            } 
+        });
 
+        if (!user) {
+            return res.status(404).json({ message: "Felhasználó nem található!" });
+        }
 
+        res.json(user);
+    } catch (error) {
+        console.error("Error fetching user profile:", error);
+        res.status(500).json({ message: "Hiba a felhasználói adatok lekérése során", error: error.message });
+    }
+};
 
-
-
-
-
-
-
-
-module.exports = { createUser, authenticateUser, getUser, updateUser, deleteUser };
+module.exports = { createUser, authenticateUser, getUser, updateUser, deleteUser, getUserProfile };

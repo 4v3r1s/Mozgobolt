@@ -22,6 +22,9 @@ router.post("/login", userController.authenticateUser); // Authenticate a user
 router.get("/getUser/:id", userController.getUser); // Get user by ID
 router.put("/updateUser/:id", userController.updateUser); // Update user by ID
 router.delete("/deleteUser/:id", userController.deleteUser); // Delete user by ID
+// Add this new route for getting the current user's profile
+router.get("/profile", authenticateToken, userController.getUserProfile);
+
 
 // Use authenticateToken for the protected route
 router.get("/protected", authenticateToken, (req, res) => {

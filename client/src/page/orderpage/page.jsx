@@ -289,7 +289,7 @@ export default function Home() {
               </a>
             </li>
             <li>
-              <a href="/order-process" className="hover:text-gray-200">
+              <a href="/tutorial" className="hover:text-gray-200">
                 RENDELÉS MENETE
               </a>
             </li>

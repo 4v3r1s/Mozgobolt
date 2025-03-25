@@ -7,6 +7,16 @@ import ProductCard from "../orderpage/product-card";
 export default function Sales() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [logoAnimated, setLogoAnimated] = useState(false);
+
+  // Animáció indítása késleltetéssel
+  useEffect(() => {
+    const timer = setTimeout(() => {
+      setLogoAnimated(true);
+    }, 300); // 300ms késleltetés
+    
+    return () => clearTimeout(timer);
+  }, []);
 
   // Fetch products from API
   useEffect(() => {
@@ -36,57 +46,19 @@ export default function Sales() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Header - animált MozgoShop felirattal */}
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-red-600">
-                <Menu className="h-6 w-6" />
-              </Button>
-              <h1 className="text-2xl font-bold">MozgoShop</h1>
-            </div>
-
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
-              <form className="relative w-full">
-                <Input
-                  placeholder="Keresés..."
-                  className="w-full pl-4 pr-10 py-2 rounded-lg border-0 focus-visible:ring-2 focus-visible:ring-red-500 text-black"
-                  autoComplete="off"
-                />
-                <button type="submit" className="absolute right-3 top-2.5">
-                  <Search className="h-5 w-5 text-gray-500" />
-                </button>
-              </form>
-            </div>
-
-            <div className="flex items-center space-x-3">
-              <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
-                <User className="h-5 w-5" />
-              </a>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-red-600">
-                <Heart className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-red-600 relative">
-                <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
-              </Button>
-            </div>
-          </div>
-
-          <div className="mt-4 md:hidden relative">
-            <form className="relative w-full">
-              <Input 
-                placeholder="Keresés..." 
-                className="w-full pl-4 pr-10 py-2 rounded-lg border-0 text-black" 
-                autoComplete="off"
-              />
-              <button type="submit" className="absolute right-3 top-2.5">
-                <Search className="h-5 w-5 text-gray-500" />
-              </button>
-            </form>
+          <div className="flex items-center justify-center overflow-hidden h-10">
+            <a href="/" className="text-white hover:text-gray-200">
+              <h1 
+                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              >
+                MozgoShop
+              </h1>
+            </a>
           </div>
         </div>
       </header>
@@ -106,7 +78,7 @@ export default function Sales() {
               </a>
             </li>
             <li>
-              <a href="/order-process" className="hover:text-gray-200">
+              <a href="/tutorial" className="hover:text-gray-200">
                 RENDELÉS MENETE
               </a>
             </li>

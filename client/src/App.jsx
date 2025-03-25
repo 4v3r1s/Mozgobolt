@@ -8,7 +8,6 @@ import Tutorial from "./page/StaticTutorial/Tutorial";
 import SignUp from "./page/auth/Register";
 import SignIn from "./page/auth/Login";
 import Account from "./page/account/account";
-import OrderProcess from "./page/OrderProcess/OrderProcess";
 import Sales from "./page/sales/sales";
 
 function App() {
@@ -25,7 +24,7 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/account" element={<Account />} />
-        <Route path="/order-process" element={<OrderProcess />} />
+        
         <Route path="/sales" element={<Sales />} />
       </Routes>
     </Router>

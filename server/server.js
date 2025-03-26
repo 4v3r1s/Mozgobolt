@@ -7,6 +7,7 @@ const napi_fogyasRoutes = require("./routes/napi_fogyasRoutes");
 const raktarRoutes = require("./routes/raktarRoutes");
 const rendelesRoutes = require("./routes/rendelesRoutes");
 const userRoutes = require("./routes/userRoutes");
+const adminRoutes = require('./routes/adminRoutes');
 
 const app = express();
 app.use(cors());
@@ -19,6 +20,7 @@ app.use("/napi_fogyas", napi_fogyasRoutes);
 app.use("/raktar", raktarRoutes);
 app.use("/rendeles", rendelesRoutes);
 app.use("/user", userRoutes);
+app.use('/admin', adminRoutes);
 
 sequelize.sync({ alter: true }) // `alter: true` ensures that existing tables are updated if needed
     .then(() => console.log("✅ Database synchronized successfully!"))

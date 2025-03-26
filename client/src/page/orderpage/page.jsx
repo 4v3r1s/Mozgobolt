@@ -24,7 +24,7 @@ export default function Home() {
           throw new Error("Failed to fetch products");
         }
         const data = await response.json();
-        
+
         // Átalakítjuk az adatbázisból érkező adatokat a megfelelő formátumra
         const formattedProducts = data.map(product => ({
           id: product.azonosito,
@@ -48,7 +48,7 @@ export default function Home() {
           color: product.szin,
           barcode: product.vonalkod
         }));
-        
+
         setProducts(formattedProducts || []);
         setFilteredProducts(formattedProducts || []);
       } catch (error) {
@@ -57,7 +57,7 @@ export default function Home() {
         setLoading(false);
       }
     };
-  
+
     fetchProducts();
   }, []);
 
@@ -67,13 +67,13 @@ export default function Home() {
     setSearchQuery(query);
     setShowSearchInfo(query.trim() !== "");
     setCurrentPage(1); // Kereséskor visszaállítjuk az első oldalra
-    
+
     // Filter products based on search query
     if (query.trim() === "") {
       setFilteredProducts(products);
     } else {
-      const filtered = products.filter(product => 
-        product.name?.toLowerCase().includes(query.toLowerCase()) || 
+      const filtered = products.filter(product =>
+        product.name?.toLowerCase().includes(query.toLowerCase()) ||
         product.description?.toLowerCase().includes(query.toLowerCase())
       );
       setFilteredProducts(filtered);
@@ -90,10 +90,10 @@ export default function Home() {
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
-  
+
   // Számoljuk ki az oldalak számát
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / productsPerPage));
-  
+
   // Oldal váltás kezelése
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
@@ -104,14 +104,14 @@ export default function Home() {
       behavior: 'smooth'
     });
   };
-  
+
   // Előző oldal
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       handlePageChange(currentPage - 1);
     }
   };
-  
+
   // Következő oldal
   const goToNextPage = () => {
     if (currentPage < totalPages) {
@@ -122,48 +122,48 @@ export default function Home() {
   // Oldalszámok generálása dinamikusan
   const getPaginationButtons = () => {
     const pageButtons = [];
-    
+
     // Első oldal mindig megjelenik
     pageButtons.push(
-      <Button 
-        key={1} 
-        variant="outline" 
-        size="sm" 
+      <Button
+        key={1}
+        variant="outline"
+        size="sm"
         className={`h-8 w-8 ${currentPage === 1 ? 'bg-red-700 text-white border-red-700' : ''}`}
         onClick={() => handlePageChange(1)}
       >
         1
       </Button>
     );
-    
+
     // Ha sok oldal van, akkor ellipszist teszünk
     if (totalPages > 5 && currentPage > 3) {
       pageButtons.push(
         <span key="ellipsis1" className="px-2">...</span>
       );
     }
-    
+
     // Középső számok
     let startPage = Math.max(2, currentPage - 1);
     let endPage = Math.min(totalPages - 1, currentPage + 1);
-    
+
     // Speciális eset, ha az aktuális oldal közel van a végéhez
     if (currentPage > totalPages - 3) {
       startPage = Math.max(2, totalPages - 3);
     }
-    
+
     // Speciális eset, ha az aktuális oldal az elején van
     if (currentPage < 4) {
       endPage = Math.min(totalPages - 1, 4);
     }
-    
+
     // Közbenső oldalak
     for (let i = startPage; i <= endPage; i++) {
       pageButtons.push(
-        <Button 
-          key={i} 
-          variant="outline" 
-          size="sm" 
+        <Button
+          key={i}
+          variant="outline"
+          size="sm"
           className={`h-8 w-8 ${currentPage === i ? 'bg-red-700 text-white border-red-700' : ''}`}
           onClick={() => handlePageChange(i)}
         >
@@ -171,21 +171,21 @@ export default function Home() {
         </Button>
       );
     }
-    
+
     // Ha sok oldal van, akkor ellipszist teszünk
     if (totalPages > 5 && currentPage < totalPages - 2) {
       pageButtons.push(
         <span key="ellipsis2" className="px-2">...</span>
       );
     }
-    
+
     // Utolsó oldal (csak ha több mint 1 oldal van)
     if (totalPages > 1) {
       pageButtons.push(
-        <Button 
-          key={totalPages} 
-          variant="outline" 
-          size="sm" 
+        <Button
+          key={totalPages}
+          variant="outline"
+          size="sm"
           className={`h-8 w-8 ${currentPage === totalPages ? 'bg-red-700 text-white border-red-700' : ''}`}
           onClick={() => handlePageChange(totalPages)}
         >
@@ -193,7 +193,7 @@ export default function Home() {
         </Button>
       );
     }
-    
+
     return pageButtons;
   };
 
@@ -207,10 +207,14 @@ export default function Home() {
               <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-red-600">
                 <Menu className="h-6 w-6" />
               </Button>
-              <h1 className="text-2xl font-bold">MozgoShop</h1>
+              <div className="flex items-center">
+
+                <img src="/public/logo2.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
+                <h1 className="text-2xl font-bold">MozgoShop</h1>
+              </div>
             </div>
 
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
+            {/* A többi fejléc elem változatlan marad */}      {/* A többi fejléc elem változatlan marad */}            {/* A többi fejléc elem változatlan marad */}            <div className="hidden md:flex flex-1 max-w-md mx-4">
               <form onSubmit={handleSearchSubmit} className="relative w-full">
                 <Input
                   placeholder="Keresés..."
@@ -224,28 +228,25 @@ export default function Home() {
                 </button>
               </form>
             </div>
-
             <div className="flex items-center space-x-3">
               <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
                 <User className="h-5 w-5" />
               </a>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-red-600">
-                <Heart className="h-5 w-5" />
-              </Button>
-              <Button variant="ghost" size="icon" className="text-white hover:bg-red-600 relative">
+              {/* A Heart ikont tartalmazó Button eltávolítva innen */}
+              <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
                   3
                 </span>
-              </Button>
+              </a>
             </div>
           </div>
 
           <div className="mt-4 md:hidden relative">
             <form onSubmit={handleSearchSubmit} className="relative w-full">
-              <Input 
-                placeholder="Keresés..." 
-                className="w-full pl-4 pr-10 py-2 rounded-lg border-0 text-black" 
+              <Input
+                placeholder="Keresés..."
+                className="w-full pl-4 pr-10 py-2 rounded-lg border-0 text-black"
                 value={searchQuery}
                 onChange={handleSearchChange}
                 autoComplete="off"
@@ -279,9 +280,9 @@ export default function Home() {
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
             <li>
-               <a href="/" className="text-white font-bold border-b-2 border-white">
-              KEZDŐLAP
-            </a>
+              <a href="/" className="text-white font-bold border-b-2 border-white">
+                KEZDŐLAP
+              </a>
             </li>
             <li>
               <a href="/info" className="hover:text-gray-200">
@@ -329,9 +330,9 @@ export default function Home() {
               <h2 className="text-2xl font-bold text-gray-800">Shop</h2>
               <div className="flex items-center">
                 <span className="text-sm text-gray-500 mr-2">
-                  {loading ? "Betöltés..." : 
-                    filteredProducts.length === 0 ? "0 termék" : 
-                    `${indexOfFirstProduct + 1}–${Math.min(indexOfLastProduct, filteredProducts.length)} termék, összesen ${filteredProducts.length} db`
+                  {loading ? "Betöltés..." :
+                    filteredProducts.length === 0 ? "0 termék" :
+                      `${indexOfFirstProduct + 1}–${Math.min(indexOfLastProduct, filteredProducts.length)} termék, összesen ${filteredProducts.length} db`
                   }
                 </span>
                 <select className="border rounded-md px-3 py-1.5 text-sm bg-white">
@@ -349,7 +350,7 @@ export default function Home() {
               <div className="text-center py-8">
                 <p className="text-gray-700 text-lg mb-2">Nincs találat a keresési feltételekre:</p>
                 <p className="font-bold text-xl">"{searchQuery}"</p>
-                <button 
+                <button
                   onClick={() => { setSearchQuery(""); setFilteredProducts(products); setShowSearchInfo(false); }}
                   className="mt-4 px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800"
                 >
@@ -368,9 +369,9 @@ export default function Home() {
             {filteredProducts.length > 0 && (
               <div className="mt-8 flex justify-center">
                 <nav className="flex items-center gap-1">
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
+                  <Button
+                    variant="outline"
+                    size="icon"
                     className="h-8 w-8"
                     onClick={goToPreviousPage}
                     disabled={currentPage === 1}
@@ -380,13 +381,13 @@ export default function Home() {
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
                     </svg>
                   </Button>
-                  
+
                   {/* Dinamikus oldalszámok */}
                   {getPaginationButtons()}
-                  
-                  <Button 
-                    variant="outline" 
-                    size="icon" 
+
+                  <Button
+                    variant="outline"
+                    size="icon"
                     className="h-8 w-8"
                     onClick={goToNextPage}
                     disabled={currentPage === totalPages}

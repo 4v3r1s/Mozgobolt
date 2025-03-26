@@ -1,13 +1,16 @@
 import { useEffect, useState } from "react";
-import { Button } from "../orderpage/Button";
 import { Link } from "react-router-dom";
 
 export default function Towns() {
-  const [towns, setTowns] = useState([]);
+  const [towns1, setTowns1] = useState([]);
+  const [towns2, setTowns2] = useState([]);
   const [logoAnimated, setLogoAnimated] = useState(false);
 
   useEffect(() => {
-    setTowns(["Budapest", "Debrecen", "Szeged", "Pécs", "Győr", "Miskolc", "Eger", "Nyíregyháza", "Székesfehérvár", "Kecskemét"]);
+    // Első táblázat települései
+    setTowns1(["Zalaszentmárton", "Zalaszentmihály", "Zalaigrice", "Alsórajk", "Kerecseny", "Orosztony", "Zalaszabar", "Esztergályoshorváti", "Bókaháza", "Szentgyörgyvár", "Alsópáhok"]);
+    // Második táblázat települései - csak 8 település
+    setTowns2(["Kallósd", "Kehidakustány", "Zalaszentlászló", "Zalaszentgrót-Zalakoppány", "Zalavég", "Kisgördö", "Vindornyafok", "Karmacs"]);
     
     // Animáció indítása késleltetéssel
     const timer = setTimeout(() => {
@@ -19,11 +22,18 @@ export default function Towns() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal */}
+      {/* Header - animált MozgoShop felirattal és logóval */}
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
-            <a href="/" className="text-white hover:text-gray-200">
+            <a href="/" className="text-white hover:text-gray-200 flex items-center">
+              <img 
+                src="/public/logo2.png" 
+                alt="MozgoShop Logo" 
+                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              />
               <h1 
                 className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -35,7 +45,6 @@ export default function Towns() {
           </div>
         </div>
       </header>
-
       {/* Navigation */}
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
@@ -81,7 +90,7 @@ export default function Towns() {
 
       {/* Települések cím */}
       <div className="container mx-auto text-center py-6">
-        <h1 className="text-2xl font-bold">Elérhető Települések</h1>
+        <h1 className="text-2xl font-bold">Települések</h1>
       </div>
 
       <main className="container mx-auto px-4 py-8">
@@ -90,32 +99,34 @@ export default function Towns() {
           <img src="/images/town2.jpg" alt="Town 2" className="rounded-lg shadow-lg w-full" />
         </div>
 
-        <div className="bg-white p-6 rounded-lg shadow-md">
-          <h2 className="text-xl font-bold text-gray-800 mb-4">Városok Listája</h2>
-          <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            {towns.map((town, index) => (
-              <li key={index} className="bg-gray-100 p-3 rounded-lg text-center font-medium text-gray-800">
-                {town}
-              </li>
-            ))}
-          </ul>
+        {/* Két táblázat egymás mellett */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+          {/* Első táblázat */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Útvonalak - 1. körzet</h2>
+            <ul className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              {towns1.map((town, index) => (
+                <li key={index} className="bg-gray-100 p-3 rounded-lg text-center font-medium text-gray-800">
+                  {town}
+                </li>
+              ))}
+            </ul>
+          </div>
+          
+          {/* Második táblázat */}
+          <div className="bg-white p-6 rounded-lg shadow-md">
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Útvonalak - 2. körzet</h2>
+            <ul className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
+              {towns2.map((town, index) => (
+                <li key={index} className="bg-gray-100 p-3 rounded-lg text-center font-medium text-gray-800">
+                  {town}
+                </li>
+              ))}
+            </ul>
+          </div>
         </div>
         
-        <div className="mt-8 text-center space-x-4">
-          <Button 
-            onClick={() => window.location.href = '/StaticKapcsolat'}
-            className="bg-red-700 text-white py-2 px-6 rounded-md hover:bg-red-800 transition-colors"
-          >
-            Kapcsolat
-          </Button>
-          
-          <Button 
-            onClick={() => window.location.href = '/order-process'}
-            className="bg-red-700 text-white py-2 px-6 rounded-md hover:bg-red-800 transition-colors"
-          >
-            Rendelési útmutató
-          </Button>
-        </div>
+        {/* Az alsó két gombot töröltem innen */}
       </main>
 
       {/* Footer */}

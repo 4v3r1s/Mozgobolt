@@ -46,11 +46,18 @@ export default function Sales() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal */}
+      {/* Header - animált MozgoShop felirattal és logóval */}
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
-            <a href="/" className="text-white hover:text-gray-200">
+            <a href="/" className="text-white hover:text-gray-200 flex items-center">
+              <img 
+                src="/public/logo2.png" 
+                alt="MozgoShop Logo" 
+                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              />
               <h1 
                 className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"

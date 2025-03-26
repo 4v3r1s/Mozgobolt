@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
 import ProductOrder from "./page/order";
-import Home from "./page/orderpage/page";  // Itt lehet a probléma
+import Home from "./page/orderpage/page";
 import Towns from "./page/StaticRoute/route";
 import Info from "./page/StaticInfo/info";
 import Contact from "./page/StaticKapcsolat/StaticKapcsolat";
@@ -9,6 +9,9 @@ import SignUp from "./page/auth/Register";
 import SignIn from "./page/auth/Login";
 import Account from "./page/account/account";
 import Sales from "./page/sales/sales";
+import Cart from "./page/cart/cart";
+import UserTable from "./page/admin/database/UserTable";
+
 
 function App() {
   return (
@@ -24,8 +27,12 @@ function App() {
         <Route path="/register" element={<SignUp />} />
         <Route path="/login" element={<SignIn />} />
         <Route path="/account" element={<Account />} />
-        
         <Route path="/sales" element={<Sales />} />
+        <Route path="/cart" element={<Cart />} />
+        
+        {/* Admin routes */}
+        <Route path="/admin" element={<UserTable />} /> {/* Use UserTable instead of AdminDashboard */}
+        <Route path="/admin/users" element={<UserTable />} />
       </Routes>
     </Router>
   );

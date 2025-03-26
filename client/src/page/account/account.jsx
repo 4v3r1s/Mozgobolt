@@ -135,7 +135,14 @@ export default function Account() {
       <header className="bg-red-700 text-white">
   <div className="container mx-auto px-4 py-4">
     <div className="flex items-center justify-center overflow-hidden h-10">
-      <a href="/" className="text-white hover:text-gray-200">
+      <a href="/" className="text-white hover:text-gray-200 flex items-center">
+        <img 
+          src="/public/logo2.png" 
+          alt="MozgoShop Logo" 
+          className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+            logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+          }`}
+        />
         <h1 
           className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
             logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -147,7 +154,6 @@ export default function Account() {
     </div>
   </div>
 </header>
-
       {/* Navigation */}
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
@@ -323,15 +329,14 @@ export default function Account() {
     {userData.role === "admin" && (
       <button 
         className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-        onClick={() => navigate('/admin/database')}
+        onClick={() => navigate('/admin')}
       >
         <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
           <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clipRule="evenodd" />
         </svg>
-        Adatbázisok kezelése
+        Admin felület
       </button>
-    )}
-  </div>
+    )}  </div>
   
   <div className="mt-6">
     <button 

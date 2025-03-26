@@ -36,7 +36,11 @@ const authenticateUser = async (req, res) => {
         }
 
         const token = jwt.sign(
-            { userId: user.id, email: user.email },
+            { 
+                userId: user.id, 
+                email: user.email,
+                role: user.szerep // Add user role to token
+            },
             "secretkey",
             { expiresIn: "1h" }
         );
@@ -116,4 +120,12 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { createUser, authenticateUser, getUser, updateUser, deleteUser, getUserProfile };
+module.exports = { 
+  createUser, 
+  authenticateUser, 
+  getUser, 
+  updateUser, 
+  deleteUser, 
+  getUserProfile,
+  getAllUsers
+};

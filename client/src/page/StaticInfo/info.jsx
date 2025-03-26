@@ -17,11 +17,18 @@ export default function info() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal */}
+      {/* Header - animált MozgoShop felirattal és logóval */}
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
-            <a href="/" className="text-white hover:text-gray-200">
+            <a href="/" className="text-white hover:text-gray-200 flex items-center">
+              <img 
+                src="/public/logo2.png" 
+                alt="MozgoShop Logo" 
+                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              />
               <h1 
                 className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -83,6 +90,7 @@ export default function info() {
       <div className="container mx-auto px-4">
         <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Rólunk</h2>
+            <h2 className="text-xl font-bold text-gray-800 mb-4">Igazi Kristóf Tamás vagyok és társam Hamza Richárd, mi álmodtuk meg a 2025-ben megalapult mozgóbolt rendszerünket. Korunkat tekintve fiatallab kategóriába tartozunk, azonban semmi sem lehetetlen, ahogyan a weboldalunk is mutatja. Egy műkődőképes, hasznos gondolatmenetet sikerült véghez vinnünk, ami sok ember mindennapjait egyszerűbbé, és komfortosabbá teszi.</h2>
             <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
               {towns.map((town, index) => (
                 <li key={index} className="bg-gray-100 p-3 rounded-lg text-center font-medium text-gray-800">
@@ -111,31 +119,35 @@ export default function info() {
           </div>
         </div>
 
-        {/* Képrészek a szöveg alatt */}
+        {/* Képrészek a szöveg alatt - módosítva, hogy a képek ugyanakkorák legyenek */}
         <div className="py-8 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Első képrész */}
             <div className="bg-white p-6 rounded-lg shadow-md">
               <h3 className="text-lg font-semibold mb-4">Cégünk logója</h3>
-              <img 
-                src="/images/logo.png" 
-                alt="MozgoShop logó" 
-                className="w-full h-auto rounded-lg shadow"
-              />
+              <div className="w-full h-64 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/public/logo2.png" 
+                  alt="MozgoShop logó" 
+                  className="object-contain max-h-full max-w-full"
+                />
+              </div>
             </div>
             
             {/* Második képrész */}
             <div className="bg-white p-6 rounded-lg shadow-md">
-              <h3 className="text-lg font-semibold mb-4">Mozgóboltunk</h3>
-              <img 
-                src="/images/mozgobolt.jpg" 
-                alt="Mozgóbolt" 
-                className="w-full h-auto rounded-lg shadow"
-                onError={(e) => {
-                  e.target.onerror = null;
-                  e.target.src = "/images/placeholder.jpg";
-                }}
-              />
+              <h3 className="text-lg font-semibold mb-4">Csapatunk</h3>
+              <div className="w-full h-64 flex items-center justify-center overflow-hidden">
+                <img 
+                  src="/images/mozgobolt.jpg" 
+                  alt="Mozgóbolt" 
+                  className="object-contain max-h-full max-w-full"
+                  onError={(e) => {
+                    e.target.onerror = null;
+                    e.target.src = "/public/Forza.jpg";
+                  }}
+                />
+              </div>
             </div>
           </div>
         </div>

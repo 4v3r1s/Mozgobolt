@@ -82,16 +82,50 @@ const updateUser = async (req, res) => {
         const { id } = req.params;
         const updates = req.body;
 
-        if (updates.password) {
-            updates.password = await bcrypt.hash(updates.password, 10);
+        // If password is being updated, hash it
+        if (updates.jelszo) {
+            updates.jelszo = await bcrypt.hash(updates.jelszo, 10);
         }
 
-        const [updated] = await User.update(updates, { where: { id } });
-        if (!updated) return res.status(404).json({ message: "User not found!" });
+        // Remove any fields that might cause issues
+        delete updates.createdAt;
+        delete updates.updatedAt;
+        delete updates.id; // Don't try to update the primary key
 
-        res.json({ message: "User updated successfully!" });
+        // Handle date conversion for szuletesidatum if it's a string
+        if (updates.szuletesidatum && typeof updates.szuletesidatum === 'string') {
+            updates.szuletesidatum = new Date(updates.szuletesidatum);
+        }
+
+        // Convert numeric string values to numbers for integer fields
+        if (updates.szamlazasi_irsz && typeof updates.szamlazasi_irsz === 'string') {
+            updates.szamlazasi_irsz = parseInt(updates.szamlazasi_irsz, 10) || null;
+        }
+        
+        if (updates.szallitasi_irsz && typeof updates.szallitasi_irsz === 'string') {
+            updates.szallitasi_irsz = parseInt(updates.szallitasi_irsz, 10) || null;
+        }
+
+        console.log("Updating user with data:", JSON.stringify(updates, null, 2));
+
+        const [updated] = await User.update(updates, { 
+            where: { id },
+            // Return the updated user
+            returning: true
+        });
+
+        if (!updated) {
+            return res.status(404).json({ message: "Felhasználó nem található!" });
+        }
+
+        res.json({ message: "Felhasználó sikeresen frissítve!" });
     } catch (error) {
-        res.status(500).json({ message: "Error updating user", error });
+        console.error("Error updating user:", error);
+        res.status(500).json({ 
+            message: "Hiba a felhasználó frissítése során", 
+            error: error.message,
+            stack: error.stack 
+        });
     }
 };
 

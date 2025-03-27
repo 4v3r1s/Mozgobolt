@@ -21,6 +21,15 @@ app.use("/raktar", raktarRoutes);
 app.use("/rendeles", rendelesRoutes);
 app.use("/user", userRoutes);
 app.use('/admin', adminRoutes);
+// Add detailed request logging
+app.use((req, res, next) => {
+    console.log(`${req.method} ${req.url}`);
+    if (req.method === 'POST' || req.method === 'PUT') {
+      console.log('Request body:', JSON.stringify(req.body, null, 2));
+    }
+    next();
+  });
+  
 
 sequelize.sync({ alter: true }) // `alter: true` ensures that existing tables are updated if needed
     .then(() => console.log("✅ Database synchronized successfully!"))

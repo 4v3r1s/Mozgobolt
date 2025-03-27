@@ -11,6 +11,7 @@ import Account from "./page/account/account";
 import Sales from "./page/sales/sales";
 import Cart from "./page/cart/cart";
 import UserTable from "./page/admin/database/UserTable";
+import ProductTable from "./page/admin/database/ProductTable";
 
 
 function App() {
@@ -31,8 +32,9 @@ function App() {
         <Route path="/cart" element={<Cart />} />
         
         {/* Admin routes */}
-        <Route path="/admin" element={<UserTable />} /> {/* Use UserTable instead of AdminDashboard */}
+        <Route path="/admin" element={<UserTable />} />
         <Route path="/admin/users" element={<UserTable />} />
+        <Route path="/admin/products" element={<ProductTable />} />
       </Routes>
     </Router>
   );

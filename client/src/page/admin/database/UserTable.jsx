@@ -6,6 +6,14 @@ export default function UserTable() {
   const [error, setError] = useState(null);
   const [editingUser, setEditingUser] = useState(null);
   const [formData, setFormData] = useState({});
+  const [showAddForm, setShowAddForm] = useState(false);
+  const [newUserData, setNewUserData] = useState({
+    felhasznalonev: "",
+    email: "",
+    jelszo: "",
+    szerep: "user",
+    hirlevel: false
+  });
 
   useEffect(() => {
     fetchUsers();
@@ -14,18 +22,30 @@ export default function UserTable() {
   const fetchUsers = async () => {
     try {
       setLoading(true);
-      
-      // Csak mock adatok használata
-      const mockUsers = [
-        { id: 1, felhasznalonev: "admin", email: "admin@example.com", szerep: "admin", hirlevel: true },
-        { id: 2, felhasznalonev: "user1", email: "user1@example.com", szerep: "user", hirlevel: false },
-        { id: 3, felhasznalonev: "vevo1", email: "vevo1@example.com", szerep: "vevo", hirlevel: true },
-      ];
-      
-      setUsers(mockUsers);
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+
+      if (!token) {
+        throw new Error("Nincs bejelentkezve");
+      }
+
+      const response = await fetch("http://localhost:3000/user/all", {
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      });
+
+      if (!response.ok) {
+        throw new Error("Nem sikerült betölteni a felhasználókat");
+      }
+
+      const data = await response.json();
+      setUsers(data);
     } catch (error) {
       console.error("Error fetching users:", error);
-      setError("Nem sikerült betölteni a felhasználókat");
+      setError("Nem sikerült betölteni a felhasználókat: " + error.message);
     } finally {
       setLoading(false);
     }
@@ -44,6 +64,14 @@ export default function UserTable() {
     });
   };
 
+  const handleNewUserChange = (e) => {
+    const { name, value, type, checked } = e.target;
+    setNewUserData({
+      ...newUserData,
+      [name]: type === "checkbox" ? checked : value,
+    });
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -52,8 +80,10 @@ export default function UserTable() {
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
 
-      // Használjuk a már létező végpontot a felhasználó frissítéséhez
-      // Például a /user/update/:id végpontot, ha létezik
+      if (!token) {
+        throw new Error("Nincs bejelentkezve");
+      }
+
       const response = await fetch(`http://localhost:3000/user/updateUser/${editingUser}`, {
         method: "PUT",
         headers: {
@@ -64,26 +94,59 @@ export default function UserTable() {
       });
 
       if (!response.ok) {
-        // Ha ez a végpont sem létezik, szimuláljuk a frissítést
-        if (response.status === 404) {
-          console.log("Végpont nem található, frissítés szimulálása");
-          setUsers(users.map(user => user.id === editingUser ? { ...formData } : user));
-          setEditingUser(null);
-          alert("Felhasználó frissítve (teszt módban)");
-          return;
-        }
         throw new Error("Hiba a felhasználó frissítése során");
       }
 
       // Update the users list
       fetchUsers();
       setEditingUser(null);
+      alert("Felhasználó sikeresen frissítve!");
     } catch (error) {
       console.error("Error updating user:", error);
-      // Hiba esetén szimuláljuk a frissítést
-      setUsers(users.map(user => user.id === editingUser ? { ...formData } : user));
-      setEditingUser(null);
-      alert("Felhasználó frissítve (teszt módban)");
+      alert("Hiba a felhasználó frissítése során: " + error.message);
+    }
+  };
+
+  const handleAddUser = async (e) => {
+    e.preventDefault();
+    try {
+      const token = document.cookie
+        .split('; ')
+        .find(row => row.startsWith('token='))
+        ?.split('=')[1];
+
+      if (!token) {
+        throw new Error("Nincs bejelentkezve");
+      }
+
+      const response = await fetch("http://localhost:3000/user/addUser", {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(newUserData),
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Hiba a felhasználó létrehozása során");
+      }
+
+      // Update the users list
+      fetchUsers();
+      setShowAddForm(false);
+      setNewUserData({
+        felhasznalonev: "",
+        email: "",
+        jelszo: "",
+        szerep: "user",
+        hirlevel: false
+      });
+      alert("Felhasználó sikeresen létrehozva!");
+    } catch (error) {
+      console.error("Error adding user:", error);
+      alert("Hiba a felhasználó létrehozása során: " + error.message);
     }
   };
 
@@ -98,34 +161,27 @@ export default function UserTable() {
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
 
-      // Használjuk a már létező végpontot a felhasználó törléséhez
-      // Például a /user/delete/:id végpontot, ha létezik
+      if (!token) {
+        throw new Error("Nincs bejelentkezve");
+      }
+
       const response = await fetch(`http://localhost:3000/user/deleteUser/${id}`, {
         method: "DELETE",
         headers: {
           "Authorization": `Bearer ${token}`,
-          "Content-Type": "application/json",
         },
       });
 
       if (!response.ok) {
-        // Ha ez a végpont sem létezik, szimuláljuk a törlést
-        if (response.status === 404) {
-          console.log("Végpont nem található, törlés szimulálása");
-          setUsers(users.filter(user => user.id !== id));
-          alert("Felhasználó törölve (teszt módban)");
-          return;
-        }
         throw new Error("Hiba a felhasználó törlése során");
       }
 
       // Update the users list
       fetchUsers();
+      alert("Felhasználó sikeresen törölve!");
     } catch (error) {
       console.error("Error deleting user:", error);
-      // Hiba esetén szimuláljuk a törlést
-      setUsers(users.filter(user => user.id !== id));
-      alert("Felhasználó törölve (teszt módban)");
+      alert("Hiba a felhasználó törlése során: " + error.message);
     }
   };
 
@@ -139,7 +195,89 @@ export default function UserTable() {
 
   return (
     <div className="overflow-x-auto">
-      <h2 className="text-xl font-semibold mb-4">Felhasználók kezelése</h2>
+      <div className="flex justify-between items-center mb-4">
+        <h2 className="text-xl font-semibold">Felhasználók kezelése</h2>
+        <button
+          onClick={() => setShowAddForm(!showAddForm)}
+          className="bg-red-700 text-white py-2 px-4 rounded hover:bg-red-800"
+        >
+          {showAddForm ? "Mégse" : "Új felhasználó"}
+        </button>
+      </div>
+
+      {showAddForm && (
+        <div className="bg-gray-100 p-4 mb-4 rounded">
+          <h3 className="text-lg font-medium mb-2">Új felhasználó hozzáadása</h3>
+          <form onSubmit={handleAddUser} className="space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Felhasználónév</label>
+                <input
+                  type="text"
+                  name="felhasznalonev"
+                  value={newUserData.felhasznalonev}
+                  onChange={handleNewUserChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Email</label>
+                <input
+                  type="email"
+                  name="email"
+                  value={newUserData.email}
+                  onChange={handleNewUserChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Jelszó</label>
+                <input
+                  type="password"
+                  name="jelszo"
+                  value={newUserData.jelszo}
+                  onChange={handleNewUserChange}
+                  required
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700">Szerep</label>
+                <select
+                  name="szerep"
+                  value={newUserData.szerep}
+                  onChange={handleNewUserChange}
+                  className="mt-1 block w-full border border-gray-300 rounded-md shadow-sm p-2"
+                >
+                  <option value="user">Felhasználó</option>
+                  <option value="vevo">Vevő</option>
+                  <option value="admin">Admin</option>
+                </select>
+              </div>
+              <div>
+                <label className="flex items-center mt-3">
+                  <input
+                    type="checkbox"
+                    name="hirlevel"
+                    checked={newUserData.hirlevel}
+                    onChange={handleNewUserChange}
+                    className="h-4 w-4 text-red-600 border-gray-300 rounded"
+                  />
+                  <span className="ml-2 text-sm text-gray-700">Hírlevél</span>
+                </label>
+              </div>
+            </div>
+            <button
+              type="submit"
+              className="bg-red-700 text-white py-2 px-4 rounded hover:bg-red-800"
+            >
+              Felhasználó létrehozása
+            </button>
+          </form>
+        </div>
+      )}
       
       <table className="min-w-full bg-white border border-gray-200">
         <thead>
@@ -148,6 +286,7 @@ export default function UserTable() {
             <th className="py-2 px-4 border-b text-left">Felhasználónév</th>
             <th className="py-2 px-4 border-b text-left">Email</th>
             <th className="py-2 px-4 border-b text-left">Szerep</th>
+            <th className="py-2 px-4 border-b text-left">Hírlevél</th>
             <th className="py-2 px-4 border-b text-left">Műveletek</th>
           </tr>
         </thead>
@@ -155,9 +294,9 @@ export default function UserTable() {
           {users.map((user) => (
             <tr key={user.id} className="hover:bg-gray-50">
               {editingUser === user.id ? (
-                <td colSpan="5" className="py-2 px-4 border-b">
+                <td colSpan="6" className="py-2 px-4 border-b">
                   <form onSubmit={handleSubmit} className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
                         <label className="block text-sm font-medium text-gray-700">Felhasználónév</label>
                         <input
@@ -192,14 +331,16 @@ export default function UserTable() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700">Hírlevél</label>
-                        <input
-                          type="checkbox"
-                          name="hirlevel"
-                          checked={formData.hirlevel || false}
-                          onChange={handleChange}
-                          className="mt-3 h-4 w-4 text-red-600 border-gray-300 rounded"
-                        />
+                        <label className="flex items-center mt-3">
+                          <input
+                            type="checkbox"
+                            name="hirlevel"
+                            checked={formData.hirlevel || false}
+                            onChange={handleChange}
+                            className="h-4 w-4 text-red-600 border-gray-300 rounded"
+                          />
+                          <span className="ml-2 text-sm text-gray-700">Hírlevél</span>
+                        </label>
                       </div>
                     </div>
                     <div className="flex space-x-2">
@@ -229,39 +370,45 @@ export default function UserTable() {
                       user.szerep === 'admin' 
                         ? 'bg-red-100 text-red-800' 
                         : user.szerep === 'vevo' 
-                          ? 'bg-blue-100 text-blue-800' 
+                          ? 'bg-blue-100 text-blue-800'
                           : 'bg-gray-100 text-gray-800'
-                    }`}>
-                      {user.szerep === 'admin' 
-                        ? 'Admin' 
-                        : user.szerep === 'vevo' 
-                          ? 'Vevő' 
-                          : 'Felhasználó'}
-                    </span>
-                  </td>
-                  <td className="py-2 px-4 border-b">
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => handleEdit(user)}
-                        className="text-blue-600 hover:text-blue-800"
-                      >
-                        Szerkesztés
-                      </button>
-                      <button
-                        onClick={() => handleDelete(user.id)}
-                        className="text-red-600 hover:text-red-800"
-                      >
-                        Törlés
-                      </button>
-                    </div>
-                  </td>
-                </>
-              )}
-            </tr>
-          ))}
-        </tbody>
-      </table>
-    </div>
-  );
-
-}
+                        }`}>
+                          {user.szerep === 'admin' 
+                            ? 'Admin' 
+                            : user.szerep === 'vevo' 
+                              ? 'Vevő' 
+                              : 'Felhasználó'}
+                        </span>
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        {user.hirlevel ? (
+                          <span className="px-2 py-1 rounded-full text-xs bg-green-100 text-green-800">Igen</span>
+                        ) : (
+                          <span className="px-2 py-1 rounded-full text-xs bg-gray-100 text-gray-800">Nem</span>
+                        )}
+                      </td>
+                      <td className="py-2 px-4 border-b">
+                        <div className="flex space-x-2">
+                          <button
+                            onClick={() => handleEdit(user)}
+                            className="text-blue-600 hover:text-blue-800"
+                          >
+                            Szerkesztés
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user.id)}
+                            className="text-red-600 hover:text-red-800"
+                          >
+                            Törlés
+                          </button>
+                        </div>
+                      </td>
+                    </>
+                  )}
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
+      );
+    }

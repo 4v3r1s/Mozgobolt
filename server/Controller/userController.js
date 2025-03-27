@@ -50,7 +50,18 @@ const authenticateUser = async (req, res) => {
         res.status(500).json({ message: "Hiba a bejelentkezés során", error });
     }
 };
-
+// Get All Users (Admin only)
+const getAllUsers = async (req, res) => {
+    try {
+        const users = await User.findAll({
+            attributes: { exclude: ["jelszo"] } // Exclude password from the response
+        });
+        res.json(users);
+    } catch (error) {
+        console.error("Error fetching all users:", error);
+        res.status(500).json({ message: "Hiba a felhasználók lekérése során", error: error.message });
+    }
+};
 // Get User by ID
 const getUser = async (req, res) => {
     try {

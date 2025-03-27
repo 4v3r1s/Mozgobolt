@@ -22,10 +22,10 @@ napi_fogyas.associate = function(models) {
     targetKey: 'azonosito'
   });
   
-  napi_fogyas.belongsTo(models.Termek, {
-    foreignKey: 'termek',
-    targetKey: 'azonosito'
-  });
+  //napi_fogyas.belongsTo(models.Termek, {
+    //foreignKey: 'termek',
+   // targetKey: 'azonosito'
+ // });
 };
 
 module.exports = napi_fogyas;

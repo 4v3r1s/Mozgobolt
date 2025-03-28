@@ -19,7 +19,7 @@ export default function Home() {
     const fetchProducts = async () => {
       try {
         // Az adatbázisból kérjük le a termékeket
-        const response = await fetch("http://localhost:3000/api/products");
+        const response = await fetch("http://localhost:3000/termek");
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }

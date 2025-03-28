@@ -12,6 +12,14 @@ const adminRoutes = require('./routes/adminRoutes');
 const app = express();
 app.use(cors());
 app.use(express.json());
+const path = require('path');
+
+// Statikus fájlok kiszolgálása - az egész public mappát kiszolgáljuk
+app.use(express.static(path.join(__dirname, 'public')));
+
+// Régi konfiguráció megtartása is
+app.use('/uploads', express.static(path.join(__dirname, 'public/uploads')));
+app.use('/termek-kepek', express.static(path.join(__dirname, 'public/termek-kepek')));
 
 
 app.use("/termek", termekRoutes);

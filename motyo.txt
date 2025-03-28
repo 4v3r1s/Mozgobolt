@@ -1,0 +1,238 @@
+Édességek:
+7622210145390-sportszelet
+8445290860668-étcsokis balaton
+8445290859440-tejcsokis balatonszelet
+7622201388409-csokis 7days croasan
+80052760-kinderbueno
+80177609-kindercsoki 4 darabos
+4025700001023-milkacsoki
+8584004305849-bombi
+3017760524896-dörmi
+8723400938132-negro
+
+Füszerek
+8586000922341-öröltpaprika
+20756475-majoarnna
+20152161-fokhagyma gran.
+5997359136281-fahéj
+5997359136243-feketebors
+5997359136304-szodabikarbona
+5997359136267-fűszerkömény
+5997359136274-babérlevél(egész)
+5997359110342-vannilincukor
+
+
+chipsek/snackek:
+3859888532465-Sós chips
+5997312702348-chio crook sajtos
+5997312792486-chio crrok hagymás tejfölös
+5997380350298-hátartási keksz
+5997380352742-detki vital keksz
+5997380362277-omlos keksz
+5998056300029-sajtos tallér
+5997347555568-szotyi
+5410041435702-tuc
+5997347540373-földi mogyi
+
+italok:
+5993330000077-cola 0,33
+5999571052783-hell
+5993330000039-cola 1,75
+5999571052530-xixo citrom 0,25
+5999860497097- hell kávé 0,25
+5998693583083- kannásbor
+5998817313435- kőbányai 2l
+5999546470475-savas 1,75 viz
+5999546470406-mentes viz 1,75
+5900535022995-barley sör 0,5
+5999559163463- kiwi szörp
+5999559163234-áfonya szörp
+5999559163500-naracs szörp
+5998760907873-citrom lé
+5999862309923-márka cola 2,5
+5999862309787-márka naracs
+5999571052677-xixo citrom 1,5
+5999862309800-szőlő márka 2,5
+
+konzervek/befőttek:
+5992895007927-torma
+5998304054766-pacalpörkölt
+5998304054742-babgulyás
+5902510275419-chilisbab
+5992895014628-vágott zöldbab
+4337256142731-csiperke gomba
+5998324142535-natur lecso
+5999560674439-tonhal konzerv
+5992895015120-vágott vegyes savanyuság
+5998324155702-csemege cékla
+5998324142733-zöldborsó
+4056489666028-bab
+5997010314348-paszirozott paradicsom
+5998324100047-ecetes paprika
+4056489499855-megybefőtt
+5999524035269-csiperkegomba
+
+tejtermék:
+5998216703301-tejföl 320g
+5998202942448-kefir
+24083041-ömlesztett sajt
+4337256847605-lapka sajt
+5998216703622-szendvicskrém
+20425166-margarin
+5998201214515-tej 2,8
+5998200460197-mizo kakao
+59901419-élesztő
+5992895012266-teavaj
+5999880096348-sűtőmargarin
+2100000095889-szivecske joghurt
+5992895010729-májkrém
+8586000020344-tej 1,5
+4000436506059-trapistasajt
+
+
+pékárú:
+mézesszelet-99900022
+gesztenyésszelet-99900045
+sakkszelet-99900049
+puncsszelet-99900048
+piskotatekercs-99900020
+keksztekercs-99900064
+gesztenyerólád
+burkifli-99900037
+virslispárna-12900012
+12900006-zsemle
+fehér kenyér 1 kg-12900001
+rozskenyér-12900043
+teljes kiörlésú kenyér -12900004
+12900008-kifli
+12900141-sós perec
+
+hentesárú/felvágott:
+5992895011658-csirmell sonka
+5999884136668-füstölt főtt tarja
+5998003165176-szeletelt csemege
+5998003165190-paprikás csemege
+5999884136699-tepertő
+09038127-sertészsír
+5999884136705-lecsokolbász
+599766460-disznósajt
+5999884136750-olasz felvágott
+5999884136927-löncs felvágott
+5999884136798-fokhagymás felvágott
+5999570090045-pároskolbász
+5999884136774-párizsi
+2813226004053-csécsi szalonna
+2813202002455-kolozsvári
+599766510-erdélyi szalonna
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

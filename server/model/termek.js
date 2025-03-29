@@ -28,7 +28,7 @@ const Termek = sequelize.define("Termek", {
   meret: { type: DataTypes.STRING(50), allowNull: true },
   szin: { type: DataTypes.STRING(50), allowNull: true },
   kepUrl: { type: DataTypes.STRING(255), allowNull: true },
-  vonalkod: { type: DataTypes.TEXT, allowNull: false },
+  vonalkod: { type: DataTypes.STRING(255), allowNull: false },
 }, {
   tableName: "termek",
   timestamps: false,

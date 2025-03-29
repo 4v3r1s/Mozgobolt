@@ -12,11 +12,21 @@ export default function ProductTable() {
     ar: 0,
     egysegnyiar: 0,
     csoport: "",
-    keszlet: 0,
-    afa_kulcs: "", // Add this required field
-    akciosar: 0,
     termekleiras: "",
-    hivatkozas: "" // This seems to be used instead of kep
+    kiszereles: "",
+    keszlet: 0,
+    akciosar: 0,
+    akcios_egysegnyiar: 0,
+    akcio_vege: "",
+    akcio_eleje: "",
+    hivatkozas: "",
+    ajanlott_termekek: "",
+    tizennyolc: false,
+    afa_kulcs: "",
+    meret: "",
+    szin: "",
+    kepUrl: "",
+    vonalkod: "" // This is the only required field (allowNull: false)
   });
   
   const [logoAnimated, setLogoAnimated] = useState(false);
@@ -104,12 +114,41 @@ export default function ProductTable() {
   };
 
   const handleNewProductChange = (e) => {
-    const { name, value, type, checked } = e.target;
+  const { name, value, type, checked } = e.target;
+  
+  // Special handling for date fields
+  if (name === 'akcio_eleje' || name === 'akcio_vege') {
+    // If the value is empty, set it to null
+    if (!value) {
+      setNewProductData({
+        ...newProductData,
+        [name]: null
+      });
+    } else {
+      // Otherwise, ensure it's in YYYY-MM-DD format
+      const dateValue = new Date(value);
+      if (!isNaN(dateValue.getTime())) {
+        const formattedDate = dateValue.toISOString().split('T')[0];
+        setNewProductData({
+          ...newProductData,
+          [name]: formattedDate
+        });
+      } else {
+        // Invalid date, set to null
+        setNewProductData({
+          ...newProductData,
+          [name]: null
+        });
+      }
+    }
+  } else {
+    // Handle other fields as before
     setNewProductData({
       ...newProductData,
       [name]: type === "checkbox" ? checked : type === "number" ? Number(value) : value,
     });
-  };
+  }
+};
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -130,7 +169,9 @@ export default function ProductTable() {
       Object.keys(formData).forEach(key => {
         // Kihagyjuk a createdAt és updatedAt mezőket
         if (key !== 'createdAt' && key !== 'updatedAt') {
-          formDataToSend.append(key, formData[key]);
+          // Convert null values to empty strings to avoid FormData issues
+          const value = formData[key] === null ? '' : formData[key];
+          formDataToSend.append(key, value);
         }
       });
       
@@ -138,7 +179,10 @@ export default function ProductTable() {
       const imageInput = document.querySelector('input[name="kep"]');
       if (imageInput && imageInput.files[0]) {
         formDataToSend.append('kep', imageInput.files[0]);
+        console.log("Image file added to form data:", imageInput.files[0].name);
       }
+      
+      console.log("Sending form data to server...");
       
       // Módosított végpont a termekRoutes.js alapján
       const response = await fetch(`http://localhost:3000/termek/${editingProduct}`, {
@@ -151,7 +195,8 @@ export default function ProductTable() {
       });
 
       if (!response.ok) {
-        throw new Error("Hiba a termék frissítése során");
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Hiba a termék frissítése során");
       }
 
       // Update the products list
@@ -167,57 +212,107 @@ export default function ProductTable() {
 
   const handleAddProduct = async (e) => {
     e.preventDefault();
+    
+    // Validate required fields
+    if (!newProductData.vonalkod) {
+      alert("A vonalkód mező kitöltése kötelező!");
+      return;
+    }
+    
     try {
       const token = document.cookie
         .split('; ')
         .find(row => row.startsWith('token='))
         ?.split('=')[1];
-
+  
       if (!token) {
         throw new Error("Nincs bejelentkezve");
       }
-
-      // FormData objektum létrehozása a fájlfeltöltéshez
+  
+      // Create a new FormData object
       const formDataToSend = new FormData();
       
-      // Adatok hozzáadása a FormData objektumhoz
+      // Add all form fields to FormData
       Object.keys(newProductData).forEach(key => {
-        formDataToSend.append(key, newProductData[key]);
+        // Handle special cases
+        if (key === 'akcio_eleje' || key === 'akcio_vege') {
+          // Only add date if it's valid
+          if (newProductData[key] && newProductData[key] !== 'Invalid date') {
+            formDataToSend.append(key, newProductData[key]);
+          }
+        } else if (newProductData[key] !== null && newProductData[key] !== undefined) {
+          // Add other fields
+          formDataToSend.append(key, String(newProductData[key]));
+        }
       });
       
-      // Kép hozzáadása, ha van kiválasztva
-      const imageInput = document.querySelector('#newProductImage');
-      if (imageInput && imageInput.files[0]) {
-        formDataToSend.append('kep', imageInput.files[0]);
+      // Add the image file if selected - use a different approach
+      const imageInput = document.getElementById('newProductImage');
+      if (imageInput && imageInput.files && imageInput.files.length > 0) {
+        const file = imageInput.files[0];
+        formDataToSend.append('kep', file, file.name);
+        console.log("Image file added to form data:", file.name, "Size:", file.size, "Type:", file.type);
+        
+        // Log the FormData contents for debugging
+        for (let pair of formDataToSend.entries()) {
+          console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+        }
+      } else {
+        console.log("No image file selected");
       }
-
-      // Módosított végpont a termekRoutes.js alapján
+  
+      console.log("Sending form data to server...");
+      
+      // Send the request - DO NOT set Content-Type header
       const response = await fetch("http://localhost:3000/termek", {
         method: "POST",
         headers: {
-          "Authorization": `Bearer ${token}`,
-          // Ne állítsuk be a Content-Type fejlécet, mert a FormData automatikusan beállítja
+          "Authorization": `Bearer ${token}`
+          // DO NOT set Content-Type here, let the browser set it with the boundary
         },
         body: formDataToSend,
       });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Hiba a termék létrehozása során");
+  
+      // Parse the response
+      let responseData;
+      const responseText = await response.text();
+      
+      try {
+        responseData = JSON.parse(responseText);
+      } catch (e) {
+        console.error("Failed to parse response:", responseText);
+        throw new Error("Invalid server response");
       }
-
-      // Update the products list
+      
+      if (!response.ok) {
+        console.error("Server error details:", responseData);
+        throw new Error(responseData.message || responseData.error || "Hiba a termék létrehozása során");
+      }
+  
+      // Success! Update the UI
       fetchProducts();
       setShowAddForm(false);
       setSelectedImage(null);
       setNewProductData({
         nev: "",
         ar: 0,
+        egysegnyiar: 0,
         csoport: "",
-        keszlet: 0,
-        akcios: false,
         termekleiras: "",
-        kep: ""
+        kiszereles: "",
+        keszlet: 0,
+        akciosar: 0,
+        akcios_egysegnyiar: 0,
+        akcio_vege: "",
+        akcio_eleje: "",
+        hivatkozas: "",
+        ajanlott_termekek: "",
+        tizennyolc: false,
+        afa_kulcs: "",
+        meret: "",
+        szin: "",
+        kepUrl: "",
+        vonalkod: ""
       });
       alert("Termék sikeresen létrehozva!");
     } catch (error) {
@@ -225,7 +320,8 @@ export default function ProductTable() {
       alert("Hiba a termék létrehozása során: " + error.message);
     }
   };
-
+  
+ 
   const handleDelete = async (id) => {
     if (!window.confirm("Biztosan törölni szeretné ezt a terméket?")) {
       return;
@@ -349,7 +445,7 @@ export default function ProductTable() {
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                     {/* Alapadatok */}
                     <div className="md:col-span-3">
-                      <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Alapadatok</h4>
+                      <h4 className="font-medium text-gray-700 mb-2 pb-1">Alapadatok</h4>
                     </div>
                     <div>
                       <label className="block text-gray-700 mb-1">Termék neve*</label>
@@ -399,12 +495,12 @@ export default function ProductTable() {
                         <label className="flex items-center mt-3">
                           <input
                             type="checkbox"
-                            name="akciosar"
-                            checked={newProductData.akciosar ? true : false}
+                            name="tizennyolc"
+                            checked={newProductData.tizennyolc}
                             onChange={handleNewProductChange}
                             className="h-4 w-4 text-red-600 border-gray-300 rounded"
                           />
-                          <span className="ml-2 text-gray-700">Akciós termék</span>
+                          <span className="ml-2 text-gray-700">18+ termék</span>
                         </label>
                       </div>
                       <div className="md:col-span-3">
@@ -418,7 +514,6 @@ export default function ProductTable() {
                         ></textarea>
                       </div>
                       
-                      {/* Új képfeltöltő mező */}
                       <div className="md:col-span-3">
                         <label className="block text-gray-700 mb-1">Termék képe</label>
                         <input
@@ -440,7 +535,6 @@ export default function ProductTable() {
                           </div>
                         )}
                       </div>
-                      
                       <div className="md:col-span-3">
                         <label className="block text-gray-700 mb-1">Hivatkozás (Kép URL)</label>
                         <input
@@ -449,7 +543,109 @@ export default function ProductTable() {
                           value={newProductData.hivatkozas || ""}
                           onChange={handleNewProductChange}
                           className="w-full p-2 border border-gray-300 rounded-md"
-                          placeholder="https://example.com/image.jpg"
+                          placeholder="Hivatkozás"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Vonalkód*</label>
+                        <input
+                          type="text"
+                          name="vonalkod"
+                          value={newProductData.vonalkod}
+                          onChange={handleNewProductChange}
+                          required
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Kiszerelés</label>
+                        <input
+                          type="text"
+                          name="kiszereles"
+                          value={newProductData.kiszereles || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">ÁFA kulcs</label>
+                        <input
+                          type="text"
+                          name="afa_kulcs"
+                          value={newProductData.afa_kulcs || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Méret</label>
+                        <input
+                          type="text"
+                          name="meret"
+                          value={newProductData.meret || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Szín</label>
+                        <input
+                          type="text"
+                          name="szin"
+                          value={newProductData.szin || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Akciós ár</label>
+                        <input
+                          type="number"
+                          name="akciosar"
+                          value={newProductData.akciosar || 0}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Akciós egységnyi ár</label>
+                        <input
+                          type="number"
+                          name="akcios_egysegnyiar"
+                          value={newProductData.akcios_egysegnyiar || 0}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Akció kezdete</label>
+                        <input
+                          type="date"
+                          name="akcio_eleje"
+                          value={newProductData.akcio_eleje || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Akció vége</label>
+                        <input
+                          type="date"
+                          name="akcio_vege"
+                          value={newProductData.akcio_vege || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-gray-700 mb-1">Ajánlott termékek</label>
+                        <input
+                          type="text"
+                          name="ajanlott_termekek"
+                          value={newProductData.ajanlott_termekek || ""}
+                          onChange={handleNewProductChange}
+                          className="w-full p-2 border border-gray-300 rounded-md"
+                          placeholder="Vesszővel elválasztott termék azonosítók"
                         />
                       </div>
                     </div>
@@ -466,21 +662,22 @@ export default function ProductTable() {
               <div className="overflow-x-auto">
                 <table className="min-w-full bg-white border border-gray-200 rounded-lg">
                   <thead className="bg-gray-50">
-                  <tr>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kép</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Név</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ár</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Egységnyi ár</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Csoport</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kiszerelés</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Készlet</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akciós ár</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akció vége</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ÁFA kulcs</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méret</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Szín</th>
-                  <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Műveletek</th> </tr>
+                    <tr>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ID</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kép</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Név</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ár</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Egységnyi ár</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Csoport</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kiszerelés</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Készlet</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akciós ár</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Akció vége</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">ÁFA kulcs</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Méret</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Szín</th>
+                      <th className="py-3 px-4 border-b text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Műveletek</th>
+                    </tr>
                   </thead>
                   <tbody className="divide-y divide-gray-200">
                     {products.map((product) => (
@@ -702,26 +899,35 @@ export default function ProductTable() {
                                    </div>
                                  )}
                                  {formData.kepUrl && !editSelectedImage && (
-                                   <div className="mt-2">
-                                     <p className="text-sm text-gray-500 mb-1">Jelenlegi kép:</p>
-                                     <img 
-                                       src={formData.kepUrl} 
-                                       alt="Jelenlegi kép" 
-                                       className="h-32 object-contain border border-gray-300 rounded-md p-1" 
-                                     />
-                                   </div>
-                                 )}
-                               </div>
-                               
+                                  <div className="mt-2">
+                                    <p className="text-sm text-gray-500 mb-1">Jelenlegi kép:</p>
+                                    <img 
+                                      src={`http://localhost:3000${formData.kepUrl}`} 
+                                      alt="Jelenlegi kép" 
+                                      className="h-32 object-contain border border-gray-300 rounded-md p-1" 
+                                      onError={(e) => {
+                                        console.log("Failed to load current image:", `http://localhost:3000${formData.kepUrl}`);
+                                        e.target.onerror = null;
+                                        e.target.parentNode.innerHTML = `
+                                          <div class="h-32 bg-gray-200 rounded-md flex items-center justify-center border border-gray-300 p-1">
+                                            <span class="text-sm text-gray-500">Kép nem található</span>
+                                          </div>
+                                        `;
+                                      }}
+                                    />
+                                  </div>
+                                )}
+                                </div>
+
                                <div className="md:col-span-3">
-                                 <label className="block text-gray-700 mb-1">Hivatkozás (Kép URL)</label>
+                                 <label className="block text-gray-700 mb-1">Hivatkozás</label>
                                  <input
                                    type="text"
                                    name="hivatkozas"
                                    value={formData.hivatkozas || ""}
                                    onChange={handleChange}
                                    className="w-full p-2 border border-gray-300 rounded-md"
-                                   placeholder="https://example.com/image.jpg"
+                                   placeholder="Hivatkozás a termékre"
                                  />
                                </div>
                              </div>
@@ -752,9 +958,13 @@ export default function ProductTable() {
                                 alt={product.nev} 
                                 className="h-12 w-12 object-cover rounded-md"
                                 onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = '/placeholder-image.png';
-                                  console.log("Kép betöltési hiba:", product.kepUrl);
+                                  console.log("Failed to load image from:", `http://localhost:3000${product.kepUrl}`);
+                                  e.target.onerror = null;                                  
+                                  e.target.parentNode.innerHTML = `
+                                    <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                      <span class="text-xs text-gray-500">Nincs kép</span>
+                                    </div>
+                                  `;
                                 }}
                               />
                             ) : product.hivatkozas ? (
@@ -763,9 +973,13 @@ export default function ProductTable() {
                                 alt={product.nev} 
                                 className="h-12 w-12 object-cover rounded-md"
                                 onError={(e) => {
+                                  console.log("Failed to load image from hivatkozas:", product.hivatkozas);
                                   e.target.onerror = null;
-                                  e.target.src = '/placeholder-image.png';
-                                  console.log("Hivatkozás betöltési hiba:", product.hivatkozas);
+                                  e.target.parentNode.innerHTML = `
+                                    <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">
+                                      <span class="text-xs text-gray-500">Nincs kép</span>
+                                    </div>
+                                  `;
                                 }}
                               />
                             ) : (
@@ -774,7 +988,6 @@ export default function ProductTable() {
                               </div>
                             )}
                           </td>
-
                           <td className="py-3 px-4 text-sm text-gray-700">{product.nev}</td>
                           <td className="py-3 px-4 text-sm text-gray-700">{product.ar} Ft</td>
                           <td className="py-3 px-4 text-sm text-gray-700">{product.egysegnyiar || "-"}</td>
@@ -870,5 +1083,3 @@ export default function ProductTable() {
     </div>
   );
 }
- 
-  

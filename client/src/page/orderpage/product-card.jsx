@@ -34,9 +34,11 @@ export default function ProductCard({ product }) {
 
   // Get product image URL
   // product-card.jsx - getProductImage függvény módosítása
+// Frissített getProductImage függvény
 const getProductImage = () => {
   // Ha van feltöltött kép (kepUrl), azt használjuk
   if (product.kepUrl) {
+    // Teljes URL-t használunk, hogy biztosan működjön
     return `http://localhost:3000${product.kepUrl}`;
   }
   // Ha nincs feltöltött kép, de van image vagy hivatkozás, azt használjuk

@@ -8,9 +8,9 @@ export default function Towns() {
 
   useEffect(() => {
     // Első táblázat települései
-    setTowns1(["Zalaszentmárton", "Zalaszentmihály", "Zalaigrice", "Alsórajk", "Kerecseny", "Orosztony", "Zalaszabar", "Esztergályoshorváti", "Bókaháza", "Szentgyörgyvár", "Alsópáhok"]);
+    setTowns1(["Zalaszentmárton", "Zalaszentmihály", "Zalaigrice", "Alsórajk", "Kerecseny", "Orosztony", "Zalaszabar", "Esztergályhorváti", "Bókaháza", "Szentgyörgyvár", "Alsópáhok"]);
     // Második táblázat települései - csak 8 település
-    setTowns2(["Kallósd", "Kehidakustány", "Zalaszentlászló", "Zalaszentgrót-Zalakoppány", "Zalavég", "Kisgördö", "Vindornyafok", "Karmacs"]);
+    setTowns2(["Kallósd", "Kehidakustány", "Zalaszentlászló", "Zalaszentgrót-Zalakoppány", "Zalavég", "Kisgörbő", "Vindornyafok", "Karmacs"]);
     
     // Animáció indítása késleltetéssel
     const timer = setTimeout(() => {
@@ -27,13 +27,13 @@ export default function Towns() {
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
-              <img 
-                src="/public/logo2.png" 
-                alt="MozgoShop Logo" 
-                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
-              />
+            <img 
+              src="/logo2.png" 
+              alt="MozgoShop Logo" 
+              className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+                logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+              }`}
+            />
               <h1 
                 className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -95,8 +95,8 @@ export default function Towns() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <img src="/images/town1.jpg" alt="Town 1" className="rounded-lg shadow-lg w-full" />
-          <img src="/images/town2.jpg" alt="Town 2" className="rounded-lg shadow-lg w-full" />
+          <img src="ut1.png" alt="Town 1" className="rounded-lg shadow-lg w-full" />
+          <img src="ut2.png" alt="Town 2" className="rounded-lg shadow-lg w-full" />
         </div>
 
         {/* Két táblázat egymás mellett */}

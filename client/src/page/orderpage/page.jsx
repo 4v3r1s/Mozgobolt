@@ -1,9 +1,10 @@
 import { useState, useEffect } from "react";
-import { Search, ShoppingCart, Menu, User, Heart } from "lucide-react";
+import { Search, ShoppingCart, Menu, User } from "lucide-react";
 import { Button } from "./Button";
 import { Input } from "./input";
 import ProductCard from "./product-card";
 import CategorySidebar from "./category-sidebar";
+import { useLocation } from "react-router-dom";
 
 export default function Home() {
   const [products, setProducts] = useState([]);
@@ -13,8 +14,13 @@ export default function Home() {
   const [showSearchInfo, setShowSearchInfo] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 8;
+  
+  // Használjuk a useLocation hook-ot a kategória lekérdezéséhez
+  const location = useLocation();
+  const searchParams = new URLSearchParams(location.search);
+  const currentCategory = searchParams.get('category');
 
-  // Fetch products from database API instead of mock API
+  // Fetch products from database API 
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -51,7 +57,9 @@ export default function Home() {
         }));
 
         setProducts(formattedProducts || []);
-        setFilteredProducts(formattedProducts || []);
+        
+        // Szűrjük a termékeket a kiválasztott kategória alapján
+        filterProductsByCategory(formattedProducts, currentCategory, searchQuery);
       } catch (error) {
         console.error("Error fetching products:", error);
       } finally {
@@ -60,8 +68,58 @@ export default function Home() {
     };
 
     fetchProducts();
-  }, []);
+  }, [currentCategory, searchQuery]); // Figyeljük a kategória és keresés változását
 
+  const filterProductsByCategory = (allProducts, categoryId, query) => {
+    console.log("Szűrési paraméterek:", { 
+      categoryId, 
+      query, 
+      categoryIdType: typeof categoryId 
+    });
+    
+    let filtered = [...allProducts];
+    
+    // Kategória szűrés
+    if (categoryId) {
+      console.log("Szűrés kategória alapján:", categoryId);
+      
+      // Debug: Nézzük meg néhány termék kategória értékét
+      console.log("Termékek kategória értékei:", 
+        allProducts.slice(0, 5).map(p => ({
+          id: p.id,
+          name: p.name,
+          category: p.category,
+          categoryType: typeof p.category
+        }))
+      );
+      
+      filtered = filtered.filter(product => {
+        const match = product.category && product.category.toString() === categoryId.toString();
+        
+        // Debug: Nézzük meg az egyezéseket
+        if (match) {
+          console.log(`Kategória egyezés: ${product.name} - Kategória: ${product.category} = ${categoryId}`);
+        }
+        
+        return match;
+      });
+      
+      console.log(`Szűrés eredménye: ${filtered.length} termék`);
+    }
+    
+    // Keresési szűrés
+    if (query && query.trim() !== "") {
+      filtered = filtered.filter(product =>
+        product.name?.toLowerCase().includes(query.toLowerCase()) ||
+        product.description?.toLowerCase().includes(query.toLowerCase())
+      );
+      console.log(`Szűrés keresés alapján: "${query}", találatok: ${filtered.length}`);
+    }
+    
+    setFilteredProducts(filtered);
+  };
+  
+    
   // Handle search input change
   const handleSearchChange = (e) => {
     const query = e.target.value;
@@ -69,22 +127,14 @@ export default function Home() {
     setShowSearchInfo(query.trim() !== "");
     setCurrentPage(1); // Kereséskor visszaállítjuk az első oldalra
 
-    // Filter products based on search query
-    if (query.trim() === "") {
-      setFilteredProducts(products);
-    } else {
-      const filtered = products.filter(product =>
-        product.name?.toLowerCase().includes(query.toLowerCase()) ||
-        product.description?.toLowerCase().includes(query.toLowerCase())
-      );
-      setFilteredProducts(filtered);
-    }
+    // Szűrjük a termékeket a keresés és a kategória alapján
+    filterProductsByCategory(products, currentCategory, query);
   };
 
   // Handle search form submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    // The filtering is already done in handleSearchChange
+    // A szűrés már megtörtént a handleSearchChange-ben
   };
 
   // Számoljuk ki a megjelenítendő termékeket
@@ -209,13 +259,12 @@ export default function Home() {
                 <Menu className="h-6 w-6" />
               </Button>
               <div className="flex items-center">
-
                 <img src="/public/logo2.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
                 <h1 className="text-2xl font-bold">MozgoShop</h1>
               </div>
             </div>
 
-            {/* A többi fejléc elem változatlan marad */}      {/* A többi fejléc elem változatlan marad */}            {/* A többi fejléc elem változatlan marad */}            <div className="hidden md:flex flex-1 max-w-md mx-4">
+            <div className="hidden md:flex flex-1 max-w-md mx-4">
               <form onSubmit={handleSearchSubmit} className="relative w-full">
                 <Input
                   placeholder="Keresés..."
@@ -233,7 +282,6 @@ export default function Home() {
               <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
                 <User className="h-5 w-5" />
               </a>
-              {/* A Heart ikont tartalmazó Button eltávolítva innen */}
               <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
                 <ShoppingCart className="h-5 w-5" />
                 <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
@@ -261,12 +309,20 @@ export default function Home() {
       </header>
 
       {/* Search status info */}
-      {showSearchInfo && (
+      {(showSearchInfo || currentCategory) && (
         <div className="bg-white border-b border-gray-200 py-2">
           <div className="container mx-auto px-4">
             <div className="flex items-center justify-between">
               <div className="text-sm text-gray-600">
-                Keresés: <span className="font-medium text-black">"{searchQuery}"</span>
+                {showSearchInfo && (
+                  <span>Keresés: <span className="font-medium text-black">"{searchQuery}"</span></span>
+                )}
+                {currentCategory && !showSearchInfo && (
+                  <span>Kategória szűrés aktív</span>
+                )}
+                {currentCategory && showSearchInfo && (
+                  <span> kategórián belül</span>
+                )}
               </div>
               <div className="text-sm">
                 {filteredProducts.length} találat
@@ -327,8 +383,10 @@ export default function Home() {
 
           {/* Products */}
           <div className="flex-1">
-            <div className="flex justify-between items-center mb-6">
-              <h2 className="text-2xl font-bold text-gray-800">Shop</h2>
+            <div className="flex justify-between items-center mb-6">             
+              <h2 className="text-2xl font-bold text-gray-800">
+                {currentCategory ? "Kategória termékei" : "Shop"}
+              </h2>
               <div className="flex items-center">
                 <span className="text-sm text-gray-500 mr-2">
                   {loading ? "Betöltés..." :
@@ -350,9 +408,14 @@ export default function Home() {
             ) : filteredProducts.length === 0 ? (
               <div className="text-center py-8">
                 <p className="text-gray-700 text-lg mb-2">Nincs találat a keresési feltételekre:</p>
-                <p className="font-bold text-xl">"{searchQuery}"</p>
+                {searchQuery && <p className="font-bold text-xl mb-2">"{searchQuery}"</p>}
+                {currentCategory && <p className="text-gray-600">A kiválasztott kategóriában</p>}
                 <button
-                  onClick={() => { setSearchQuery(""); setFilteredProducts(products); setShowSearchInfo(false); }}
+                  onClick={() => { 
+                    setSearchQuery(""); 
+                    setFilteredProducts(products); 
+                    setShowSearchInfo(false); 
+                  }}
                   className="mt-4 px-4 py-2 bg-red-700 text-white rounded-md hover:bg-red-800"
                 >
                   Keresés törlése

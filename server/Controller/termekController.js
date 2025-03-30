@@ -93,31 +93,77 @@ exports.updateTermek = async (req, res) => {
       return res.status(404).json({ message: "Termek not found" });
     }
     
-    // Ha van kép feltöltve (multer middleware után)
-    if (req.file) {
-      // Delete old image if exists
-      if (termek.kepUrl) {
-        // Módosítjuk a helyes mappára
-        const oldImagePath = path.join(__dirname, '../../public', termek.kepUrl);
-        if (fs.existsSync(oldImagePath)) {
-          fs.unlinkSync(oldImagePath);
-          console.log("Old image deleted:", oldImagePath);
-        }
+    // Create a clean update object with proper type conversions
+    const updateData = {};
+    
+    // Handle string fields
+    ['nev', 'termekleiras', 'kiszereles', 'hivatkozas', 'ajanlott_termekek', 
+     'afa_kulcs', 'meret', 'szin', 'vonalkod'].forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field] || null;
       }
-      
-      // Store the relative path to the image
-      req.body.kepUrl = `/termek-kepek/${req.file.filename}`;
-      console.log("New image URL set to:", req.body.kepUrl);
+    });
+    
+    // Handle numeric fields with proper conversion
+    ['ar', 'egysegnyiar', 'csoport', 'keszlet', 'akciosar', 'akcios_egysegnyiar'].forEach(field => {
+      if (req.body[field] !== undefined) {
+        // Convert to number or null if empty
+        updateData[field] = req.body[field] === '' ? null : 
+                           isNaN(Number(req.body[field])) ? null : Number(req.body[field]);
+      }
+    });
+    
+    // Handle date fields
+    ['akcio_vege', 'akcio_eleje'].forEach(field => {
+      if (req.body[field] !== undefined) {
+        updateData[field] = req.body[field] || null;
+      }
+    });
+    
+    // Handle boolean fields
+    if (req.body.tizennyolc !== undefined) {
+      updateData.tizennyolc = req.body.tizennyolc === 'true' || req.body.tizennyolc === true;
     }
     
-    await termek.update(req.body);
-    res.json(await Termek.findByPk(req.params.id));
+    // Ha van kép feltöltve (multer middleware után)
+    if (req.file) {
+      try {
+        // Delete old image if exists
+        if (termek.kepUrl) {
+          // Módosítjuk a helyes mappára
+          const oldImagePath = path.join(__dirname, '../../public', termek.kepUrl);
+          if (fs.existsSync(oldImagePath)) {
+            fs.unlinkSync(oldImagePath);
+            console.log("Old image deleted:", oldImagePath);
+          }
+        }
+        
+        // Store the relative path to the image
+        updateData.kepUrl = `/termek-kepek/${req.file.filename}`;
+        console.log("New image URL set to:", updateData.kepUrl);
+      } catch (imageError) {
+        console.error("Error handling image:", imageError);
+        // Continue with update even if image handling fails
+      }
+    }
+    
+    console.log("Final update data:", updateData);
+    
+    // Update the product with clean data
+    await termek.update(updateData);
+    
+    // Return the updated product
+    const updatedTermek = await Termek.findByPk(req.params.id);
+    res.json(updatedTermek);
   } catch (error) {
     console.error("Error updating product:", error);
-    res.status(500).json({ message: "Server error", error: error.message });
+    res.status(500).json({ 
+      message: "Server error", 
+      error: error.message,
+      stack: process.env.NODE_ENV === 'development' ? error.stack : undefined
+    });
   }
 };
-
 // Delete a termek
 exports.deleteTermek = async (req, res) => {
   try {

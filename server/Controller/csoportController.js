@@ -1,4 +1,6 @@
 const Csoport = require("../model/csoport");
+const { Sequelize } = require("sequelize");
+const sequelize = require("../config/config");
 
 // Get all csoportok
 exports.getAllCsoport = async (req, res) => {
@@ -56,6 +58,27 @@ exports.deleteCsoport = async (req, res) => {
     }
     await csoport.destroy();
     res.json({ message: "Csoport deleted successfully" });
+  } catch (error) {
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+// Get all csoportok with product counts
+exports.getAllCsoportWithCounts = async (req, res) => {
+  try {
+    const csoportokWithCounts = await Csoport.findAll({
+      attributes: [
+        'azonosito',
+        'nev',
+        'csoport',
+        'hivatkozas',
+        'tizennyolc',
+        [sequelize.literal('(SELECT COUNT(*) FROM termek WHERE termek.csoport = Csoport.csoport)'), 'termekCount']
+      ],
+      order: [['nev', 'ASC']]
+    });
+    
+    res.json(csoportokWithCounts);
   } catch (error) {
     res.status(500).json({ message: "Server error", error: error.message });
   }

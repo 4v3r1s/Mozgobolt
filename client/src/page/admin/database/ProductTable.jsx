@@ -150,65 +150,76 @@ export default function ProductTable() {
   }
 };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  try {
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
 
-      if (!token) {
-        throw new Error("Nincs bejelentkezve");
-      }
-
-      // FormData objektum létrehozása a fájlfeltöltéshez
-      const formDataToSend = new FormData();
-      
-      // Adatok hozzáadása a FormData objektumhoz
-      Object.keys(formData).forEach(key => {
-        // Kihagyjuk a createdAt és updatedAt mezőket
-        if (key !== 'createdAt' && key !== 'updatedAt') {
-          // Convert null values to empty strings to avoid FormData issues
-          const value = formData[key] === null ? '' : formData[key];
-          formDataToSend.append(key, value);
-        }
-      });
-      
-      // Kép hozzáadása, ha van kiválasztva
-      const imageInput = document.querySelector('input[name="kep"]');
-      if (imageInput && imageInput.files[0]) {
-        formDataToSend.append('kep', imageInput.files[0]);
-        console.log("Image file added to form data:", imageInput.files[0].name);
-      }
-      
-      console.log("Sending form data to server...");
-      
-      // Módosított végpont a termekRoutes.js alapján
-      const response = await fetch(`http://localhost:3000/termek/${editingProduct}`, {
-        method: "PUT",
-        headers: {
-          "Authorization": `Bearer ${token}`,
-          // Ne állítsuk be a Content-Type fejlécet, mert a FormData automatikusan beállítja
-        },
-        body: formDataToSend,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || "Hiba a termék frissítése során");
-      }
-
-      // Update the products list
-      fetchProducts();
-      setEditingProduct(null);
-      setEditSelectedImage(null);
-      alert("Termék sikeresen frissítve!");
-    } catch (error) {
-      console.error("Error updating product:", error);
-      alert("Hiba a termék frissítése során: " + error.message);
+    if (!token) {
+      throw new Error("Nincs bejelentkezve");
     }
-  };
+
+    // FormData objektum létrehozása a fájlfeltöltéshez
+    const formDataToSend = new FormData();
+    
+    // Adatok hozzáadása a FormData objektumhoz
+    Object.keys(formData).forEach(key => {
+      // Kihagyjuk a createdAt és updatedAt mezőket
+      if (key !== 'createdAt' && key !== 'updatedAt') {
+        // Convert null values to empty strings to avoid FormData issues
+        const value = formData[key] === null ? '' : formData[key];
+        formDataToSend.append(key, value);
+      }
+    });
+    
+    // Kép hozzáadása, ha van kiválasztva
+    const imageInput = document.querySelector('input[name="kep"]');
+    if (imageInput && imageInput.files[0]) {
+      formDataToSend.append('kep', imageInput.files[0]);
+      console.log("Image file added to form data:", imageInput.files[0].name);
+    }
+    
+    console.log("Sending form data to server...");
+    
+    // Módosított végpont a termekRoutes.js alapján
+    const response = await fetch(`http://localhost:3000/termek/${editingProduct}`, {
+      method: "PUT",
+      headers: {
+        "Authorization": `Bearer ${token}`,
+        // Ne állítsuk be a Content-Type fejlécet, mert a FormData automatikusan beállítja
+      },
+      body: formDataToSend,
+    });
+
+    // Get the response text first
+    const responseText = await response.text();
+    
+    // Try to parse it as JSON
+    let responseData;
+    try {
+      responseData = JSON.parse(responseText);
+    } catch (e) {
+      console.error("Failed to parse response as JSON:", responseText);
+      throw new Error("Invalid server response format");
+    }
+
+    if (!response.ok) {
+      throw new Error(responseData.message || responseData.error || "Hiba a termék frissítése során");
+    }
+
+    // Update the products list
+    fetchProducts();
+    setEditingProduct(null);
+    setEditSelectedImage(null);
+    alert("Termék sikeresen frissítve!");
+  } catch (error) {
+    console.error("Error updating product:", error);
+    alert("Hiba a termék frissítése során: " + error.message);
+  }
+};
 
   const handleAddProduct = async (e) => {
     e.preventDefault();

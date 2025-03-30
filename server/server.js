@@ -29,6 +29,7 @@ app.use("/raktar", raktarRoutes);
 app.use("/rendeles", rendelesRoutes);
 app.use("/user", userRoutes);
 app.use('/admin', adminRoutes);
+app.use("/api/csoport", csoportRoutes);
 
 // Add detailed request logging
 app.use((req, res, next) => {

@@ -2,42 +2,94 @@ const { DataTypes } = require("sequelize");
 const sequelize = require("../config/config");
 
 const Rendeles = sequelize.define("Rendeles", {
-  azonosito: { type: DataTypes.INTEGER, primaryKey: true, autoIncrement: true },
-  vevo: { 
+  azonosito: { 
     type: DataTypes.INTEGER, 
+    primaryKey: true, 
+    autoIncrement: true 
+  },
+  // Rendelés azonosító (pl. R-12345)
+  rendelesAzonosito: { 
+    type: DataTypes.STRING(50), 
     allowNull: false,
+    unique: true
+  },
+  // Vevő adatok
+  vevoNev: { 
+    type: DataTypes.STRING(255), 
+    allowNull: false 
+  },
+  vevoEmail: { 
+    type: DataTypes.STRING(255), 
+    allowNull: false 
+  },
+  vevoTelefon: { 
+    type: DataTypes.STRING(50), 
+    allowNull: false 
+  },
+  // Szállítási adatok
+  szallitasiCim: { 
+    type: DataTypes.STRING(255), 
+    allowNull: false 
+  },
+  szallitasiVaros: { 
+    type: DataTypes.STRING(100), 
+    allowNull: false 
+  },
+  szallitasiIrsz: { 
+    type: DataTypes.STRING(20), 
+    allowNull: false 
+  },
+  // Fizetési adatok
+  fizetesiMod: { 
+    type: DataTypes.STRING(50), 
+    allowNull: false,
+    defaultValue: 'cash' 
+  },
+  // Rendelés állapota (pl. feldolgozás alatt, kiszállítva, stb.)
+  allapot: { 
+    type: DataTypes.STRING(50), 
+    allowNull: false,
+    defaultValue: 'feldolgozás alatt' 
+  },
+  // Rendelés összegzés
+  osszeg: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false 
+  },
+  szallitasiDij: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false,
+    defaultValue: 0 
+  },
+  kedvezmeny: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false,
+    defaultValue: 0 
+  },
+  vegosszeg: { 
+    type: DataTypes.DECIMAL(10, 2), 
+    allowNull: false 
+  },
+  // Időbélyegek
+  rendelesIdeje: { 
+    type: DataTypes.DATE, 
+    allowNull: false,
+    defaultValue: DataTypes.NOW 
+  },
+  // Opcionális felhasználói azonosító, ha be van jelentkezve
+  felhasznaloId: { 
+    type: DataTypes.INTEGER, 
+    allowNull: true,
     references: {
-      model: 'users', // Match the tableName from the User model
+      model: 'users',
       key: 'id'
     }
   },
-  termek: { 
-    type: DataTypes.INTEGER, 
-    allowNull: false,
-    references: {
-      model: 'termek',
-      key: 'azonosito'
-    }
-  },
-  mennyiseg: { type: DataTypes.INTEGER, allowNull: false },
-  datum: { type: DataTypes.DATEONLY, allowNull: false },
-  helyszin: { type: DataTypes.TEXT, allowNull: false },
 }, {
   tableName: "rendeles",
   timestamps: false,
 });
 
-// Kapcsolatok definiálása
-Rendeles.associate = function(models) {
-  Rendeles.belongsTo(models.User, {
-    foreignKey: 'vevo',
-    targetKey: 'id'
-  });
-  
-  Rendeles.belongsTo(models.Termek, {
-    foreignKey: 'termek',
-    targetKey: 'azonosito'
-  });
-};
+// Remove the associate function
 
 module.exports = Rendeles;

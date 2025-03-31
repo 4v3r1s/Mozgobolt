@@ -22,6 +22,7 @@ export default function Payment() {
   const [errors, setErrors] = useState({});
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [processingOrder, setProcessingOrder] = useState(false);
+  const [discount, setDiscount] = useState(0);
 
   // Animáció indítása késleltetéssel
   useEffect(() => {
@@ -120,11 +121,66 @@ export default function Payment() {
     setProcessingOrder(true);
     
     try {
-      // Itt küldenénk el a rendelést a szervernek
-      // Példa: await fetch('/api/orders', { method: 'POST', body: JSON.stringify({...}) });
+      // Rendelés adatok összeállítása
+      const orderData = {
+        vevoAdatok: {
+          firstName: formData.firstName,
+          lastName: formData.lastName,
+          email: formData.email,
+          phone: formData.phone
+        },
+        szallitasiAdatok: {
+          address: formData.address,
+          city: formData.city,
+          zipCode: formData.zipCode
+        },
+        fizetesiMod: paymentMethod,
+        osszegek: {
+          subtotal: calculateSubtotal(),
+          shipping: shipping,
+          discount: 0, // Itt 0-t adunk meg, mivel a payment oldalon nincs kupon kezelés
+          total: total
+        },
+        tetelek: cartItems.map(item => ({
+          id: item.id,
+          name: item.name,
+          quantity: item.quantity,
+          price: item.price,
+          discountPrice: item.discountPrice || null
+        }))
+      };
       
-      // Szimuláljuk a szerver válaszát
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Felhasználói azonosító hozzáadása, ha be van jelentkezve
+      const userData = localStorage.getItem('user');
+      if (userData) {
+        try {
+          const parsedUser = JSON.parse(userData);
+          if (parsedUser && parsedUser.id) {
+            orderData.felhasznaloId = parsedUser.id;
+          }
+        } catch (error) {
+          console.error("Hiba a felhasználói adatok feldolgozásakor:", error);
+        }
+      }
+      
+      console.log("Rendelés adatok:", orderData);
+      
+      // Rendelés elküldése a szervernek
+      const response = await fetch('http://localhost:3000/api/rendeles', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(orderData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Hiba történt a rendelés feldolgozása során');
+      }
+      
+      const responseData = await response.json();
+      console.log("Rendelés sikeresen létrehozva:", responseData);
       
       // Sikeres rendelés esetén
       setOrderPlaced(true);
@@ -138,7 +194,7 @@ export default function Payment() {
       
     } catch (error) {
       console.error("Hiba a rendelés feldolgozásakor:", error);
-      alert("Hiba történt a rendelés feldolgozása során. Kérjük, próbálja újra később.");
+      alert("Hiba történt a rendelés feldolgozása során: " + error.message);
     } finally {
       setProcessingOrder(false);
     }

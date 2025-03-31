@@ -95,8 +95,21 @@ export default function Towns() {
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <img src="ut1.png" alt="Town 1" className="rounded-lg shadow-lg w-full" />
-          <img src="ut2.png" alt="Town 2" className="rounded-lg shadow-lg w-full" />
+          {/* Kisebb képek fehér kerettel */}
+          <div className="flex justify-center">
+            <img 
+              src="ut1.png" 
+              alt="Town 1" 
+              className="rounded-lg shadow-lg w-3/4 border-4 border-white" 
+            />
+          </div>
+          <div className="flex justify-center">
+            <img 
+              src="ut2.png" 
+              alt="Town 2" 
+              className="rounded-lg shadow-lg w-3/4 border-4 border-white" 
+            />
+          </div>
         </div>
 
         {/* Két táblázat egymás mellett */}
@@ -125,8 +138,6 @@ export default function Towns() {
             </ul>
           </div>
         </div>
-        
-        {/* Az alsó két gombot töröltem innen */}
       </main>
 
       {/* Footer */}

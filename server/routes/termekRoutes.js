@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const termekController = require("../Controller/termekController");
+const cartController = require("../Controller/cartController");
 const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
@@ -86,5 +87,12 @@ router.put("/:id", function(req, res, next) {
 }, termekController.updateTermek);
 
 router.delete("/:id", termekController.deleteTermek);
+
+// Kosár kezelő útvonalak
+router.get("/cart", cartController.getCart);
+router.post("/cart/add", cartController.addToCart);
+router.put("/cart/update", cartController.updateCartItem);
+router.delete("/cart/remove/:id", cartController.removeFromCart);
+router.delete("/cart/clear", cartController.clearCart);
 
 module.exports = router;

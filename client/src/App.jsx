@@ -12,6 +12,7 @@ import Sales from "./page/sales/sales";
 import Cart from "./page/cart/cart";
 import UserTable from "./page/admin/database/UserTable";
 import ProductTable from "./page/admin/database/ProductTable";
+import Payment from "./page/payment/payment";
 
 
 function App() {
@@ -30,6 +31,7 @@ function App() {
         <Route path="/account" element={<Account />} />
         <Route path="/sales" element={<Sales />} />
         <Route path="/cart" element={<Cart />} />
+        <Route path="/payment" element={<Payment />} />
         
         {/* Admin routes */}
         <Route path="/admin" element={<UserTable />} />

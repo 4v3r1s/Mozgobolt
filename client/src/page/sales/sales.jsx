@@ -8,6 +8,7 @@ export default function Sales() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [logoAnimated, setLogoAnimated] = useState(false);
+  const [error, setError] = useState(null);
 
   // Animáció indítása késleltetéssel
   useEffect(() => {
@@ -18,24 +19,32 @@ export default function Sales() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Fetch products from API
+  // Termékek lekérése a backend API-ról
   useEffect(() => {
     const fetchProducts = async () => {
       try {
-        const response = await fetch("https://mocki.io/v1/3def6397-c9eb-4f19-b249-b61c2addd7f3");
-        if (!response.ok) {
-          throw new Error("Failed to fetch products");
-        }
-        const data = await response.json();
+        // Helyes API végpont használata
+        const response = await fetch("http://localhost:3000/termek");
         
-        // Filter only products with discount (akciós termékek)
-        const discountedProducts = data.products.filter(product => 
-          product.discount && product.discount > 0
+        if (!response.ok) {
+          throw new Error(`Nem sikerült lekérni a termékeket: ${response.status} ${response.statusText}`);
+        }
+        
+        const allProducts = await response.json();
+        console.log("Összes lekért termék:", allProducts);
+        
+        // Egyszerűsített szűrés - csak azokat a termékeket mutatjuk, amelyeknek van akcióár beállítva
+        const discountedProducts = allProducts.filter(product => 
+          product.akciosar !== null && 
+          product.akciosar !== undefined && 
+          parseFloat(product.akciosar) > 0
         );
         
+        console.log("Szűrt akciós termékek:", discountedProducts);
         setProducts(discountedProducts || []);
       } catch (error) {
-        console.error("Error fetching products:", error);
+        console.error("Hiba a termékek lekérése közben:", error);
+        setError(error.message);
       } finally {
         setLoading(false);
       }
@@ -43,6 +52,30 @@ export default function Sales() {
 
     fetchProducts();
   }, []);
+
+  // Kedvezmény százalék kiszámítása
+  const calculateDiscount = (originalPrice, discountPrice) => {
+    if (!originalPrice || !discountPrice) return 0;
+    const original = parseFloat(originalPrice);
+    const discount = parseFloat(discountPrice);
+    if (isNaN(original) || isNaN(discount) || original <= 0) return 0;
+    return Math.round(((original - discount) / original) * 100);
+  };
+
+  // Kép URL helyes formázása
+  const formatImageUrl = (url) => {
+    if (!url) return null;
+    
+    // Ha a kép URL már tartalmazza a http vagy https előtagot, akkor hagyjuk változatlanul
+    if (url.startsWith('http://') || url.startsWith('https://')) {
+      return url;
+    }
+    
+    // Ha a kép URL relatív útvonal, akkor egészítsük ki a szerver URL-jével
+    // Eltávolítjuk a kezdő / jelet, ha van
+    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
+    return `http://localhost:3000/${cleanUrl}`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -52,7 +85,7 @@ export default function Sales() {
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
               <img 
-                src="/public/logo2.png" 
+                src="/logo2.png" 
                 alt="MozgoShop Logo" 
                 className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -131,6 +164,19 @@ export default function Sales() {
             <div className="text-center py-8">
               <p className="text-gray-600">Akciós termékek betöltése...</p>
             </div>
+          ) : error ? (
+            <div className="text-center py-8 text-red-600">
+              <p className="text-lg font-semibold mb-2">Hiba történt a termékek betöltése közben</p>
+              <p>{error}</p>
+              <div className="mt-4 p-4 bg-gray-100 rounded-lg text-left">
+                <p className="font-medium">Lehetséges megoldások:</p>
+                <ul className="list-disc pl-5 mt-2 text-gray-700">
+                  <li>Ellenőrizze, hogy a szerver fut-e</li>
+                  <li>Ellenőrizze a hálózati kapcsolatot</li>
+                  <li>Próbálja meg frissíteni az oldalt</li>
+                </ul>
+              </div>
+            </div>
           ) : products.length === 0 ? (
             <div className="text-center py-8">
               <p className="text-gray-700 text-lg mb-2">Jelenleg nincsenek akciós termékek.</p>
@@ -147,7 +193,51 @@ export default function Sales() {
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Aktuális akciók</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
-                  <ProductCard key={product.id} product={product} />
+                  <div key={product.azonosito} className="bg-white rounded-lg shadow-md overflow-hidden">
+                    <div className="relative">
+                      {product.kepUrl ? (
+                        <img 
+                          src={formatImageUrl(product.kepUrl)} 
+                          alt={product.nev} 
+                          className="w-full h-48 object-cover"
+                          onError={(e) => {
+                            console.error("Kép betöltési hiba:", product.kepUrl);
+                            e.target.onerror = null;
+                            e.target.src = "/placeholder.png"; // Helyettesítő kép, ha nem töltődik be
+                          }}
+                        />
+                      ) : (
+                        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
+                          <span className="text-gray-400">Nincs kép</span>
+                        </div>
+                      )}
+                      {calculateDiscount(product.ar, product.akciosar) > 0 && (
+                        <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
+                          {calculateDiscount(product.ar, product.akciosar)}% kedvezmény
+                        </div>
+                      )}
+                    </div>
+                    <div className="p-4">
+                      <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.nev || "Névtelen termék"}</h3>
+                      <p className="text-sm text-gray-600 mb-2">{product.kiszereles || ""}</p>
+                      <div className="flex items-center justify-between">
+                        <div>
+                          <span className="text-red-600 font-bold">{product.akciosar} Ft</span>
+                          {product.ar && (
+                            <span className="text-gray-400 text-sm line-through ml-2">{product.ar} Ft</span>
+                          )}
+                        </div>
+                        <button className="bg-red-700 text-white px-3 py-1 rounded-md text-sm hover:bg-red-800">
+                          Kosárba
+                        </button>
+                      </div>
+                      {product.akcio_vege && (
+                        <div className="mt-2 text-xs text-gray-500">
+                          Akció vége: {new Date(product.akcio_vege).toLocaleDateString('hu-HU')}
+                        </div>
+                      )}
+                    </div>
+                  </div>
                 ))}
               </div>
             </div>

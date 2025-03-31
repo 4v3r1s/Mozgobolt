@@ -13,12 +13,48 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showSearchInfo, setShowSearchInfo] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
+  const [cartItemCount, setCartItemCount] = useState(0); // Új állapot a kosár számolásához
   const productsPerPage = 8;
   
   // Használjuk a useLocation hook-ot a kategória lekérdezéséhez
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const currentCategory = searchParams.get('category');
+
+  // Kosár számláló frissítése
+  useEffect(() => {
+    // Kezdeti betöltés
+    updateCartCount();
+    
+    // Eseményfigyelő a kosár változásaira
+    window.addEventListener('storage', updateCartCount);
+    
+    // Egyedi esemény figyelése a kosár frissítésére
+    window.addEventListener('cartUpdated', updateCartCount);
+    
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
+  
+  // Kosár számláló frissítése
+  const updateCartCount = () => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const cartItems = JSON.parse(savedCart);
+        // Összesítjük a termékek mennyiségét
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        setCartItemCount(totalItems);
+      } catch (error) {
+        console.error("Hiba a kosár betöltésekor:", error);
+        setCartItemCount(0);
+      }
+    } else {
+      setCartItemCount(0);
+    }
+  };
 
   // Fetch products from database API 
   useEffect(() => {
@@ -284,9 +320,11 @@ export default function Home() {
               </a>
               <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
                 <ShoppingCart className="h-5 w-5" />
-                <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                  3
-                </span>
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
               </a>
             </div>
           </div>
@@ -332,8 +370,8 @@ export default function Home() {
         </div>
       )}
 
-      {/* Navigation */}
-      <nav className="bg-red-800 text-white">
+          {/* Navigation */}
+          <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
             <li>
@@ -518,3 +556,4 @@ export default function Home() {
     </div>
   );
 }
+

@@ -23,68 +23,79 @@ export default function Cart() {
 
   // Kosár tartalmának betöltése
   useEffect(() => {
-    // Itt majd az adatbázisból vagy localStorage-ból töltjük be a kosár tartalmát
-    // Most példa adatokat használunk
-    const mockCartItems = [
-      {
-        id: 1,
-        name: "Friss kenyér",
-        price: 650,
-        discountPrice: 550,
-        quantity: 2,
-        image: "https://via.placeholder.com/100",
-        unit: "db"
-      },
-      {
-        id: 2,
-        name: "Tej 2.8%",
-        price: 450,
-        discountPrice: null,
-        quantity: 1,
-        image: "https://via.placeholder.com/100",
-        unit: "l"
-      },
-      {
-        id: 3,
-        name: "Alma",
-        price: 350,
-        discountPrice: null,
-        quantity: 3,
-        image: "https://via.placeholder.com/100",
-        unit: "kg"
+    const loadCart = () => {
+      try {
+        const savedCart = localStorage.getItem('cart');
+        console.log("Betöltött kosár:", savedCart);
+        
+        if (savedCart && savedCart !== "undefined" && savedCart !== "null") {
+          const parsedCart = JSON.parse(savedCart);
+          console.log("Feldolgozott kosár:", parsedCart);
+          
+          if (Array.isArray(parsedCart)) {
+            setCartItems(parsedCart);
+          } else {
+            console.error("A kosár nem tömb formátumú:", parsedCart);
+            setCartItems([]);
+          }
+        } else {
+          console.log("Nincs kosár vagy érvénytelen formátum");
+          setCartItems([]);
+        }
+      } catch (error) {
+        console.error("Hiba a kosár betöltésekor:", error);
+        setCartItems([]);
+      } finally {
+        setLoading(false);
       }
-    ];
+    };
     
-    setCartItems(mockCartItems);
-    setLoading(false);
+    loadCart();
+    
+    // Eseményfigyelők hozzáadása
+    window.addEventListener('storage', loadCart);
+    window.addEventListener('cartUpdated', loadCart);
+    
+    return () => {
+      window.removeEventListener('storage', loadCart);
+      window.removeEventListener('cartUpdated', loadCart);
+    };
   }, []);
 
   // Mennyiség növelése
   const increaseQuantity = (id) => {
-    setCartItems(prevItems => 
-      prevItems.map(item => 
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.map(item => 
         item.id === id ? { ...item, quantity: item.quantity + 1 } : item
-      )
-    );
+      );
+      
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      return updatedItems;
+    });
   };
 
-  // Mennyiség csökkentése - módosított verzió
+  // Mennyiség csökkentése
   const decreaseQuantity = (id) => {
-    setCartItems(prevItems => 
-      prevItems.map(item => {
-        // Ha a termék mennyisége 1 és csökkenteni akarjuk, akkor null-t adunk vissza
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.map(item => {
         if (item.id === id && item.quantity <= 1) {
           return null;
         }
-        // Egyébként csökkentjük a mennyiséget
         return item.id === id ? { ...item, quantity: item.quantity - 1 } : item;
-      }).filter(Boolean) // Kiszűrjük a null értékeket (törölni kívánt termékek)
-    );
+      }).filter(Boolean);
+      
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      return updatedItems;
+    });
   };
 
   // Termék eltávolítása a kosárból
   const removeItem = (id) => {
-    setCartItems(prevItems => prevItems.filter(item => item.id !== id));
+    setCartItems(prevItems => {
+      const updatedItems = prevItems.filter(item => item.id !== id);
+      localStorage.setItem('cart', JSON.stringify(updatedItems));
+      return updatedItems;
+    });
   };
 
   // Kupon alkalmazása
@@ -109,6 +120,13 @@ export default function Cart() {
   const discountAmount = couponApplied ? (subtotal * discount / 100) : 0;
   const shipping = subtotal > 10000 ? 0 : 990; // Ingyenes szállítás 10000 Ft felett
   const total = subtotal - discountAmount + shipping;
+
+  // Kosár tartalmának törlése (debug célokra)
+  const clearCart = () => {
+    localStorage.removeItem('cart');
+    setCartItems([]);
+    alert("Kosár törölve!");
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -191,6 +209,14 @@ export default function Cart() {
               <span>Vissza a vásárláshoz</span>
             </button>
             <h1 className="text-2xl font-bold text-gray-800 ml-auto">Kosár</h1>
+            
+            {/* Debug gomb - csak fejlesztéshez */}
+            <button 
+              onClick={clearCart}
+              className="ml-4 text-xs text-gray-500 hover:text-red-700"
+            >
+              Kosár törlése (debug)
+            </button>
           </div>
 
           {loading ? (
@@ -215,7 +241,7 @@ export default function Cart() {
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               {/* Kosár tartalma */}
               <div className="lg:col-span-2">
-                <div className="bg-white rounded-lg shadow-md overflow-hidden">
+              <div className="bg-white rounded-lg shadow-md overflow-hidden">
                   <div className="p-4 bg-gray-50 border-b">
                     <h2 className="font-semibold text-gray-700">Kosár tartalma ({cartItems.length} termék)</h2>
                   </div>
@@ -338,18 +364,21 @@ export default function Cart() {
                     )}
                   </div>
                   
-                  {/* Tovább a pénztárhoz gomb */}
-                  <div className="mt-6">
-                    <Button 
-                      onClick={() => navigate('/checkout')}
-                      className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors"
-                    >
-                      Tovább a pénztárhoz
-                    </Button>
-                    <p className="text-xs text-center text-gray-500 mt-2">
-                      A "Tovább a pénztárhoz" gombra kattintva elfogadja az Általános Szerződési Feltételeket.
-                    </p>
-                  </div>
+                
+<div className="mt-6">
+  <Button 
+    onClick={() => {
+      console.log("Navigálás a payment oldalra");
+      navigate('/payment');
+    }}
+    className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors"
+  >
+    Tovább a pénztárhoz
+  </Button>
+  <p className="text-xs text-center text-gray-500 mt-2">
+    A "Tovább a pénztárhoz" gombra kattintva elfogadja az Általános Szerződési Feltételeket.
+  </p>
+</div>
                 </div>
               </div>
             </div>
@@ -407,3 +436,4 @@ export default function Cart() {
     </div>
   );
 }
+

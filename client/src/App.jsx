@@ -13,7 +13,8 @@ import Cart from "./page/cart/cart";
 import UserTable from "./page/admin/database/UserTable";
 import ProductTable from "./page/admin/database/ProductTable";
 import Payment from "./page/payment/payment";
-
+import ProfileEdit from './page/account/profile-edit';
+import Orders from './page/account/orders';
 
 function App() {
   return (
@@ -32,7 +33,8 @@ function App() {
         <Route path="/sales" element={<Sales />} />
         <Route path="/cart" element={<Cart />} />
         <Route path="/payment" element={<Payment />} />
-        
+        <Route path="/profile/edit" element={<ProfileEdit />} />
+        <Route path="/orders" element={<Orders />} />
         {/* Admin routes */}
         <Route path="/admin" element={<UserTable />} />
         <Route path="/admin/users" element={<UserTable />} />

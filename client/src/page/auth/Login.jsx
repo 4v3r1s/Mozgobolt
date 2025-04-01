@@ -30,7 +30,7 @@ export default function SignIn() {
   const handleSubmit = async (e) => {
     e.preventDefault()
     setError("")
-
+  
     try {
       const response = await fetch("http://localhost:3000/user/login", {
         method: "POST",
@@ -39,24 +39,46 @@ export default function SignIn() {
         },
         body: JSON.stringify({ email, jelszo }),
       })
-
+  
       if (!response.ok) {
         throw new Error("Sikertelen bejelentkezés")
       }
-
+  
       const data = await response.json()
       const token = data.token
-
+  
       if (!token) {
         throw new Error("Token nem található")
       }
-
-      // Set token in cookie (you can adjust options like expiration and path)
+  
+      // Set token in cookie
       document.cookie = `token=${token}; path=/; ${rememberMe ? "max-age=604800;" : ""}`
-
+      
+      // FONTOS: Tároljuk a tokent a localStorage-ban is
+      localStorage.setItem('token', token)
+      console.log("Token mentve a localStorage-ba:", token)
+      
+      // Opcionálisan: felhasználói adatok lekérése és tárolása
+      try {
+        const userResponse = await fetch("http://localhost:3000/user/profile", {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        })
+        
+        if (userResponse.ok) {
+          const userData = await userResponse.json()
+          localStorage.setItem('user', JSON.stringify(userData))
+          console.log("Felhasználói adatok mentve:", userData)
+        }
+      } catch (userError) {
+        console.error("Hiba a felhasználói adatok lekérésekor:", userError)
+        // Nem szakítjuk meg a folyamatot, ha ez a rész hibás
+      }
+  
       // Show success alert instead of using JavaScript alert
       showAlert("Sikeres bejelentkezés!", "success")
-
+  
       // Optional: redirect after a short delay to allow the user to see the success message
       setTimeout(() => {
         window.location.href = "/#"; // or any route after login
@@ -66,7 +88,7 @@ export default function SignIn() {
       setError("Hiba történt a bejelentkezés során.")
       showAlert("Hiba történt a bejelentkezés során.")
     }
-  }
+  }  
 
   return (
     <div className="min-h-screen bg-gray-50 flex items-center justify-center">

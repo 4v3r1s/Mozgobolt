@@ -35,6 +35,12 @@ const authenticateUser = async (req, res) => {
             return res.status(401).json({ message: "Érvénytelen email vagy jelszó!" });
         }
 
+        // Ellenőrizzük, hogy a user.id létezik-e
+        if (!user.id) {
+            console.error("User ID is missing:", user);
+            return res.status(500).json({ message: "Hiba a bejelentkezés során: hiányzó felhasználói azonosító" });
+        }
+
         const token = jwt.sign(
             { 
                 userId: user.id, 
@@ -45,9 +51,22 @@ const authenticateUser = async (req, res) => {
             { expiresIn: "1h" }
         );
 
-        res.json({ message: "Sikeres bejelentkezés!", token});
+        // Debug: ellenőrizzük a generált tokent
+        console.log("Generated token:", token);
+        console.log("Token payload:", { userId: user.id, email: user.email, role: user.szerep });
+
+        // Állítsuk be a token cookie-t
+        res.cookie('token', token, {
+            httpOnly: true,
+            secure: process.env.NODE_ENV === 'production', // HTTPS csak production környezetben
+            maxAge: 3600000, // 1 óra
+            sameSite: 'lax'
+        });
+
+        res.json({ message: "Sikeres bejelentkezés!", token });
     } catch (error) {
-        res.status(500).json({ message: "Hiba a bejelentkezés során", error });
+        console.error("Login error:", error);
+        res.status(500).json({ message: "Hiba a bejelentkezés során", error: error.message });
     }
 };
 // Get All Users (Admin only)
@@ -145,8 +164,15 @@ const deleteUser = async (req, res) => {
 // Get Current User Profile
 const getUserProfile = async (req, res) => {
     try {
+        // Debug: ellenőrizzük a req.user objektumot
+        console.log("User from token:", req.user);
+        
         // The user ID is extracted from the JWT token in the authenticateToken middleware
         const userId = req.user.userId;
+        
+        if (!userId) {
+            return res.status(400).json({ message: "Hiányzó felhasználói azonosító" });
+        }
         
         const user = await User.findByPk(userId, { 
             attributes: { 
@@ -165,12 +191,43 @@ const getUserProfile = async (req, res) => {
     }
 };
 
-module.exports = { 
-  createUser, 
-  authenticateUser, 
-  getUser, 
-  updateUser, 
-  deleteUser, 
-  getUserProfile,
-  getAllUsers
-};
+
+
+// Get User Orders
+const getUserOrders = async (req, res) => {
+    try {
+      const userId = req.user.userId;
+      
+      // Lekérjük a felhasználó rendeléseit
+      const rendelesek = await Rendeles.findAll({
+        where: { felhasznaloId: userId },
+        order: [['rendelesIdeje', 'DESC']],
+        include: [{
+          model: RendelesTetelek,
+          as: 'tetelek',
+          include: [{
+            model: Termek,
+            attributes: ['nev', 'kepUrl']
+          }]
+        }]
+      });
+      
+      res.json(rendelesek);
+    } catch (error) {
+      console.error("Hiba a felhasználói rendelések lekérdezésekor:", error);
+      res.status(500).json({ message: "Hiba a rendelések lekérdezése során", error: error.message });
+    }
+  };
+  
+  // Exportáljuk az új metódust
+  module.exports = { 
+    createUser, 
+    authenticateUser, 
+    getUser, 
+    updateUser, 
+    deleteUser, 
+    getUserProfile,
+    getAllUsers,
+    getUserOrders
+  };
+  

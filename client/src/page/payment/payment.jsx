@@ -67,6 +67,52 @@ export default function Payment() {
     loadCart();
   }, [navigate]);
 
+  useEffect(() => {
+    const loadUserData = async () => {
+      try {
+        // Ellenőrizzük, hogy van-e token a localStorage-ban
+        const token = localStorage.getItem('token');
+        if (!token) {
+          console.log("Nincs bejelentkezve felhasználó");
+          return;
+        }
+        
+        // Felhasználói adatok lekérése a szervertől
+        const response = await fetch('http://localhost:3000/api/rendeles', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            'Authorization': `Bearer ${token}` // Győződj meg róla, hogy a token el van küldve
+          },
+          body: JSON.stringify(orderData)
+        });
+        
+        if (!response.ok) {
+          throw new Error('Nem sikerült betölteni a felhasználói adatokat');
+        }
+        
+        const userData = await response.json();
+        console.log("Betöltött felhasználói adatok:", userData);
+        
+        // Form adatok előtöltése a felhasználói adatokkal
+        setFormData({
+          firstName: userData.keresztnev || '',
+          lastName: userData.vezeteknev || '',
+          email: userData.email || '',
+          phone: userData.telefonszam || '',
+          address: userData.szallitasi_kozterulet && userData.szallitasi_hazszam ? 
+                  `${userData.szallitasi_kozterulet} ${userData.szallitasi_hazszam}` : '',
+          city: userData.szallitasi_telepules || '',
+          zipCode: userData.szallitasi_irsz ? userData.szallitasi_irsz.toString() : '',
+        });
+      } catch (error) {
+        console.error("Hiba a felhasználói adatok betöltésekor:", error);
+      }
+    };
+    
+    loadUserData();
+  }, []);
+
   // Form input változás kezelése
   const handleInputChange = (e) => {
     const { name, value } = e.target;
@@ -138,7 +184,7 @@ export default function Payment() {
         osszegek: {
           subtotal: calculateSubtotal(),
           shipping: shipping,
-          discount: 0, // Itt 0-t adunk meg, mivel a payment oldalon nincs kupon kezelés
+          discount: 0,
           total: total
         },
         tetelek: cartItems.map(item => ({
@@ -150,27 +196,21 @@ export default function Payment() {
         }))
       };
       
-      // Felhasználói azonosító hozzáadása, ha be van jelentkezve
-      const userData = localStorage.getItem('user');
-      if (userData) {
-        try {
-          const parsedUser = JSON.parse(userData);
-          if (parsedUser && parsedUser.id) {
-            orderData.felhasznaloId = parsedUser.id;
-          }
-        } catch (error) {
-          console.error("Hiba a felhasználói adatok feldolgozásakor:", error);
-        }
-      }
+      // Token lekérése a localStorage-ból
+      const token = localStorage.getItem('token');
+      const headers = {
+        'Content-Type': 'application/json'
+      };
       
-      console.log("Rendelés adatok:", orderData);
+      // Ha van token, hozzáadjuk a kéréshez
+      if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+      }
       
       // Rendelés elküldése a szervernek
       const response = await fetch('http://localhost:3000/api/rendeles', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
+        headers: headers,
         body: JSON.stringify(orderData)
       });
       

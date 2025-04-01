@@ -82,10 +82,11 @@ const User = sequelize.define("User", {
 // Associations remain the same
 User.associate = function(models) {
     User.hasMany(models.Rendeles, {
-        foreignKey: 'vevo',
+        foreignKey: 'felhasznaloId',
         sourceKey: 'id'
     });
 };
+
 
 sequelize.sync()
     .then(() => console.log("✅ User table updated!"))

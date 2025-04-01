@@ -1,6 +1,6 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/config");
-
+const RendelesTetelek = require('./rendelesTetelek');
 const Rendeles = sequelize.define("Rendeles", {
   azonosito: { 
     type: DataTypes.INTEGER, 
@@ -90,6 +90,10 @@ const Rendeles = sequelize.define("Rendeles", {
   timestamps: false,
 });
 
-// Remove the associate function
+Rendeles.hasMany(RendelesTetelek, {
+  foreignKey: 'rendelesId',
+  sourceKey: 'azonosito',
+  as: 'tetelek'
+});
 
 module.exports = Rendeles;

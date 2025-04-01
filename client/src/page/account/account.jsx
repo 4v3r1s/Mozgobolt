@@ -7,12 +7,27 @@ export default function Account() {
     username: "",
     email: "",
     newsletter: false,
-    registrationDate: "",
-    role: "" // Add role field
+    telefonszam: "",
+    vezeteknev: "",
+    keresztnev: "",
+    szuletesidatum: "",
+    szamlazasi_nev: "",
+    szamlazasi_irsz: "",
+    szamlazasi_telepules: "",
+    szamlazasi_kozterulet: "",
+    szamlazasi_hazszam: "",
+    adoszam: "",
+    szallitasi_nev: "",
+    szallitasi_irsz: "",
+    szallitasi_telepules: "",
+    szallitasi_kozterulet: "",
+    szallitasi_hazszam: "",
+    role: "" // Megtartjuk a role-t a kódban, de nem jelenítjük meg
   });
   const [loading, setLoading] = useState(true);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
   const [logoAnimated, setLogoAnimated] = useState(false);
+  const [differentBillingAddress, setDifferentBillingAddress] = useState(false);
 
   const [alert, setAlert] = useState({
     show: false,
@@ -87,14 +102,39 @@ export default function Account() {
         }
 
         const data = await response.json();
+        
+        // Ellenőrizzük, hogy a számlázási és szállítási adatok különböznek-e
+        const hasDifferentBillingAddress = 
+          data.szamlazasi_nev !== data.szallitasi_nev ||
+          data.szamlazasi_irsz !== data.szallitasi_irsz ||
+          data.szamlazasi_telepules !== data.szallitasi_telepules ||
+          data.szamlazasi_kozterulet !== data.szallitasi_kozterulet ||
+          data.szamlazasi_hazszam !== data.szallitasi_hazszam;
+        
+        setDifferentBillingAddress(hasDifferentBillingAddress);
+        
         setUserData({
           username: data.felhasznalonev || "Nincs megadva",
           email: data.email || "Nincs megadva",
           newsletter: data.hirlevel || false,
-          registrationDate: data.regisztracio_datum 
-            ? new Date(data.regisztracio_datum).toLocaleDateString('hu-HU') 
-            : "Nincs adat",
-          role: data.szerep || "user" // Store the user role
+          telefonszam: data.telefonszam || "Nincs megadva",
+          vezeteknev: data.vezeteknev || "Nincs megadva",
+          keresztnev: data.keresztnev || "Nincs megadva",
+          szuletesidatum: data.szuletesidatum 
+            ? new Date(data.szuletesidatum).toLocaleDateString('hu-HU') 
+            : "Nincs megadva",
+          szamlazasi_nev: data.szamlazasi_nev || "Nincs megadva",
+          szamlazasi_irsz: data.szamlazasi_irsz || "Nincs megadva",
+          szamlazasi_telepules: data.szamlazasi_telepules || "Nincs megadva",
+          szamlazasi_kozterulet: data.szamlazasi_kozterulet || "Nincs megadva",
+          szamlazasi_hazszam: data.szamlazasi_hazszam || "Nincs megadva",
+          adoszam: data.adoszam || "Nincs megadva",
+          szallitasi_nev: data.szallitasi_nev || "Nincs megadva",
+          szallitasi_irsz: data.szallitasi_irsz || "Nincs megadva",
+          szallitasi_telepules: data.szallitasi_telepules || "Nincs megadva",
+          szallitasi_kozterulet: data.szallitasi_kozterulet || "Nincs megadva",
+          szallitasi_hazszam: data.szallitasi_hazszam || "Nincs megadva",
+          role: data.szerep || "user" // Megtartjuk a role-t a kódban, de nem jelenítjük meg
         });
       } catch (error) {
         console.error("Error fetching user data:", error);
@@ -133,27 +173,28 @@ export default function Account() {
     <div className="min-h-screen bg-gray-50">
       {/* Header */}
       <header className="bg-red-700 text-white">
-  <div className="container mx-auto px-4 py-4">
-    <div className="flex items-center justify-center overflow-hidden h-10">
-      <a href="/" className="text-white hover:text-gray-200 flex items-center">
-        <img 
-          src="/public/logo2.png" 
-          alt="MozgoShop Logo" 
-          className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
-            logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-          }`}
-        />
-        <h1 
-          className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
-            logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-          }`}
-        >
-          MozgoShop
-        </h1>
-      </a>
-    </div>
-  </div>
-</header>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center overflow-hidden h-10">
+            <a href="/" className="text-white hover:text-gray-200 flex items-center">
+              <img 
+                src="/public/logo2.png" 
+                alt="MozgoShop Logo" 
+                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              />
+              <h1 
+                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              >
+                MozgoShop
+              </h1>
+            </a>
+          </div>
+        </div>
+      </header>
+      
       {/* Navigation */}
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
@@ -251,6 +292,7 @@ export default function Account() {
               ) : (
                 <>
                   <div className="space-y-4">
+                    {/* Személyes adatok szekció */}
                     <div className="border-b pb-4">
                       <h2 className="text-lg font-semibold text-gray-800 mb-2">Személyes adatok</h2>
                       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -262,15 +304,21 @@ export default function Account() {
                           <p className="text-sm text-gray-500">Email cím</p>
                           <p className="font-medium text-lg">{userData.email}</p>
                         </div>
-                      </div>
-                    </div>
-
-                    <div className="border-b pb-4">
-                      <h2 className="text-lg font-semibold text-gray-800 mb-2">Fiók információk</h2>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                         <div className="bg-gray-50 p-4 rounded-md">
-                          <p className="text-sm text-gray-500">Regisztráció dátuma</p>
-                          <p className="font-medium text-lg">{userData.registrationDate}</p>
+                          <p className="text-sm text-gray-500">Vezetéknév</p>
+                          <p className="font-medium text-lg">{userData.vezeteknev}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Keresztnév</p>
+                          <p className="font-medium text-lg">{userData.keresztnev}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Telefonszám</p>
+                          <p className="font-medium text-lg">{userData.telefonszam}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Születési dátum</p>
+                          <p className="font-medium text-lg">{userData.szuletesidatum}</p>
                         </div>
                         <div className="bg-gray-50 p-4 rounded-md">
                           <p className="text-sm text-gray-500">Hírlevél feliratkozás</p>
@@ -284,8 +332,67 @@ export default function Account() {
                         </div>
                       </div>
                     </div>
+                    {/* Szállítási adatok szekció */}
+                    <div className="border-b pb-4">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-2">Szállítási adatok</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Szállítási név</p>
+                          <p className="font-medium text-lg">{userData.szallitasi_nev}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Irányítószám</p>
+                          <p className="font-medium text-lg">{userData.szallitasi_irsz}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Település</p>
+                          <p className="font-medium text-lg">{userData.szallitasi_telepules}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Közterület</p>
+                          <p className="font-medium text-lg">{userData.szallitasi_kozterulet}</p>
+                        </div>
+                        <div className="bg-gray-50 p-4 rounded-md">
+                          <p className="text-sm text-gray-500">Házszám</p>
+                          <p className="font-medium text-lg">{userData.szallitasi_hazszam}</p>
+                        </div>
+                      </div>
+                    </div>
 
-                    <div className="pt-2">
+                    {/* Számlázási adatok szekció - csak ha különbözik a szállítási címtől */}
+                    {differentBillingAddress && (
+                      <div className="border-b pb-4">
+                        <h2 className="text-lg font-semibold text-gray-800 mb-2">Számlázási adatok</h2>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <p className="text-sm text-gray-500">Számlázási név</p>
+                            <p className="font-medium text-lg">{userData.szamlazasi_nev}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <p className="text-sm text-gray-500">Irányítószám</p>
+                            <p className="font-medium text-lg">{userData.szamlazasi_irsz}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <p className="text-sm text-gray-500">Település</p>
+                            <p className="font-medium text-lg">{userData.szamlazasi_telepules}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <p className="text-sm text-gray-500">Közterület</p>
+                            <p className="font-medium text-lg">{userData.szamlazasi_kozterulet}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <p className="text-sm text-gray-500">Házszám</p>
+                            <p className="font-medium text-lg">{userData.szamlazasi_hazszam}</p>
+                          </div>
+                          <div className="bg-gray-50 p-4 rounded-md">
+                            <p className="text-sm text-gray-500">Adószám</p>
+                            <p className="font-medium text-lg">{userData.adoszam}</p>
+                          </div>
+                        </div>
+                      </div>
+                    )}
+
+<div className="pt-2">
   <h2 className="text-lg font-semibold text-gray-800 mb-4">Fiók műveletek</h2>
   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
     <button 
@@ -306,24 +413,6 @@ export default function Account() {
       </svg>
       Rendeléseim
     </button>
-    <button 
-      className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-      onClick={() => navigate('/wishlist')}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M3.172 5.172a4 4 0 015.656 0L10 6.343l1.172-1.171a4 4 0 115.656 5.656L10 17.657l-6.828-6.829a4 4 0 010-5.656z" clipRule="evenodd" />
-      </svg>
-      Kívánságlistám
-    </button>
-    <button 
-      className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-      onClick={() => navigate('/addresses')}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
-      </svg>
-      Címeim
-    </button>
     
     {/* Admin database management button - only visible for admins */}
     {userData.role === "admin" && (
@@ -336,7 +425,8 @@ export default function Account() {
         </svg>
         Admin felület
       </button>
-    )}  </div>
+    )}
+  </div>
   
   <div className="mt-6">
     <button 
@@ -407,3 +497,5 @@ export default function Account() {
     </div>
   );
 }
+
+                    

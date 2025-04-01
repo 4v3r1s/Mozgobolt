@@ -50,9 +50,15 @@ exports.createRendeles = async (req, res) => {
       szallitasiAdatok, 
       fizetesiMod, 
       osszegek, 
-      tetelek,
-      felhasznaloId
+      tetelek
     } = req.body;
+    
+    // Felhasználói azonosító kinyerése a JWT tokenből, ha van
+    let felhasznaloId = null;
+    if (req.user && req.user.userId) {
+      felhasznaloId = req.user.userId;
+      console.log("Felhasználói azonosító beállítva:", felhasznaloId);
+    }
     
     // Rendelés azonosító generálása
     const rendelesAzonosito = `R-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 1000)}`;
@@ -71,7 +77,7 @@ exports.createRendeles = async (req, res) => {
       szallitasiDij: osszegek.shipping,
       kedvezmeny: osszegek.discount || 0,
       vegosszeg: osszegek.total,
-      felhasznaloId: felhasznaloId || null
+      felhasznaloId: felhasznaloId
     }, { transaction });
     
     // Rendelés tételek létrehozása
@@ -184,5 +190,75 @@ exports.getRendelesTetelek = async (req, res) => {
   } catch (error) {
     console.error("Hiba a rendelés tételek lekérdezésekor:", error);
     res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+exports.getUserOrders = async (req, res) => {
+  try {
+    // A felhasználó ID-t a JWT tokenből kapjuk
+    const userId = req.user.userId;
+    
+    console.log("Felhasználói rendelések lekérdezése, userId:", userId);
+    
+    // Ellenőrizzük, hogy a userId megfelelő formátumú-e
+    if (!userId || isNaN(parseInt(userId))) {
+      console.error("Érvénytelen userId:", userId);
+      return res.status(400).json({ message: "Érvénytelen felhasználói azonosító" });
+    }
+    
+    // Naplózzuk a lekérdezés paramétereit
+    console.log("Lekérdezés paraméterei:", { felhasznaloId: userId });
+    
+    // Lekérjük a felhasználó rendeléseit
+    const rendelesek = await Rendeles.findAll({
+      where: { felhasznaloId: userId },
+      order: [['rendelesIdeje', 'DESC']],
+      include: [{
+        model: RendelesTetelek,
+        as: 'tetelek',
+        include: [{
+          model: Termek,
+          attributes: ['nev', 'kepUrl']
+        }]
+      }]
+    });
+    
+    console.log(`${rendelesek.length} rendelés található a felhasználóhoz (${userId})`);
+    
+    // Ha nincs rendelés, akkor is küldjünk vissza egy üres tömböt
+    if (rendelesek.length === 0) {
+      console.log("Nincsenek rendelések a felhasználóhoz");
+      return res.json([]);
+    }
+    
+    // Naplózzuk az első rendelés adatait
+    if (rendelesek.length > 0) {
+      console.log("Első rendelés adatai:", JSON.stringify(rendelesek[0].toJSON(), null, 2));
+    }
+    
+    // Átalakítjuk a rendeléseket a frontend számára megfelelő formátumra
+    const formattedOrders = rendelesek.map(rendeles => {
+      const rendelesObj = rendeles.toJSON();
+      
+      return {
+        id: rendelesObj.rendelesAzonosito,
+        status: rendelesObj.allapot,
+        createdAt: rendelesObj.rendelesIdeje,
+        total_price: rendelesObj.vegosszeg,
+        shipping_address: `${rendelesObj.szallitasiIrsz} ${rendelesObj.szallitasiVaros}, ${rendelesObj.szallitasiCim}`,
+        payment_method: rendelesObj.fizetesiMod,
+        items: rendelesObj.tetelek ? rendelesObj.tetelek.map(tetel => ({
+          product_name: tetel.termekNev,
+          product_image: tetel.Termek ? tetel.Termek.kepUrl : null,
+          quantity: tetel.mennyiseg,
+          price: tetel.egysegAr
+        })) : []
+      };
+    });
+    
+    console.log("Válasz küldése a kliensnek:", formattedOrders.length, "rendeléssel");
+    res.json(formattedOrders);
+  } catch (error) {
+    console.error("Hiba a felhasználó rendeléseinek lekérdezésekor:", error);
+    res.status(500).json({ message: "Hiba a rendelések lekérdezése során", error: error.message });
   }
 };

@@ -1,5 +1,7 @@
 const { DataTypes } = require("sequelize");
 const sequelize = require("../config/config");
+const Termek = require('./termek');
+
 
 const RendelesTetelek = sequelize.define("RendelesTetelek", {
   azonosito: { 
@@ -42,6 +44,11 @@ const RendelesTetelek = sequelize.define("RendelesTetelek", {
 }, {
   tableName: "rendeles_tetelek",
   timestamps: false,
+});
+
+RendelesTetelek.belongsTo(Termek, {
+  foreignKey: 'termekId',
+  targetKey: 'azonosito'
 });
 
 module.exports = RendelesTetelek;

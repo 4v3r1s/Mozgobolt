@@ -23,7 +23,7 @@ export default function Payment() {
   const [orderPlaced, setOrderPlaced] = useState(false);
   const [processingOrder, setProcessingOrder] = useState(false);
   const [discount, setDiscount] = useState(0);
-
+  const [couponApplied, setCouponApplied] = useState(false);
   // Animáció indítása késleltetéssel
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -39,7 +39,14 @@ export default function Payment() {
       try {
         const savedCart = localStorage.getItem('cart');
         console.log("Betöltött kosár:", savedCart);
-        
+        const savedDiscount = localStorage.getItem('cartDiscount');
+        if (savedDiscount) {
+          const discountData = JSON.parse(savedDiscount);
+          if (discountData.applied) {
+            setCouponApplied(true);
+            setDiscount(discountData.percent);
+          }
+        }
         if (savedCart && savedCart !== "undefined" && savedCart !== "null") {
           const parsedCart = JSON.parse(savedCart);
           console.log("Feldolgozott kosár:", parsedCart);
@@ -182,8 +189,8 @@ export default function Payment() {
         osszegek: {
           subtotal: calculateSubtotal(),
           shipping: shipping,
-          discount: 0,
-          total: total
+          discount: discount, // Use the actual discount percentage
+          total: total // This should be the total after discount
         },
         tetelek: cartItems.map(item => ({
           id: item.id,
@@ -223,6 +230,16 @@ export default function Payment() {
       // Sikeres rendelés esetén
       setOrderPlaced(true);
       
+      if (responseData) {
+        setOrderPlaced(true);
+        
+        // Clear cart and discount
+        localStorage.removeItem('cart');
+        localStorage.removeItem('cartDiscount');
+        
+        // Trigger cart update event
+        window.dispatchEvent(new Event('cartUpdated'));
+      }
       // Kosár ürítése
       localStorage.removeItem('cart');
       
@@ -245,10 +262,11 @@ export default function Payment() {
       return total + (itemPrice * item.quantity);
     }, 0);
   };
-
+  
   const subtotal = calculateSubtotal();
-  const shipping = subtotal > 10000 ? 0 : 990; // Ingyenes szállítás 10000 Ft felett
-  const total = subtotal + shipping;
+  const discountAmount = discount > 0 ? (subtotal * discount / 100) : 0;
+  const shipping = subtotal > 10000 ? 0 : 990;
+  const total = subtotal - discountAmount + shipping;
 
   // Ha a rendelés sikeres volt, megjelenítjük a visszaigazoló képernyőt
   if (orderPlaced) {
@@ -612,25 +630,34 @@ export default function Payment() {
                       </div>
                       
                       {/* Összegek */}
-                      <div className="space-y-2 pt-2">
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Részösszeg</span>
-                          <span>{subtotal.toLocaleString()} Ft</span>
-                        </div>
-                        
-                        <div className="flex justify-between text-sm text-gray-600">
-                          <span>Szállítási díj</span>
-                          <span>{shipping === 0 ? "Ingyenes" : `${shipping.toLocaleString()} Ft`}</span>
-                        </div>
-                        
-                        <div className="border-t pt-3 mt-3">
-                          <div className="flex justify-between font-semibold text-lg">
-                            <span>Összesen</span>
-                            <span>{total.toLocaleString()} Ft</span>
+                        <div className="space-y-2 pt-2">
+                          <div className="flex justify-between text-sm text-gray-600">
+                            <span>Részösszeg</span>
+                            <span>{subtotal.toLocaleString()} Ft</span>
                           </div>
-                          <p className="text-xs text-gray-500 mt-1">Az ár tartalmazza az ÁFÁ-t</p>
+                          
+                          {/* Add this block to display discount if applied */}
+                          {couponApplied && discount > 0 && (
+                            <div className="flex justify-between text-sm text-green-600">
+                              <span>Kupon kedvezmény ({discount}%)</span>
+                              <span>-{(subtotal * discount / 100).toLocaleString()} Ft</span>
+                            </div>
+                          )}
+                          
+                          <div className="flex justify-between text-sm text-gray-600">
+                            <span>Szállítási díj</span>
+                            <span>{shipping === 0 ? "Ingyenes" : `${shipping.toLocaleString()} Ft`}</span>
+                          </div>
+                          
+                          <div className="border-t pt-3 mt-3">
+                            <div className="flex justify-between font-semibold text-lg">
+                              <span>Összesen</span>
+                              <span>{total.toLocaleString()} Ft</span>
+                            </div>
+                            <p className="text-xs text-gray-500 mt-1">Az ár tartalmazza az ÁFÁ-t</p>
+                          </div>
                         </div>
-                      </div>
+
                     </div>
                     
                     {/* Rendelés elküldése gomb - csak asztali nézetben */}

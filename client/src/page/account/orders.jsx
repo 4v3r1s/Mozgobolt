@@ -1,19 +1,15 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 
 export default function Orders() {
   const navigate = useNavigate();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [logoAnimated, setLogoAnimated] = useState(false);
 
-  const [alert, setAlert] = useState({
-    show: false,
-    message: "",
-    type: "error", // success or error
-  });
-
-  // Animáció indítása késleltetéssel
+  // Animation effect
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
@@ -22,107 +18,58 @@ export default function Orders() {
     return () => clearTimeout(timer);
   }, []);
 
-  const showAlert = (message, type = "error") => {
-    setAlert({
-      show: true,
-      message,
-      type,
-    });
-
-    // Auto-hide alert after 5 seconds
-    setTimeout(() => {
-      setAlert((prev) => ({ ...prev, show: false }));
-    }, 5000);
-  };
-
- 
+  // Fetch orders
+  useEffect(() => {
     const fetchOrders = async () => {
-        try {
-          // Get token from localStorage
-          const token = localStorage.getItem('token');
-          console.log("Tárolt token:", token ? "Van token" : "Nincs token");
-      
-          if (!token) {
+      try {
+        // Get token from localStorage
+        const token = localStorage.getItem('token');
+        
+        if (!token) {
+          // Redirect to login if no token
+          navigate('/login');
+          return;
+        }
+        
+        // Fetch orders from the server
+        const response = await fetch("http://localhost:3000/api/rendeles/my-orders", {
+          method: "GET",
+          headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        
+        if (!response.ok) {
+          if (response.status === 401) {
+            // Token expired or invalid
             navigate('/login');
             return;
           }
-      
-          // Próbáljuk dekódolni a tokent (csak debug célokra)
-          try {
-            const base64Url = token.split('.')[1];
-            const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-            const jsonPayload = decodeURIComponent(atob(base64).split('').map(function(c) {
-              return '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2);
-            }).join(''));
-            
-            const payload = JSON.parse(jsonPayload);
-            console.log("Token payload:", payload);
-            console.log("User ID from token:", payload.userId);
-          } catch (e) {
-            console.error("Hiba a token dekódolásakor:", e);
-          }
-      
-          console.log("Rendelések lekérése...");
-          
-          // Használjuk a nem-prefixelt útvonalat
-          const response = await fetch("http://localhost:3000/rendeles/my-orders", {
-            method: "GET",
-            headers: {
-              "Authorization": `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          });
-      
-          console.log("Válasz státusz:", response.status);
-      
-          if (!response.ok) {
-            const errorText = await response.text();
-            console.error("Hiba a válaszban:", errorText);
-            
-            if (response.status === 401) {
-              // Token expired or invalid
-              navigate('/login');
-              return;
-            }
-            throw new Error(`Hiba a rendelések lekérése során: ${response.status} ${errorText}`);
-          }
-      
-          const data = await response.json();
-          console.log("Betöltött rendelések:", data);
-          
-          // Ellenőrizzük, hogy a data egy tömb-e
-          if (Array.isArray(data)) {
-            setOrders(data);
-            console.log(`${data.length} rendelés betöltve`);
-          } else {
-            console.error("A válasz nem tömb formátumú:", data);
-            setOrders([]);
-          }
-        } catch (error) {
-          console.error("Error fetching orders:", error);
-          showAlert("Hiba történt a rendelések betöltése során: " + error.message);
-        } finally {
-          setLoading(false);
+          throw new Error(`Error fetching orders: ${response.status}`);
         }
-      };
-      
-      useEffect(() => {
-        fetchOrders();
-      }, [navigate]);
-
-  // Rendelés állapot fordítása
-  const getStatusText = (status) => {
-    const statusMap = {
-      'pending': 'Függőben',
-      'processing': 'Feldolgozás alatt',
-      'shipped': 'Kiszállítva',
-      'delivered': 'Kézbesítve',
-      'cancelled': 'Törölve'
+        
+        const data = await response.json();
+        console.log("Loaded orders:", data);
+        
+        if (Array.isArray(data)) {
+          setOrders(data);
+        } else {
+          console.error("Response is not an array:", data);
+          setOrders([]);
+        }
+      } catch (error) {
+        console.error("Error fetching orders:", error);
+        setError(error.message);
+      } finally {
+        setLoading(false);
+      }
     };
-    return statusMap[status] || status;
-  };
+    
+    fetchOrders();
+  }, [navigate]);
 
-  // Dátum formázása
+  // Format date
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('hu-HU', {
@@ -132,6 +79,28 @@ export default function Orders() {
       hour: '2-digit',
       minute: '2-digit'
     });
+  };
+
+  // Get status text
+  const getStatusText = (status) => {
+    const statusMap = {
+      'feldolgozás alatt': 'Feldolgozás alatt',
+      'kiszállítás alatt': 'Kiszállítás alatt',
+      'kiszállítva': 'Kiszállítva',
+      'törölve': 'Törölve'
+    };
+    return statusMap[status] || status;
+  };
+
+  // Get status color
+  const getStatusColor = (status) => {
+    const colorMap = {
+      'feldolgozás alatt': 'bg-yellow-100 text-yellow-800',
+      'kiszállítás alatt': 'bg-blue-100 text-blue-800',
+      'kiszállítva': 'bg-green-100 text-green-800',
+      'törölve': 'bg-red-100 text-red-800'
+    };
+    return colorMap[status] || 'bg-gray-100 text-gray-800';
   };
 
   return (
@@ -164,41 +133,13 @@ export default function Orders() {
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
-            <li>
-              <a href="/" className="hover:text-gray-200">
-                KEZDŐLAP
-              </a>
-            </li>
-            <li>
-              <a href="/info" className="hover:text-gray-200">
-                BEMUTATKOZÁS
-              </a>
-            </li>
-            <li>
-              <a href="/Tutorial" className="hover:text-gray-200">
-                RENDELÉS MENETE
-              </a>
-            </li>
-            <li>
-              <a href="/account" className="text-white font-bold border-b-2 border-white">
-                FIÓKOM
-              </a>
-            </li>
-            <li>
-              <a href="/sales" className="hover:text-gray-200">
-                AKCIÓK
-              </a>
-            </li>
-            <li>
-              <a href="/utvonal" className="hover:text-gray-200">
-                TELEPÜLÉSEK
-              </a>
-            </li>
-            <li>
-              <a href="/StaticKapcsolat" className="hover:text-gray-200">
-                KAPCSOLAT
-              </a>
-            </li>
+            <li><a href="/" className="hover:text-gray-200">KEZDŐLAP</a></li>
+            <li><a href="/info" className="hover:text-gray-200">BEMUTATKOZÁS</a></li>
+            <li><a href="/tutorial" className="hover:text-gray-200">RENDELÉS MENETE</a></li>
+            <li><a href="/account" className="text-white font-bold border-b-2 border-white">FIÓKOM</a></li>
+            <li><a href="/sales" className="hover:text-gray-200">AKCIÓK</a></li>
+            <li><a href="/utvonal" className="hover:text-gray-200">TELEPÜLÉSEK</a></li>
+            <li><a href="/StaticKapcsolat" className="hover:text-gray-200">KAPCSOLAT</a></li>
           </ul>
         </div>
       </nav>
@@ -206,33 +147,24 @@ export default function Orders() {
       {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-4xl mx-auto">
-          <div className="bg-white rounded-lg shadow-md overflow-hidden">
-            <div className="bg-red-700 text-white py-4 px-6 flex justify-between items-center">
-              <h1 className="text-2xl font-bold">Rendeléseim</h1>
-              <button 
-                onClick={() => navigate('/account')}
-                className="text-white bg-red-800 px-4 py-2 rounded hover:bg-red-900 transition-colors text-sm"
-              >
-                Vissza a fiókhoz
-              </button>
+          <div className="flex items-center mb-6">
+            <button 
+              onClick={() => navigate('/account')} 
+              className="flex items-center text-gray-600 hover:text-red-700"
+            >
+              <ArrowLeft className="h-5 w-5 mr-2" />
+              <span>Vissza a fiókomhoz</span>
+            </button>
+            <h1 className="text-2xl font-bold text-gray-800 ml-auto">Rendeléseim</h1>
+          </div>
+
+          {error && (
+            <div className="p-4 mb-4 bg-red-100 text-red-800 rounded-md">
+              <p>{error}</p>
             </div>
+          )}
 
-            {alert.show && (
-              <div
-                className={`p-4 mb-4 mx-6 mt-6 rounded-md ${
-                  alert.type === "success" ? "bg-green-100 text-green-800" : "bg-red-100 text-red-800"
-                } flex justify-between items-center`}
-              >
-                <p>{alert.message}</p>
-                <button
-                  onClick={() => setAlert((prev) => ({ ...prev, show: false }))}
-                  className="text-gray-500 hover:text-gray-700"
-                >
-                  ✕
-                </button>
-              </div>
-            )}
-
+          <div className="bg-white rounded-lg shadow-md overflow-hidden">
             <div className="p-6">
               {loading ? (
                 <div className="text-center py-8">
@@ -258,11 +190,7 @@ export default function Orders() {
                           <span className="ml-2 font-medium">{order.id}</span>
                         </div>
                         <div>
-                          <span className={`px-3 py-1 rounded-full text-xs font-medium
-                            ${order.status === 'delivered' ? 'bg-green-100 text-green-800' : 
-                              order.status === 'cancelled' ? 'bg-red-100 text-red-800' :
-                              'bg-yellow-100 text-yellow-800'}`}
-                          >
+                          <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                             {getStatusText(order.status)}
                           </span>
                         </div>
@@ -279,16 +207,12 @@ export default function Orders() {
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Szállítási cím</p>
-                            <p className="font-medium">
-                              {order.shipping_address || 'Nincs megadva'}
-                            </p>
+                            <p className="font-medium">{order.shipping_address}</p>
                           </div>
                           <div>
                             <p className="text-sm text-gray-500">Fizetési mód</p>
                             <p className="font-medium">
-                              {order.payment_method === 'cash' ? 'Készpénz' : 
-                               order.payment_method === 'card' ? 'Bankkártya' : 
-                               order.payment_method || 'Nincs megadva'}
+                              {order.payment_method === 'cash' ? 'Készpénz' : order.payment_method}
                             </p>
                           </div>
                         </div>
@@ -317,7 +241,7 @@ export default function Orders() {
                                       <div className="flex items-center">
                                         {item.product_image && (
                                           <img 
-                                            src={item.product_image} 
+                                            src={`http://localhost:3000${item.product_image}`} 
                                             alt={item.product_name} 
                                             className="h-10 w-10 object-cover mr-3"
                                           />
@@ -340,15 +264,6 @@ export default function Orders() {
                               </tbody>
                             </table>
                           </div>
-                        </div>
-                        
-                        <div className="mt-4 flex justify-end">
-                          <button 
-                            onClick={() => navigate(`/order-details/${order.id}`)}
-                            className="text-red-700 hover:text-red-800 text-sm font-medium"
-                          >
-                            Részletek megtekintése
-                          </button>
                         </div>
                       </div>
                     </div>
@@ -379,31 +294,10 @@ export default function Orders() {
             <div>
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
-                <li>
-                  <a href="#" className="hover:underline">
-                    Általános Szerződési Feltételek
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Adatvédelmi Tájékoztató
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Adatvédelmi Tájékoztató
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Szállítási Információk
-                  </a>
-                </li>
-                <li>
-                  <a href="/StaticKapcsolat" className="hover:underline">
-                    Kapcsolat
-                  </a>
-                </li>
+                <li><a href="#" className="hover:underline">Általános Szerződési Feltételek</a></li>
+                <li><a href="#" className="hover:underline">Adatvédelmi Tájékoztató</a></li>
+                <li><a href="#" className="hover:underline">Szállítási Információk</a></li>
+                <li><a href="/StaticKapcsolat" className="hover:underline">Kapcsolat</a></li>
               </ul>
             </div>
           </div>

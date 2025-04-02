@@ -12,6 +12,7 @@ export default function Cart() {
   const [couponApplied, setCouponApplied] = useState(false);
   const [discount, setDiscount] = useState(0);
 
+  
   // Animáció indítása késleltetéssel
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -103,6 +104,13 @@ export default function Cart() {
     if (couponCode.toLowerCase() === "mozgo10") {
       setCouponApplied(true);
       setDiscount(10); // 10% kedvezmény
+      
+      // Save discount information to localStorage
+      localStorage.setItem('cartDiscount', JSON.stringify({
+        applied: true,
+        percent: 10,
+        code: couponCode
+      }));
     } else {
       alert("Érvénytelen kuponkód!");
     }

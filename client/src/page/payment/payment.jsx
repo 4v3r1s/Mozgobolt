@@ -70,31 +70,29 @@ export default function Payment() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Ellenőrizzük, hogy van-e token a localStorage-ban
+        // Check if user is logged in
         const token = localStorage.getItem('token');
         if (!token) {
-          console.log("Nincs bejelentkezve felhasználó");
+          console.log("No user logged in");
           return;
         }
         
-        // Felhasználói adatok lekérése a szervertől
-        const response = await fetch('http://localhost:3000/api/rendeles', {
-          method: 'POST',
+        // Fetch user data from server
+        const response = await fetch('http://localhost:3000/user/profile', {
+          method: 'GET',
           headers: {
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}` // Győződj meg róla, hogy a token el van küldve
-          },
-          body: JSON.stringify(orderData)
+            'Authorization': `Bearer ${token}`
+          }
         });
         
         if (!response.ok) {
-          throw new Error('Nem sikerült betölteni a felhasználói adatokat');
+          throw new Error('Failed to load user data');
         }
         
         const userData = await response.json();
-        console.log("Betöltött felhasználói adatok:", userData);
+        console.log("Loaded user data:", userData);
         
-        // Form adatok előtöltése a felhasználói adatokkal
+        // Populate form with user data
         setFormData({
           firstName: userData.keresztnev || '',
           lastName: userData.vezeteknev || '',
@@ -106,7 +104,7 @@ export default function Payment() {
           zipCode: userData.szallitasi_irsz ? userData.szallitasi_irsz.toString() : '',
         });
       } catch (error) {
-        console.error("Hiba a felhasználói adatok betöltésekor:", error);
+        console.error("Error loading user data:", error);
       }
     };
     
@@ -556,11 +554,11 @@ export default function Payment() {
                               readOnly
                             />
                             <label htmlFor="cash" className="ml-3 block text-sm font-medium text-gray-700">
-                              Készpénzes fizetés átvételkor
+                              Fizetés átvételkor a futárnak (készpénzes vagy bankkártya)
                             </label>
                           </div>
                           <p className="text-sm text-gray-500 mt-2 ml-7">
-                            A rendelés átvételekor fizet készpénzben a futárnak.
+                            A rendelés átvételekor fizet készpénzzel agy bankkártyával a futárnak.
                           </p>
                         </div>
                       </div>

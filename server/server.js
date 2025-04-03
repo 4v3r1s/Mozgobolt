@@ -8,6 +8,7 @@ const raktarRoutes = require("./routes/raktarRoutes");
 const rendelesRoutes = require("./routes/rendelesRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require('./routes/adminRoutes');
+const emailService = require('./services/emailService');
 
 // Import models directly
 const Rendeles = require('./model/rendeles');
@@ -85,6 +86,49 @@ app.use("/raktar", raktarRoutes);
 app.use("/rendeles", rendelesRoutes);
 app.use("/user", userRoutes);
 app.use('/admin', adminRoutes);
+
+// E-mail teszt végpont
+app.get('/test-email', async (req, res) => {
+  try {
+    console.log("E-mail teszt végpont meghívva");
+    const emailService = require('./services/emailService');
+    
+    const result = await emailService.sendOrderConfirmation({
+      vevoAdatok: {
+        firstName: 'Teszt',
+        lastName: 'Felhasználó',
+        email: 'test@example.com',
+        phone: '06201234567'
+      },
+      szallitasiAdatok: {
+        address: 'Teszt utca 1.',
+        city: 'Budapest',
+        zipCode: '1111'
+      },
+      fizetesiMod: 'cash',
+      osszegek: {
+        subtotal: 1000,
+        shipping: 990,
+        discount: 0,
+        total: 1990
+      },
+      tetelek: [
+        {
+          id: 1,
+          name: 'Teszt termék',
+          quantity: 1,
+          price: 1000,
+          discountPrice: null
+        }
+      ]
+    }, 'TEST-12345');
+    
+    res.json({ message: 'E-mail teszt elküldve', result });
+  } catch (error) {
+    console.error("E-mail teszt hiba:", error);
+    res.status(500).json({ message: 'E-mail küldési hiba', error: error.message });
+  }
+});
 
 // Add a catch-all route to handle 404s and log them
 app.use((req, res) => {

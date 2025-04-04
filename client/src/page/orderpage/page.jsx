@@ -346,30 +346,6 @@ export default function Home() {
         </div>
       </header>
 
-      {/* Search status info */}
-      {(showSearchInfo || currentCategory) && (
-        <div className="bg-white border-b border-gray-200 py-2">
-          <div className="container mx-auto px-4">
-            <div className="flex items-center justify-between">
-              <div className="text-sm text-gray-600">
-                {showSearchInfo && (
-                  <span>Keresés: <span className="font-medium text-black">"{searchQuery}"</span></span>
-                )}
-                {currentCategory && !showSearchInfo && (
-                  <span>Kategória szűrés aktív</span>
-                )}
-                {currentCategory && showSearchInfo && (
-                  <span> kategórián belül</span>
-                )}
-              </div>
-              <div className="text-sm">
-                {filteredProducts.length} találat
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
-
           {/* Navigation */}
           <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">

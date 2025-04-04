@@ -144,16 +144,7 @@ export default function SignIn() {
           </div>
 
           <div className="flex items-center space-x-2">
-            <input
-              type="checkbox"
-              id="remember"
-              checked={rememberMe}
-              onChange={(e) => setRememberMe(e.target.checked)}
-              className="w-4 h-4"
-            />
-            <label htmlFor="remember" className="text-sm text-gray-600">
-              Emlékezz rám
-            </label>
+         
           </div>
 
           {error && <div className="text-red-600 text-sm">{error}</div>}

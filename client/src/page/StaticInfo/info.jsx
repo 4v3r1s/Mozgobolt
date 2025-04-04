@@ -90,36 +90,57 @@ export default function info() {
       <div className="container mx-auto px-4">
         <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Rólunk</h2>
-            <h2 className="text-xl font-bold text-gray-800 mb-4">Igazi Kristóf Tamás vagyok és társam Hamza Richárd, mi álmodtuk meg a 2025-ben megalapult mozgóbolt rendszerünket. Korunkat tekintve fiatallab kategóriába tartozunk, azonban semmi sem lehetetlen, ahogyan a weboldalunk is mutatja. Egy műkődőképes, hasznos gondolatmenetet sikerült véghez vinnünk, ami sok ember mindennapjait egyszerűbbé, és komfortosabbá teszi.</h2>
-            <ul className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-              {towns.map((town, index) => (
-                <li key={index} className="bg-gray-100 p-3 rounded-lg text-center font-medium text-gray-800">
-                  {town}
-                </li>
-              ))}
-            </ul>
+            <p className="mb-4">
+              Üdvözöljük a MozgoShop világában! Engedje meg, hogy bemutatkozzunk és megosszuk Önnel történetünket, küldetésünket és céljainkat.
+            </p>
+            <p className="mb-4">
+              A MozgoShop mögött két elhivatott fiatal vállalkozó áll: Igazi Kristóf Tamás és Hamza Richárd. 2025-ben álmodtuk meg és hoztuk létre ezt az innovatív mozgóbolt-rendszert, amely egy egyszerű, mégis hatékony megoldást kínál a vidéki közösségek számára. Bár fiatalok vagyunk, hiszünk abban, hogy a jó ötletek és a kemény munka révén semmi sem lehetetlen. Ez a weboldal és maga a MozgoShop is ennek az elkötelezettségnek az eredménye.
+            </p>
         </div>
 
-        {/* Új elkülönített rész a cégről szóló információkkal */}
+        {/* Küldetésünk rész */}
         <div className="bg-white mt-6 p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Küldetésünk</h2>
           <div className="prose max-w-none">
             <p className="mb-4">
-              A MozgoShop 2025-ben alakult azzal a céllal, hogy friss és minőségi élelmiszereket juttasson el a vidéki településekre. 
-              Küldetésünk, hogy megkönnyítsük azok életét, akik számára nehézséget jelent a bevásárlás.
+              A MozgoShop megszületésének legfőbb célja az volt, hogy friss és minőségi élelmiszereket juttassunk el azokhoz, akik számára a bevásárlás nehézséget jelent. Különösen fontosnak tartjuk a vidéki településeken élők és az idősebb generáció támogatását, hiszen sokan közülük nem tudnak rendszeresen eljutni a nagyobb bevásárlóközpontokba.
             </p>
             <p className="mb-4">
-              Szolgáltatásunk különösen fontos az idősebb korosztály számára, akik gyakran nem tudnak eljutni a nagyobb bevásárlóközpontokba. 
-              Mozgóboltunk rendszeresen látogatja a környező településeket, megbízható menetrenddel és széles termékválasztékkal.
-            </p>
-            <p>
-              Büszkék vagyunk arra, hogy a helyi közösségek részévé váltunk, és hogy nap mint nap hozzájárulhatunk az emberek kényelméhez és jóllétéhez.
-              Célunk továbbra is az, hogy bővítsük szolgáltatásainkat és még több településre juttassuk el a minőségi élelmiszereket.
+              Rendszeresen közlekedő mozgóboltunk megbízható menetrend szerint látogatja a környező falvakat, biztosítva ezzel a kényelmes és kiszámítható vásárlási lehetőséget. Széles termékkínálattal rendelkezünk, amelyet folyamatosan bővítünk a helyi igényeknek megfelelően.
             </p>
           </div>
         </div>
 
-        {/* Képrészek a szöveg alatt - módosítva, hogy a képek ugyanakkorák legyenek */}
+        {/* Miért választanak minket rész */}
+        <div className="bg-white mt-6 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Miért választanak minket?</h2>
+          <div className="prose max-w-none">
+            <ul className="list-disc pl-5 mb-4">
+              <li className="mb-2"><strong>Kényelem:</strong> Vásárlóinknak nem kell hosszú utakat megtenniük az alapvető élelmiszerekért.</li>
+              <li className="mb-2"><strong>Megbízhatóság:</strong> Rendszeres és pontos kiszállítás, előre meghatározott időpontokban.</li>
+              <li className="mb-2"><strong>Minőség:</strong> Friss, gondosan válogatott termékek, amelyeket közvetlenül házhoz vagy a települések központjába szállítunk.</li>
+              <li className="mb-2"><strong>Közösségépítés:</strong> Számunkra a helyi közösségek támogatása kiemelten fontos. Célunk, hogy személyes kapcsolatot alakítsunk ki vásárlóinkkal, és igazodjunk az igényeikhez.</li>
+            </ul>
+          </div>
+        </div>
+
+        {/* Jövőképünk rész */}
+        <div className="bg-white mt-6 p-6 rounded-lg shadow-md">
+          <h2 className="text-xl font-bold text-gray-800 mb-4">Jövőképünk</h2>
+          <div className="prose max-w-none">
+            <p className="mb-4">
+              Büszkék vagyunk arra, hogy a MozgoShop rövid idő alatt a vidéki közösségek meghatározó részévé vált. Hiszünk abban, hogy ez a szolgáltatás hozzájárul az emberek komfortérzetének növeléséhez és életminőségük javításához. Terveink között szerepel szolgáltatásunk továbbfejlesztése és kiterjesztése, hogy még több települést érhessünk el és még szélesebb termékkínálattal szolgálhassuk ki vásárlóinkat.
+            </p>
+            <p className="mb-4">
+              Ha Ön is szeretne egy megbízható, kényelmes és minőségi szolgáltatás részese lenni, várjuk szeretettel mozgóboltunkban!
+            </p>
+            <p className="font-medium text-center text-red-700">
+              📍 MozgoShop – Friss élelmiszer, közvetlenül az otthonába!
+            </p>
+          </div>
+        </div>
+
+        {/* Képrészek a szöveg alatt */}
         <div className="py-8 mt-6">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Első képrész */}

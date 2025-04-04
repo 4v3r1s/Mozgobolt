@@ -12,27 +12,27 @@ export default function OrderTutorial() {
       {
         title: "Termék kiválasztása",
         description: "Böngésszen a kínálatunkban és válassza ki a kívánt termékeket.",
-        image: "/images/tutorial1.jpg"
+        image: "/public/1.png"
       },
       {
         title: "Kosárba helyezés",
         description: "Kattintson a 'Kosárba' gombra a kiválasztott termék mellett.",
-        image: "/images/tutorial2.jpg"
+        image: "/public/2.png"
+      },
+      {
+        title: "Vásárlás, kuponkód megadása",
+        description: "Adja meg a kuponkódot, majd kattintson a 'Tovább a fizetéshez gombra.",
+        image: "/public/3.png"
       },
       {
         title: "Szállítási adatok megadása",
-        description: "Adja meg a szállítási címet és válassza ki a kívánt szállítási módot.",
-        image: "/images/tutorial3.jpg"
-      },
-      {
-        title: "Fizetési mód kiválasztása",
-        description: "Válassza ki a megfelelő fizetési módot (bankkártya, utánvét, átutalás).",
-        image: "/images/tutorial4.jpg"
+        description: "Töltse ki a szállítási adatokat, majd kattintson a 'Rendelés elküldése gombra'.",
+        image: "/public/4.png"
       },
       {
         title: "Rendelés véglegesítése",
         description: "Ellenőrizze a megadott adatokat és kattintson a 'Rendelés leadása' gombra.",
-        image: "/images/tutorial5.jpg"
+        image: "/public/5.png"
       }
     ]);
     
@@ -123,10 +123,7 @@ export default function OrderTutorial() {
       </div>
 
       <main className="container mx-auto px-4 py-8">
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          <img src="/images/order_tutorial1.jpg" alt="Rendelési folyamat" className="rounded-lg shadow-lg w-full" />
-          <img src="/images/order_tutorial2.jpg" alt="Kosár áttekintés" className="rounded-lg shadow-lg w-full" />
-        </div>
+        
 
         <div className="bg-white p-6 rounded-lg shadow-md mb-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Hogyan rendeljek?</h2>
@@ -135,7 +132,6 @@ export default function OrderTutorial() {
             Kövesse az alábbi lépéseket a sikeres rendeléshez.
           </p>
         </div>
-
         <div className="space-y-6">
           {steps.map((step, index) => (
             <div key={index} className="bg-white p-6 rounded-lg shadow-md">
@@ -146,25 +142,28 @@ export default function OrderTutorial() {
                 <h3 className="text-lg font-bold text-gray-800">{step.title}</h3>
               </div>
               <p className="text-gray-700 mb-4">{step.description}</p>
-              <div className="mt-4">
-                <img src={step.image} alt={`Lépés ${index + 1}`} className="rounded-lg shadow-md w-full" />
+              <div className="mt-4 flex justify-start">
+                <img 
+                  src={step.image} 
+                  alt={`Lépés ${index + 1}`} 
+                  className="rounded-lg shadow-md w-1/6 h-auto" 
+                />
               </div>
             </div>
           ))}
         </div>
-        
         <div className="bg-white p-6 rounded-lg shadow-md mt-8">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Gyakori kérdések a rendeléssel kapcsolatban</h2>
           
           <div className="space-y-4">
             <div>
               <h3 className="text-lg font-semibold">Mennyi a szállítási idő?</h3>
-              <p className="text-gray-700">A szállítási idő általában 2-3 munkanap, de ez függ a célállomástól és a rendelés időpontjától.</p>
+              <p className="text-gray-700">A leadásnapjátót tekintve, másnap 12:00-ig megérkezika rendelés.</p>
             </div>
             
             <div>
               <h3 className="text-lg font-semibold">Hogyan fizethetek?</h3>
-              <p className="text-gray-700">Fizethet bankkártyával online, utánvéttel a csomag átvételekor, vagy előre utalással.</p>
+              <p className="text-gray-700">Fizethet bankkártyával helyben, vagy utánvéttel kézpénzel a rendelés átvételekor.</p>
             </div>
             
             <div>

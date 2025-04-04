@@ -341,37 +341,38 @@ export default function Cart() {
                     </div>
                   </div>
                   
-                  {/* Kuponkód */}
-                  <div className="mt-6">
-                    <label htmlFor="coupon" className="block text-sm font-medium text-gray-700 mb-1">
-                      Kuponkód
-                    </label>
-                    <div className="flex">
-                    <input
-                        type="text"
-                        id="coupon"
-                        className="flex-1 border border-gray-300 rounded-l-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500"
-                        placeholder="Kuponkód megadása"
-                        value={couponCode}
-                        onChange={(e) => setCouponCode(e.target.value)}
-                        disabled={couponApplied}
-                      />
-                      <button
-                        type="button"
-                        onClick={applyCoupon}
-                        disabled={couponApplied || !couponCode}
-                        className="bg-red-700 text-white px-4 py-2 rounded-r-md hover:bg-red-800 disabled:bg-gray-400 disabled:cursor-not-allowed"
-                      >
-                        Beváltás
-                      </button>
-                    </div>
-                    {couponApplied && (
-                      <p className="text-sm text-green-600 mt-1">
-                        A kupon sikeresen alkalmazva! ({discount}% kedvezmény)
-                      </p>
-                    )}
-                  </div>
-                  
+                {/* Kuponkód */}
+<div className="mt-6">
+  <label htmlFor="coupon" className="block text-sm font-medium text-gray-700 mb-1">
+    Kuponkód
+  </label>
+  <div className="relative">
+    <input
+      type="text"
+      id="coupon"
+      className="w-full border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-red-500 focus:border-red-500 pr-16"
+      placeholder="Kuponkód megadása"
+      value={couponCode}
+      onChange={(e) => setCouponCode(e.target.value)}
+      disabled={couponApplied}
+    />
+    <button
+      type="button"
+      onClick={applyCoupon}
+      disabled={couponApplied || !couponCode}
+      className="absolute right-1 top-1/2 transform -translate-y-1/2 bg-red-700 text-white px-2 py-1 text-xs rounded-md hover:bg-red-800 disabled:bg-gray-400 disabled:cursor-not-allowed whitespace-nowrap"
+    >
+      Beváltás
+    </button>
+  </div>
+  {couponApplied && (
+    <p className="text-sm text-green-600 mt-1">
+      A kupon sikeresen alkalmazva! ({discount}% kedvezmény)
+    </p>
+  )}
+</div>
+
+
                 
 <div className="mt-6">
   <Button 
@@ -381,7 +382,7 @@ export default function Cart() {
     }}
     className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors"
   >
-    Tovább a pénztárhoz
+    Tovább 
   </Button>
   <p className="text-xs text-center text-gray-500 mt-2">
     A "Tovább a pénztárhoz" gombra kattintva elfogadja az Általános Szerződési Feltételeket.

@@ -112,6 +112,14 @@ export default function Towns() {
           </div>
         </div>
 
+        {/* Kiszállítási információ */}
+        <div className="bg-red-100 p-4 rounded-lg shadow-md mb-8 text-center">
+          <p className="text-lg font-medium text-red-800">
+           A mozgóbolt 8:00-kor érkezik az első faluba, 12:00-kor éri el az utolsó települést.
+           Kiszállítás ebben az időintervallumban várható.
+          </p>
+        </div>
+
         {/* Két táblázat egymás mellett */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
           {/* Első táblázat */}

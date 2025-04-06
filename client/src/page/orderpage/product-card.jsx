@@ -1,8 +1,23 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Button } from "./Button";
 
 export default function ProductCard({ product }) {
   const [addedToCart, setAddedToCart] = useState(false);
+  const [isPromoActive, setIsPromoActive] = useState(false);
+  
+  // Check if promotion is active
+  useEffect(() => {
+    if (product.discountPrice && product.akcio_eleje && product.akcio_vege) {
+      const currentDate = new Date();
+      const startDate = new Date(product.akcio_eleje);
+      const endDate = new Date(product.akcio_vege);
+      
+      // Set promotion status based on current date
+      setIsPromoActive(currentDate >= startDate && currentDate <= endDate);
+    } else {
+      setIsPromoActive(false);
+    }
+  }, [product]);
   
   // Kosárba helyezés kezelése
   const handleAddToCart = (e) => {
@@ -14,7 +29,8 @@ export default function ProductCard({ product }) {
       id: product.id,
       name: product.name,
       price: product.price,
-      discountPrice: product.discountPrice,
+      // Only use discount price if promotion is active
+      discountPrice: isPromoActive ? product.discountPrice : null,
       image: product.kepUrl ? `http://localhost:3000${product.kepUrl}` : product.image,
       quantity: 1,
       unit: product.unit || 'db'
@@ -65,8 +81,8 @@ export default function ProductCard({ product }) {
           className="w-full h-48 object-cover"
         />
         
-        {/* Akciós címke */}
-        {product.discountPrice && (
+        {/* Akciós címke - csak ha aktív az akció */}
+        {isPromoActive && product.discountPrice && (
           <div className="absolute top-2 left-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
             {product.discount}% AKCIÓ
           </div>
@@ -82,7 +98,7 @@ export default function ProductCard({ product }) {
         
         <div className="flex items-end justify-between">
           <div>
-            {product.discountPrice ? (
+            {isPromoActive && product.discountPrice ? (
               <div className="flex items-center">
                 <span className="text-red-600 font-medium">{product.discountPrice} Ft</span>
                 <span className="ml-2 text-sm text-gray-500 line-through">{product.price} Ft</span>
@@ -92,7 +108,7 @@ export default function ProductCard({ product }) {
             )}
             {product.unitPrice && (
               <div className="text-xs text-gray-500 mt-1">
-                {product.discountUnitPrice ? product.discountUnitPrice : product.unitPrice} Ft/egység
+                {isPromoActive && product.discountUnitPrice ? product.discountUnitPrice : product.unitPrice} Ft/egység
               </div>
             )}
           </div>

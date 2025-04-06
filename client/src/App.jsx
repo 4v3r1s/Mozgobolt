@@ -1,4 +1,4 @@
-import { BrowserRouter as Router, Route, Routes } from "react-router-dom";
+import { BrowserRouter as Router, Route, Routes, Navigate } from "react-router-dom";
 import ProductOrder from "./page/order";
 import Home from "./page/orderpage/page";
 import Towns from "./page/StaticRoute/route";
@@ -12,9 +12,11 @@ import Sales from "./page/sales/sales";
 import Cart from "./page/cart/cart";
 import UserTable from "./page/admin/database/UserTable";
 import ProductTable from "./page/admin/database/ProductTable";
+import OrderTable from "./page/admin/database/OrderTable"; // Importáljuk az OrderTable komponenst
 import Payment from "./page/payment/payment";
 import ProfileEdit from './page/account/profile-edit';
 import Orders from './page/account/orders';
+import AdminDashboard from './page/admin/database/AdminDashboard';
 
 function App() {
   return (
@@ -36,9 +38,11 @@ function App() {
         <Route path="/profile/edit" element={<ProfileEdit />} />
         <Route path="/orders" element={<Orders />} />
         {/* Admin routes */}
-        <Route path="/admin" element={<UserTable />} />
+        <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
+        <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UserTable />} />
         <Route path="/admin/products" element={<ProductTable />} />
+        <Route path="/admin/orders" element={<OrderTable />} /> {/* Új útvonal a rendelések kezeléséhez */}
       </Routes>
     </Router>
   );

@@ -9,6 +9,10 @@ const rendelesRoutes = require("./routes/rendelesRoutes");
 const userRoutes = require("./routes/userRoutes");
 const adminRoutes = require('./routes/adminRoutes');
 const emailService = require('./services/emailService');
+const emailRoutes = require('./routes/emailRoutes');
+const raktarKeszletRoutes = require('./routes/raktarKeszletRoutes');
+const raktarKeszlet2Routes = require("./routes/raktarKeszlet2Routes");
+
 
 // Import models directly
 const Rendeles = require('./model/rendeles');
@@ -28,7 +32,7 @@ app.use(cors({
 
 app.use(express.json());
 const path = require('path');
-
+require('dotenv').config({ path: path.resolve(__dirname, '../.env') });
 // Set up associations directly
 // Only set these up if the models exist
 if (User) {
@@ -59,10 +63,12 @@ if (RendelesTetelek && Termek) {
 
 // Statikus fájlok kiszolgálása - az egész public mappát kiszolgáljuk
 app.use(express.static(path.join(__dirname, '../public')));
-
+app.use('/email', emailRoutes);
 // Régi konfiguráció megtartása is
 app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/termek-kepek', express.static(path.join(__dirname, '../public/termek-kepek')));
+app.use("/raktar-keszlet", raktarKeszletRoutes);
+app.use("/raktarkeszlet2", raktarKeszlet2Routes);
 
 // Add detailed request logging BEFORE routes
 app.use((req, res, next) => {
@@ -87,48 +93,7 @@ app.use("/rendeles", rendelesRoutes);
 app.use("/user", userRoutes);
 app.use('/admin', adminRoutes);
 
-// E-mail teszt végpont
-app.get('/test-email', async (req, res) => {
-  try {
-    console.log("E-mail teszt végpont meghívva");
-    const emailService = require('./services/emailService');
-    
-    const result = await emailService.sendOrderConfirmation({
-      vevoAdatok: {
-        firstName: 'Teszt',
-        lastName: 'Felhasználó',
-        email: 'test@example.com',
-        phone: '06201234567'
-      },
-      szallitasiAdatok: {
-        address: 'Teszt utca 1.',
-        city: 'Budapest',
-        zipCode: '1111'
-      },
-      fizetesiMod: 'cash',
-      osszegek: {
-        subtotal: 1000,
-        shipping: 990,
-        discount: 0,
-        total: 1990
-      },
-      tetelek: [
-        {
-          id: 1,
-          name: 'Teszt termék',
-          quantity: 1,
-          price: 1000,
-          discountPrice: null
-        }
-      ]
-    }, 'TEST-12345');
-    
-    res.json({ message: 'E-mail teszt elküldve', result });
-  } catch (error) {
-    console.error("E-mail teszt hiba:", error);
-    res.status(500).json({ message: 'E-mail küldési hiba', error: error.message });
-  }
-});
+
 
 // Add a catch-all route to handle 404s and log them
 app.use((req, res) => {

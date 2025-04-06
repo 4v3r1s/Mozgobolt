@@ -371,63 +371,6 @@ const handleSubmit = async (e) => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal */}
-      <header className="bg-red-700 text-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-center overflow-hidden h-10">
-            <a href="/" className="text-white hover:text-gray-200 flex items-center">
-              <img 
-                src="/logo2.png" 
-                alt="MozgoShop Logo" 
-                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
-              />
-              <h1 
-                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
-              >
-                MozgoShop Admin
-              </h1>
-            </a>
-          </div>
-        </div>
-      </header>
-
-      {/* Navigation */}
-      <nav className="bg-red-800 text-white">
-        <div className="container mx-auto px-4">
-          <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
-            <li>
-              <a href="/admin" className="hover:text-gray-200">
-                VEZÉRLŐPULT
-              </a>
-            </li>
-            <li>
-              <a href="/admin/users" className="hover:text-gray-200">
-                FELHASZNÁLÓK
-              </a>
-            </li>
-            <li>
-              <a href="/admin/products" className="text-white font-bold border-b-2 border-white">
-                TERMÉKEK
-              </a>
-            </li>
-            <li>
-              <a href="/admin/orders" className="hover:text-gray-200">
-                RENDELÉSEK
-              </a>
-            </li>
-            <li>
-              <a href="/admin/settings" className="hover:text-gray-200">
-                BEÁLLÍTÁSOK
-              </a>
-            </li>
-          </ul>
-        </div>
-      </nav>
-
       <main className="container mx-auto px-4 py-8">
         {loading ? (
           <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -1036,61 +979,6 @@ const handleSubmit = async (e) => {
           </div>
         )}
       </main>
-
-      {/* Footer */}
-      <footer className="bg-red-700 text-white mt-12">
-        <div className="container mx-auto px-4 py-8">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div>
-              <h3 className="text-lg font-bold mb-4">MozgoShop Admin</h3>
-              <p className="text-sm">Adminisztrációs felület a MozgoShop webáruház kezeléséhez.</p>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold mb-4">Gyors linkek</h3>
-              <ul className="text-sm space-y-2">
-                <li>
-                  <a href="/admin" className="hover:underline">
-                    Vezérlőpult
-                  </a>
-                </li>
-                <li>
-                  <a href="/admin/users" className="hover:underline">
-                    Felhasználók
-                  </a>
-                </li>
-                <li>
-                  <a href="/admin/products" className="hover:underline">
-                    Termékek
-                  </a>
-                </li>
-                <li>
-                  <a href="/admin/orders" className="hover:underline">
-                    Rendelések
-                  </a>
-                </li>
-              </ul>
-            </div>
-            <div>
-              <h3 className="text-lg font-bold mb-4">Segítség</h3>
-              <ul className="text-sm space-y-2">
-                <li>
-                  <a href="/admin/help" className="hover:underline">
-                    Dokumentáció
-                  </a>
-                </li>
-                <li>
-                  <a href="/admin/support" className="hover:underline">
-                    Támogatás
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2025 MozgoShop. Minden jog fenntartva.</p>
-          </div>
-        </div>
-      </footer>
     </div>
   );
 }

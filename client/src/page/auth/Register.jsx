@@ -1,10 +1,10 @@
 "use client"
 
 import { useState } from "react"
-import { useNavigate } from "react-router-dom" // ✅ import useNavigate
+import { useNavigate } from "react-router-dom"
 
 export default function SignUp() {
-  const navigate = useNavigate() // ✅ initialize navigate
+  const navigate = useNavigate()
 
   const [formData, setFormData] = useState({
     username: "",
@@ -75,8 +75,30 @@ export default function SignUp() {
       if (response.ok) {
         showAlert("Sikeres regisztráció!", "success")
         console.log("User added:", data)
+        
+        // Küldünk egy regisztrációs visszaigazoló e-mailt
+        try {
+          const emailResponse = await fetch("http://localhost:3000/email/registration-confirmation", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              email: formData.email,
+              username: formData.username
+            }),
+          });
+          
+          if (emailResponse.ok) {
+            console.log("Regisztrációs e-mail elküldve");
+          } else {
+            console.error("Hiba a regisztrációs e-mail küldésekor");
+          }
+        } catch (emailError) {
+          console.error("E-mail küldési hiba:", emailError);
+        }
 
-        // ✅ Redirect to login after short delay
+        // Redirect to login after short delay
         setTimeout(() => navigate("/login"), 1500)
       } else {
         showAlert(`Hiba: ${data.message}`)

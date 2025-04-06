@@ -391,54 +391,66 @@ export default function Account() {
                         </div>
                       </div>
                     )}
-
-<div className="pt-2">
-  <h2 className="text-lg font-semibold text-gray-800 mb-4">Fiók műveletek</h2>
-  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-    <button 
-      className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-      onClick={() => navigate('/profile/edit')}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
-      </svg>
-      Adatok szerkesztése
-    </button>
-    <button 
-      className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-      onClick={navigateToOrders}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-        <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
-      </svg>
-      Rendeléseim
-    </button>
-    
-    {/* Admin database management button - only visible for admins */}
-    {userData.role === "admin" && (
-      <button 
-        className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-        onClick={() => navigate('/admin')}
-      >
-        <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-          <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clipRule="evenodd" />
-        </svg>
-        Admin felület
-      </button>
-    )}
-  </div>
-  
-  <div className="mt-6">
-    <button 
-      className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors flex items-center justify-center"
-      onClick={handleLogout}
-    >
-      <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
-      </svg>
-      Kijelentkezés
-    </button>
-  </div>
-</div>
+                    <div className="pt-2">
+                      <h2 className="text-lg font-semibold text-gray-800 mb-4">Fiók műveletek</h2>
+                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <button 
+                          className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                          onClick={() => navigate('/profile/edit')}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z" />
+                          </svg>
+                          Adatok szerkesztése
+                        </button>
+                        <button 
+                          className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                          onClick={navigateToOrders}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                            <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
+                          </svg>
+                          Rendeléseim
+                        </button>
+                        
+                        {/* Napi fogyás rögzítése gomb - alkalmazottaknak (vevo) és adminoknak jelenik meg */}
+                        {(userData.role === "vevo" || userData.role === "admin") && (
+                          <button 
+                            className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                            onClick={() => navigate('/napi-fogyas')}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clipRule="evenodd" />
+                            </svg>
+                            Napi fogyás rögzítése
+                          </button>
+                        )}
+                        
+                        {/* Admin database management button - only visible for admins */}
+                        {userData.role === "admin" && (
+                          <button 
+                            className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
+                            onClick={() => navigate('/admin/dashboard')}
+                          >
+                            <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                              <path fillRule="evenodd" d="M5 4a3 3 0 00-3 3v6a3 3 0 003 3h10a3 3 0 003-3V7a3 3 0 00-3-3H5zm-1 9v-1h5v2H5a1 1 0 01-1-1zm7 1h4a1 1 0 001-1v-1h-5v2zm0-4h5V8h-5v2zM9 8H4v2h5V8z" clipRule="evenodd" />
+                            </svg>
+                            Admin felület
+                          </button>
+                        )}
+                      </div>
+                      
+                      <div className="mt-6">
+                        <button 
+                          className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors flex items-center justify-center"
+                          onClick={handleLogout}
+                        >
+                          <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                          </svg>
+                          Kijelentkezés
+                        </button>
+                      </div>
+                    </div>
                   </div>
                 </>
               )}

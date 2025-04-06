@@ -2,18 +2,71 @@ const nodemailer = require('nodemailer');
 
 // Transporter létrehozása valós SMTP szerverrel
 const transporter = nodemailer.createTransport({
-  host: 'smtp.gmail.com',  // vagy más SMTP szerver
-  port: 587,
-  secure: false, // true for 465, false for other ports
+  service: 'gmail',
   auth: {
-    user: 'info.vandorboltwebaruhaz@gmail.com', // SMTP felhasználó
-    pass: 'wujh ycod kiey bdwd', // SMTP jelszó vagy app jelszó
+    user: 'info.vandorboltwebaruhaz@gmail.com',
+    pass: 'dpmo unxt mlca wuxr',
   },
-  // Fejlesztési környezetben kikapcsolhatjuk a tanúsítvány ellenőrzését
-  tls: {
-    rejectUnauthorized: false // Csak fejlesztési környezetben!
-  }
 });
+
+// Regisztrációs visszaigazoló e-mail küldése
+exports.sendRegistrationConfirmation = async (userData) => {
+  try {
+    console.log("Regisztrációs e-mail küldése:", userData.email);
+    
+    // E-mail tartalom
+    const mailOptions = {
+      from: '"MozgoShop" <info.vandorboltwebaruhaz@gmail.com>',
+      to: userData.email,
+      subject: `Sikeres regisztráció a MozgoShop oldalán`,
+      html: `
+        <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
+          <div style="background-color: #c81e1e; color: white; padding: 20px; text-align: center;">
+            <h1>Köszönjük a regisztrációt!</h1>
+          </div>
+          
+          <div style="padding: 20px; border: 1px solid #ddd; background-color: #f9f9f9;">
+            <p>Kedves ${userData.username}!</p>
+            
+            <p>Köszönjük, hogy regisztráltál a MozgoShop webáruházban!</p>
+            
+            <div style="background-color: #fff; padding: 15px; border: 1px solid #ddd; margin: 15px 0;">
+              <p>A regisztrációd sikeresen megtörtént. Mostantól bejelentkezhetsz az oldalunkra és élvezheted a regisztrált felhasználók előnyeit:</p>
+              
+              <ul style="list-style-type: disc; margin-left: 20px;">
+                <li>Gyorsabb vásárlási folyamat</li>
+                <li>Rendeléseid nyomon követése</li>
+                <li>Korábbi rendeléseid megtekintése</li>
+                <li>Személyes adataid kezelése</li>
+              </ul>
+              
+              <p style="margin-top: 20px;">Bejelentkezéshez használd az e-mail címedet és a regisztráció során megadott jelszavadat.</p>
+            </div>
+            
+            <p>Köszönjük, hogy a MozgoShop-ot választottad!</p>
+            
+            <p>Üdvözlettel,<br>MozgoShop Csapata</p>
+          </div>
+          
+          <div style="padding: 15px; text-align: center; font-size: 12px; color: #777;">
+            <p>Ez egy automatikus üzenet, kérjük, ne válaszoljon rá.</p>
+            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+          </div>
+        </div>
+      `
+    };
+
+    // E-mail küldése
+    const info = await transporter.sendMail(mailOptions);
+    console.log('Regisztrációs e-mail elküldve: %s', info.messageId);
+    return info;
+  } catch (error) {
+    console.error('Hiba a regisztrációs e-mail küldésekor:', error);
+    // Nem dobjuk tovább a hibát, csak naplózzuk
+    return { error: error.message };
+  }
+};
+
 
 // Rendelés visszaigazoló e-mail küldése
 exports.sendOrderConfirmation = async (orderData, rendelesAzonosito) => {
@@ -111,7 +164,6 @@ exports.sendOrderConfirmation = async (orderData, rendelesAzonosito) => {
     };
 
     // E-mail küldése
-    console.log("E-mail küldés megkísérlése...");
     const info = await transporter.sendMail(mailOptions);
     console.log('E-mail elküldve: %s', info.messageId);
     return info;
@@ -122,40 +174,3 @@ exports.sendOrderConfirmation = async (orderData, rendelesAzonosito) => {
   }
 };
 
-// Alternatív megoldás: Ethereal Email használata teszteléshez
-exports.sendTestEmail = async (to, subject, html) => {
-  try {
-    // Tesztfiók létrehozása
-    const testAccount = await nodemailer.createTestAccount();
-    
-    // Tesztfiók transporterének létrehozása
-    const testTransporter = nodemailer.createTransport({
-      host: 'smtp.ethereal.email',
-      port: 587,
-      secure: false,
-      auth: {
-        user: testAccount.user,
-        pass: testAccount.pass
-      }
-    });
-    
-    // E-mail küldése
-    const info = await testTransporter.sendMail({
-      from: '"MozgoShop Test" <test@mozgoshop.hu>',
-      to,
-      subject,
-      html
-    });
-    
-    console.log('Teszt e-mail elküldve: %s', info.messageId);
-    console.log('Előnézet URL: %s', nodemailer.getTestMessageUrl(info));
-    
-    return {
-      messageId: info.messageId,
-      previewUrl: nodemailer.getTestMessageUrl(info)
-    };
-  } catch (error) {
-    console.error('Hiba a teszt e-mail küldésekor:', error);
-    return { error: error.message };
-  }
-};

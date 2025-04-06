@@ -65,11 +65,15 @@ const optionalAuthenticateToken = (req, res, next) => {
 router.get("/", rendelesController.getAllRendeles);
 router.post("/", optionalAuthenticateToken, rendelesController.createRendeles);
 router.get("/my-orders", authenticateToken, rendelesController.getUserOrders);
+router.get("/stats", authenticateToken, rendelesController.getOrderStats);
 
 // 2. Aztán a paraméteres útvonalak
 router.get("/:id", rendelesController.getRendelesById);
 router.put("/:id", rendelesController.updateRendeles);
 router.delete("/:id", rendelesController.deleteRendeles);
 router.get("/:id/tetelek", rendelesController.getRendelesTetelek);
+
+
+
 
 module.exports = router;

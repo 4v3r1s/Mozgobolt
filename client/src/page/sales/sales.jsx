@@ -33,11 +33,23 @@ export default function Sales() {
         const allProducts = await response.json();
         console.log("Összes lekért termék:", allProducts);
         
-        // Egyszerűsített szűrés - csak azokat a termékeket mutatjuk, amelyeknek van akcióár beállítva
+        // Get current date for comparison
+        const currentDate = new Date();
+        // Format as YYYY-MM-DD for comparison with database dates
+        const currentDateString = currentDate.toISOString().split('T')[0];
+        
+        // Filter products that:
+        // 1. Have a discount price
+        // 2. Have valid promotion dates
+        // 3. Current date is within the promotion period
         const discountedProducts = allProducts.filter(product => 
           product.akciosar !== null && 
           product.akciosar !== undefined && 
-          parseFloat(product.akciosar) > 0
+          parseFloat(product.akciosar) > 0 &&
+          product.akcio_eleje && 
+          product.akcio_vege &&
+          product.akcio_eleje <= currentDateString &&
+          product.akcio_vege >= currentDateString
         );
         
         console.log("Szűrt akciós termékek:", discountedProducts);
@@ -49,7 +61,7 @@ export default function Sales() {
         setLoading(false);
       }
     };
-
+  
     fetchProducts();
   }, []);
 

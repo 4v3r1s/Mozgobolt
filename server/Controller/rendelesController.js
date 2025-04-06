@@ -277,4 +277,56 @@ exports.updateRendeles = async (req, res) => {
           res.status(500).json({ message: "Hiba a rendelések lekérdezése során", error: error.message });
         }
       };
+  // Rendelés statisztikák lekérése
+  exports.getOrderStats = async (req, res) => {
+    try {
+      // Összes rendelés lekérése
+      const allOrders = await Rendeles.findAll();
     
+      // Rendelések száma
+      const totalOrders = allOrders.length;
+    
+      // Feldolgozás alatt lévő rendelések
+      const pendingOrders = allOrders.filter(order => order.allapot === "feldolgozás alatt").length;
+    
+      // Kiszállítás alatt lévő rendelések
+      const shippingOrders = allOrders.filter(order => order.allapot === "kiszállítás alatt").length;
+    
+      // Teljesített rendelések
+      const completedOrders = allOrders.filter(order => order.allapot === "teljesítve").length;
+    
+      // Törölt rendelések
+      const cancelledOrders = allOrders.filter(order => order.allapot === "törölve").length;
+    
+      // Legutóbbi 5 rendelés
+      const recentOrders = await Rendeles.findAll({
+        order: [['rendelesIdeje', 'DESC']],
+        limit: 5,
+        include: [{
+          model: RendelesTetelek,
+          as: 'tetelek',
+          include: [{
+            model: Termek,
+            attributes: ['nev', 'kepUrl']
+          }]
+        }]
+      });
+    
+      // Összes bevétel
+      const totalRevenue = allOrders.reduce((sum, order) => sum + parseFloat(order.vegosszeg), 0);
+    
+      // Válasz küldése
+      res.json({
+        totalOrders,
+        pendingOrders,
+        shippingOrders,
+        completedOrders,
+        cancelledOrders,
+        recentOrders,
+        totalRevenue
+      });
+    } catch (error) {
+      console.error("Hiba a rendelés statisztikák lekérdezésekor:", error);
+      res.status(500).json({ message: "Server error", error: error.message });
+    }
+  };

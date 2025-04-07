@@ -13,7 +13,8 @@ export default function Home() {
   const [loading, setLoading] = useState(true);
   const [showSearchInfo, setShowSearchInfo] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
-  const [cartItemCount, setCartItemCount] = useState(0); // Új állapot a kosár számolásához
+  const [cartItemCount, setCartItemCount] = useState(0);
+  const [sortOption, setSortOption] = useState("default"); // Új állapot a rendezéshez
   const productsPerPage = 8;
   
   // Használjuk a useLocation hook-ot a kategória lekérdezéséhez
@@ -106,6 +107,41 @@ export default function Home() {
     fetchProducts();
   }, [currentCategory, searchQuery]); // Figyeljük a kategória és keresés változását
 
+  // Termékek rendezése a kiválasztott opció alapján
+  const sortProducts = (products, option) => {
+    const sortedProducts = [...products];
+    
+    switch (option) {
+      case "price-asc":
+        return sortedProducts.sort((a, b) => {
+          // Akciós árat használunk, ha van, egyébként a normál árat
+          const priceA = a.discountPrice !== null ? a.discountPrice : a.price;
+          const priceB = b.discountPrice !== null ? b.discountPrice : b.price;
+          return priceA - priceB;
+        });
+      
+      case "price-desc":
+        return sortedProducts.sort((a, b) => {
+          const priceA = a.discountPrice !== null ? a.discountPrice : a.price;
+          const priceB = b.discountPrice !== null ? b.discountPrice : b.price;
+          return priceB - priceA;
+        });
+      
+      case "name-asc":
+        return sortedProducts.sort((a, b) => 
+          a.name.localeCompare(b.name, 'hu', { sensitivity: 'base' })
+        );
+      
+      case "name-desc":
+        return sortedProducts.sort((a, b) => 
+          b.name.localeCompare(a.name, 'hu', { sensitivity: 'base' })
+        );
+      
+      default:
+        return sortedProducts; // Alapértelmezett rendezés
+    }
+  };
+
   const filterProductsByCategory = (allProducts, categoryId, query) => {
     console.log("Szűrési paraméterek:", { 
       categoryId, 
@@ -152,9 +188,21 @@ export default function Home() {
       console.log(`Szűrés keresés alapján: "${query}", találatok: ${filtered.length}`);
     }
     
-    setFilteredProducts(filtered);
+    // Rendezés alkalmazása a szűrt termékekre
+    const sortedFiltered = sortProducts(filtered, sortOption);
+    
+    setFilteredProducts(sortedFiltered);
   };
   
+  // Rendezési opció változásának kezelése
+  const handleSortChange = (e) => {
+    const newSortOption = e.target.value;
+    setSortOption(newSortOption);
+    
+    // Újrarendezzük a már szűrt termékeket
+    const sortedProducts = sortProducts(filteredProducts, newSortOption);
+    setFilteredProducts(sortedProducts);
+  };
     
   // Handle search input change
   const handleSearchChange = (e) => {
@@ -315,7 +363,7 @@ export default function Home() {
               </form>
             </div>
             <div className="flex items-center space-x-3">
-              <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
+                            <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
                 <User className="h-5 w-5" />
               </a>
               <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
@@ -408,11 +456,16 @@ export default function Home() {
                       `${indexOfFirstProduct + 1}–${Math.min(indexOfLastProduct, filteredProducts.length)} termék, összesen ${filteredProducts.length} db`
                   }
                 </span>
-                <select className="border rounded-md px-3 py-1.5 text-sm bg-white">
-                  <option>Alapértelmezett rendezés</option>
-                  <option>Ár szerint növekvő</option>
-                  <option>Ár szerint csökkenő</option>
-                  <option>Név szerint A-Z</option>
+                <select 
+                  className="border rounded-md px-3 py-1.5 text-sm bg-white"
+                  value={sortOption}
+                  onChange={handleSortChange}
+                >
+                  <option value="default">Alapértelmezett rendezés</option>
+                  <option value="price-asc">Ár szerint növekvő</option>
+                  <option value="price-desc">Ár szerint csökkenő</option>
+                  <option value="name-asc">Név szerint A-Z</option>
+                  <option value="name-desc">Név szerint Z-A</option>
                 </select>
               </div>
             </div>

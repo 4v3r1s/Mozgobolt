@@ -160,7 +160,7 @@ export default function info() {
               <h3 className="text-lg font-semibold mb-4">Csapatunk</h3>
               <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                 <img 
-                  src="/public/vándorbolt.png" 
+                  src="/public/mink.png" 
                   alt="Mozgóbolt" 
                   className="w-auto h-full scale-[2]" 
                   onError={(e) => {

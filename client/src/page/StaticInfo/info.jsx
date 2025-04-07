@@ -23,7 +23,7 @@ export default function info() {
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
               <img 
-                src="/public/logo2.png" 
+                src="/public/vándorbolt.png" 
                 alt="MozgoShop Logo" 
                 className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -34,7 +34,7 @@ export default function info() {
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                 }`}
               >
-                MozgoShop
+                Vándorbolt
               </h1>
             </a>
           </div>
@@ -148,7 +148,7 @@ export default function info() {
               <h3 className="text-lg font-semibold mb-4">Cégünk logója</h3>
               <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                 <img 
-                  src="/public/logo2.png" 
+                  src="/public/vándorbolt.png" 
                   alt="MozgoShop logó" 
                   className="object-contain max-h-full max-w-full"
                 />
@@ -160,12 +160,12 @@ export default function info() {
               <h3 className="text-lg font-semibold mb-4">Csapatunk</h3>
               <div className="w-full h-64 flex items-center justify-center overflow-hidden">
                 <img 
-                  src="/images/mozgobolt.jpg" 
+                  src="/public/vándorbolt.png" 
                   alt="Mozgóbolt" 
-                  className="object-contain max-h-full max-w-full"
+                  className="w-auto h-full scale-[2]" 
                   onError={(e) => {
                     e.target.onerror = null;
-                    e.target.src = "/public/Forza.jpg";
+                    e.target.src = "/public/mink.png";
                   }}
                 />
               </div>

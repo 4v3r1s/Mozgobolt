@@ -295,8 +295,8 @@ export default function Home() {
                 <Menu className="h-6 w-6" />
               </Button>
               <div className="flex items-center">
-                <img src="/public/logo2.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
-                <h1 className="text-2xl font-bold">MozgoShop</h1>
+                <img src="/public/vándorbolt.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
+                <h1 className="text-2xl font-bold">Vándorbolt</h1>
               </div>
             </div>
 

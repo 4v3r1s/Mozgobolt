@@ -278,11 +278,11 @@ export default function Payment() {
             <div className="flex items-center justify-center overflow-hidden h-10">
               <a href="/" className="text-white hover:text-gray-200 flex items-center">
                 <img 
-                  src="/public/logo2.png" 
+                  src="/public/vándorbolt.png" 
                   alt="MozgoShop Logo" 
                   className="h-16 -my-3 mr-3"
                 />
-                <h1 className="text-2xl font-bold">MozgoShop</h1>
+                <h1 className="text-2xl font-bold">Vándorbolt</h1>
               </a>
             </div>
           </div>
@@ -322,7 +322,7 @@ export default function Payment() {
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
               <img 
-                src="/public/logo2.png" 
+                src="/public/vándorbolt.png" 
                 alt="MozgoShop Logo" 
                 className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
@@ -333,7 +333,7 @@ export default function Payment() {
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                 }`}
               >
-                MozgoShop
+              Vándorbolt
               </h1>
             </a>
           </div>

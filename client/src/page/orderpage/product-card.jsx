@@ -73,12 +73,12 @@ export default function ProductCard({ product }) {
         </div>
       )}
       
-      <div className="relative">
-        {/* Termék képe */}
+      <div className="relative h-48 flex items-center justify-center bg-gray-100">
+        {/* Termék képe - módosítva, hogy teljesen beleférjen a keretbe */}
         <img 
           src={product.kepUrl ? `http://localhost:3000${product.kepUrl}` : product.image || "/public/placeholder.png"} 
           alt={product.name} 
-          className="w-full h-48 object-cover"
+          className="max-w-full max-h-48 object-contain"
         />
         
         {/* Akciós címke - csak ha aktív az akció */}

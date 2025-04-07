@@ -9,6 +9,7 @@ export default function Sales() {
   const [loading, setLoading] = useState(true);
   const [logoAnimated, setLogoAnimated] = useState(false);
   const [error, setError] = useState(null);
+  const [cartItemCount, setCartItemCount] = useState(0); // Added cart counter state
 
   // Animáció indítása késleltetéssel
   useEffect(() => {
@@ -18,6 +19,41 @@ export default function Sales() {
     
     return () => clearTimeout(timer);
   }, []);
+
+  // Kosár számláló frissítése - copied from page.jsx
+  useEffect(() => {
+    // Kezdeti betöltés
+    updateCartCount();
+    
+    // Eseményfigyelő a kosár változásaira
+    window.addEventListener('storage', updateCartCount);
+    
+    // Egyedi esemény figyelése a kosár frissítésére
+    window.addEventListener('cartUpdated', updateCartCount);
+    
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
+  
+  // Kosár számláló frissítése - copied from page.jsx
+  const updateCartCount = () => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const cartItems = JSON.parse(savedCart);
+        // Összesítjük a termékek mennyiségét
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        setCartItemCount(totalItems);
+      } catch (error) {
+        console.error("Hiba a kosár betöltésekor:", error);
+        setCartItemCount(0);
+      }
+    } else {
+      setCartItemCount(0);
+    }
+  };
 
   // Termékek lekérése a backend API-ról
   useEffect(() => {
@@ -91,26 +127,58 @@ export default function Sales() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal és logóval */}
+      {/* Header - updated with cart functionality from page.jsx */}
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-center overflow-hidden h-10">
-            <a href="/" className="text-white hover:text-gray-200 flex items-center">
-              <img 
-                src="/logo2.png" 
-                alt="MozgoShop Logo" 
-                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-4">
+              <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-red-600">
+                <Menu className="h-6 w-6" />
+              </Button>
+              <div className="flex items-center">
+                <img src="/public/vándorbolt.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
+                <h1 className="text-2xl font-bold">Vándorbolt</h1>
+              </div>
+            </div>
+
+            <div className="hidden md:flex flex-1 max-w-md mx-4">
+              <form className="relative w-full">
+                <Input
+                  placeholder="Keresés..."
+                  className="w-full pl-4 pr-10 py-2 rounded-lg border-0 focus-visible:ring-2 focus-visible:ring-red-500 text-black"
+                  autoComplete="off"
+                />
+                <button type="submit" className="absolute right-3 top-2.5">
+                  <Search className="h-5 w-5 text-gray-500" />
+                </button>
+              </form>
+            </div>
+            <div className="flex items-center space-x-3">
+              <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
+                <User className="h-5 w-5" />
+              </a>
+              <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
+                <ShoppingCart className="h-5 w-5" />
+                {cartItemCount > 0 && (
+                  <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+                    {cartItemCount}
+                  </span>
+                )}
+              </a>
+            </div>
+          </div>
+
+          <div className="mt-4 md:hidden relative">
+            <form className="relative w-full">
+              <Input
+                placeholder="Keresés..."
+                className="w-full pl-4 pr-10 py-2 rounded-lg border-0 text-black"
+                autoComplete="off"
               />
-              <h1 
-                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
-              >
-                MozgoShop
-              </h1>
-            </a>
+              <button type="submit" className="absolute right-3 top-2.5">
+                <Search className="h-5 w-5 text-gray-500" />
+              </button>
+            </form>
           </div>
         </div>
       </header>
@@ -205,51 +273,32 @@ export default function Sales() {
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Aktuális akciók</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
                 {products.map((product) => (
-                  <div key={product.azonosito} className="bg-white rounded-lg shadow-md overflow-hidden">
-                    <div className="relative">
-                      {product.kepUrl ? (
-                        <img 
-                          src={formatImageUrl(product.kepUrl)} 
-                          alt={product.nev} 
-                          className="w-full h-48 object-cover"
-                          onError={(e) => {
-                            console.error("Kép betöltési hiba:", product.kepUrl);
-                            e.target.onerror = null;
-                            e.target.src = "/placeholder.png"; // Helyettesítő kép, ha nem töltődik be
-                          }}
-                        />
-                      ) : (
-                        <div className="w-full h-48 bg-gray-200 flex items-center justify-center">
-                          <span className="text-gray-400">Nincs kép</span>
-                        </div>
-                      )}
-                      {calculateDiscount(product.ar, product.akciosar) > 0 && (
-                        <div className="absolute top-2 right-2 bg-red-600 text-white text-xs font-bold px-2 py-1 rounded">
-                          {calculateDiscount(product.ar, product.akciosar)}% kedvezmény
-                        </div>
-                      )}
-                    </div>
-                    <div className="p-4">
-                      <h3 className="text-lg font-semibold text-gray-800 mb-2">{product.nev || "Névtelen termék"}</h3>
-                      <p className="text-sm text-gray-600 mb-2">{product.kiszereles || ""}</p>
-                      <div className="flex items-center justify-between">
-                        <div>
-                          <span className="text-red-600 font-bold">{product.akciosar} Ft</span>
-                          {product.ar && (
-                            <span className="text-gray-400 text-sm line-through ml-2">{product.ar} Ft</span>
-                          )}
-                        </div>
-                        <button className="bg-red-700 text-white px-3 py-1 rounded-md text-sm hover:bg-red-800">
-                          Kosárba
-                        </button>
-                      </div>
-                      {product.akcio_vege && (
-                        <div className="mt-2 text-xs text-gray-500">
-                          Akció vége: {new Date(product.akcio_vege).toLocaleDateString('hu-HU')}
-                        </div>
-                      )}
-                    </div>
-                  </div>
+                  <ProductCard 
+                    key={product.azonosito} 
+                    product={{
+                      id: product.azonosito,
+                      name: product.nev,
+                      price: parseFloat(product.ar),
+                      originalPrice: product.akciosar ? parseFloat(product.ar) : null,
+                      discount: product.akciosar ? Math.round(((product.ar - product.akciosar) / product.ar) * 100) : 0,
+                      discountPrice: product.akciosar ? parseFloat(product.akciosar) : null,
+                      description: product.termekleiras,
+                      image: product.hivatkozas,
+                      kepUrl: product.kepUrl,
+                      category: product.csoport,
+                      stock: product.keszlet,
+                      unit: product.kiszereles,
+                      unitPrice: parseFloat(product.egysegnyiar),
+                      discountUnitPrice: product.akcios_egysegnyiar ? parseFloat(product.akcios_egysegnyiar) : null,
+                      discountEndDate: product.akcio_vege,
+                      discountStartDate: product.akcio_eleje,
+                      isAdult: product.tizennyolc ? true : false,
+                      vat: product.afa_kulcs,
+                      size: product.meret,
+                      color: product.szin,
+                      barcode: product.vonalkod
+                    }} 
+                  />
                 ))}
               </div>
             </div>
@@ -277,33 +326,33 @@ export default function Sales() {
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
                 <li>
-                  <a href="#" className="hover:underline">
-                    Általános Szerződési Feltételek
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Adatvédelmi Tájékoztató
-                  </a>
-                </li>
-                <li>
-                  <a href="#" className="hover:underline">
-                    Szállítási Információk
-                  </a>
-                </li>
-                <li>
-                  <a href="/StaticKapcsolat" className="hover:underline">
-                    Kapcsolat
-                  </a>
-                </li>
-              </ul>
-            </div>
-          </div>
-          <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
-          </div>
+                <a href="#" className="hover:underline">
+                Általános Szerződési Feltételek
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Adatvédelmi Tájékoztató
+              </a>
+            </li>
+            <li>
+              <a href="#" className="hover:underline">
+                Szállítási Információk
+              </a>
+            </li>
+            <li>
+              <a href="/StaticKapcsolat" className="hover:underline">
+                Kapcsolat
+              </a>
+            </li>
+          </ul>
         </div>
-      </footer>
+      </div>
+      <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
+        <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+      </div>
     </div>
-  );
+  </footer>
+</div>
+);
 }

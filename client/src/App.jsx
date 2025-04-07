@@ -12,11 +12,13 @@ import Sales from "./page/sales/sales";
 import Cart from "./page/cart/cart";
 import UserTable from "./page/admin/database/UserTable";
 import ProductTable from "./page/admin/database/ProductTable";
-import OrderTable from "./page/admin/database/OrderTable"; // Importáljuk az OrderTable komponenst
+import OrderTable from "./page/admin/database/OrderTable";
+import NapiFogyasTable from "./page/admin/database/NapiFogyasTable"; // Importáljuk az új komponenst
 import Payment from "./page/payment/payment";
 import ProfileEdit from './page/account/profile-edit';
 import Orders from './page/account/orders';
 import AdminDashboard from './page/admin/database/AdminDashboard';
+import NapiFogyas from './page/account/napiFogyas';
 
 function App() {
   return (
@@ -37,12 +39,14 @@ function App() {
         <Route path="/payment" element={<Payment />} />
         <Route path="/profile/edit" element={<ProfileEdit />} />
         <Route path="/orders" element={<Orders />} />
+        <Route path="/account/napiFogyas" element={<NapiFogyas />} />
         {/* Admin routes */}
         <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />
         <Route path="/admin/users" element={<UserTable />} />
         <Route path="/admin/products" element={<ProductTable />} />
-        <Route path="/admin/orders" element={<OrderTable />} /> {/* Új útvonal a rendelések kezeléséhez */}
+        <Route path="/admin/orders" element={<OrderTable />} />
+        <Route path="/admin/napi-fogyas" element={<NapiFogyasTable />} /> {/* Új útvonal a napi fogyás kezeléséhez */}
       </Routes>
     </Router>
   );

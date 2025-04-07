@@ -3,6 +3,8 @@ import { useNavigate } from "react-router-dom";
 import UserTable from "./UserTable";
 import ProductTable from "./ProductTable";
 import OrderTable from "./OrderTable";
+import NapiFogyasTable from "./NapiFogyasTable";
+
 
 export default function AdminDashboard() {
   const navigate = useNavigate();
@@ -77,92 +79,99 @@ export default function AdminDashboard() {
   };
 
   // Statisztikák lekérése
-  const fetchStats = async () => {
-    try {
-      setLoading(true);
-      
-      // Admin jogosultság ellenőrzése
-      const isAdmin = await checkAdminAuth();
-      if (!isAdmin) return;
-      
-      const token = document.cookie
-        .split('; ')
-        .find(row => row.startsWith('token='))
-        ?.split('=')[1];
+const fetchStats = async () => {
+  try {
+    setLoading(true);
+    
+    // Admin jogosultság ellenőrzése
+    const isAdmin = await checkAdminAuth();
+    if (!isAdmin) return;
+    
+    const token = document.cookie
+      .split('; ')
+      .find(row => row.startsWith('token='))
+      ?.split('=')[1];
 
-      // Felhasználói statisztikák lekérése
-      const usersResponse = await fetch("http://localhost:3000/user/all", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (!usersResponse.ok) {
-        throw new Error("Nem sikerült betölteni a felhasználói adatokat");
+    // Felhasználói statisztikák lekérése
+    const usersResponse = await fetch("http://localhost:3000/user/all", {
+      headers: {
+        "Authorization": `Bearer ${token}`
       }
+    });
 
-      const usersData = await usersResponse.json();
-      
-      // Termék statisztikák lekérése
-      const productsResponse = await fetch("http://localhost:3000/termek", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (!productsResponse.ok) {
-        throw new Error("Nem sikerült betölteni a termék adatokat");
-      }
-
-      const productsData = await productsResponse.json();
-      
-      // Rendelés statisztikák lekérése
-      const ordersResponse = await fetch("http://localhost:3000/rendeles/stats", {
-        headers: {
-          "Authorization": `Bearer ${token}`
-        }
-      });
-
-      if (!ordersResponse.ok) {
-        throw new Error("Nem sikerült betölteni a rendelés statisztikákat");
-      }
-
-      const ordersData = await ordersResponse.json();
-      
-      // Statisztikák kiszámítása
-      const adminUsers = usersData.filter(user => user.szerep === "admin").length;
-      const newsletterSubscribers = usersData.filter(user => user.hirlevel).length;
-      const lowStockProducts = productsData.filter(product => product.keszlet < 10).length;
-      const productsOnSale = productsData.filter(product => 
-        product.akciosar && product.akciosar > 0 && 
-        new Date(product.akcio_vege) > new Date()
-      ).length;
-      
-      // Statisztikák beállítása
-      setStats({
-        totalUsers: usersData.length,
-        adminUsers,
-        regularUsers: usersData.length - adminUsers,
-        newsletterSubscribers,
-        totalProducts: productsData.length,
-        lowStockProducts,
-        productsOnSale,
-        totalOrders: ordersData.totalOrders,
-        pendingOrders: ordersData.pendingOrders,
-        shippingOrders: ordersData.shippingOrders,
-        completedOrders: ordersData.completedOrders,
-        cancelledOrders: ordersData.cancelledOrders,
-        totalRevenue: ordersData.totalRevenue,
-        recentOrders: ordersData.recentOrders || []
-      });
-      
-      setLoading(false);
-    } catch (error) {
-      console.error("Hiba a statisztikák lekérése során:", error);
-      setError(error.message);
-      setLoading(false);
+    if (!usersResponse.ok) {
+      throw new Error("Nem sikerült betölteni a felhasználói adatokat");
     }
-  };
+
+    const usersData = await usersResponse.json();
+    
+    // Termék statisztikák lekérése
+    const productsResponse = await fetch("http://localhost:3000/termek", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!productsResponse.ok) {
+      throw new Error("Nem sikerült betölteni a termék adatokat");
+    }
+
+    const productsData = await productsResponse.json();
+    
+    // Rendelés statisztikák lekérése
+    const ordersResponse = await fetch("http://localhost:3000/rendeles/stats", {
+      headers: {
+        "Authorization": `Bearer ${token}`
+      }
+    });
+
+    if (!ordersResponse.ok) {
+      throw new Error("Nem sikerült betölteni a rendelés statisztikákat");
+    }
+
+    const ordersData = await ordersResponse.json();
+    
+    // Statisztikák kiszámítása
+    const adminUsers = usersData.filter(user => user.szerep === "admin").length;
+    const newsletterSubscribers = usersData.filter(user => user.hirlevel).length;
+    const lowStockProducts = productsData.filter(product => product.keszlet < 10).length;
+    const productsOnSale = productsData.filter(product => 
+      product.akciosar && product.akciosar > 0 && 
+      new Date(product.akcio_vege) > new Date()
+    ).length;
+    
+    // Módosított bevétel számítás - csak a nem törölt rendeléseket vesszük figyelembe
+    const totalRevenue = ordersData.totalOrders > 0 
+      ? ordersData.recentOrders
+          .filter(order => order.allapot !== "törölve") // Kiszűrjük a törölt rendeléseket
+          .reduce((sum, order) => sum + parseFloat(order.vegosszeg), 0)
+      : 0;
+    
+    // Statisztikák beállítása
+    setStats({
+      totalUsers: usersData.length,
+      adminUsers,
+      regularUsers: usersData.length - adminUsers,
+      newsletterSubscribers,
+      totalProducts: productsData.length,
+      lowStockProducts,
+      productsOnSale,
+      totalOrders: ordersData.totalOrders,
+      pendingOrders: ordersData.pendingOrders,
+      shippingOrders: ordersData.shippingOrders,
+      completedOrders: ordersData.completedOrders,
+      cancelledOrders: ordersData.cancelledOrders,
+      totalRevenue: totalRevenue, // Módosított bevétel érték
+      recentOrders: ordersData.recentOrders || []
+    });
+    
+    setLoading(false);
+  } catch (error) {
+    console.error("Hiba a statisztikák lekérése során:", error);
+    setError(error.message);
+    setLoading(false);
+  }
+};
 
   // Komponens betöltésekor lekérjük a statisztikákat
   useEffect(() => {
@@ -311,14 +320,14 @@ export default function AdminDashboard() {
                   Rendelések
                 </button>
                 <button
-                  onClick={() => setActiveTab("categories")}
+                onClick={() => setActiveTab("napiFogyas")}
                   className={`py-4 px-6 text-center border-b-2 font-medium text-sm ${
-                    activeTab === "categories"
+                    activeTab === "napiFogyas"
                       ? "border-red-700 text-red-700"
                       : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300"
                   }`}
-                >
-                  Kategóriák
+                  >
+                  Napi fogyás
                 </button>
               </nav>
             </div>
@@ -682,7 +691,7 @@ export default function AdminDashboard() {
               {activeTab === "users" && <UserTable />}
               {activeTab === "products" && <ProductTable />}
               {activeTab === "orders" && <OrderTable />}
-              {activeTab === "categories" && <p>Kategóriák kezelése - Fejlesztés alatt</p>}
+              {activeTab === "napiFogyas" && <NapiFogyasTable />}
             </div>
           </div>
         )}

@@ -411,13 +411,12 @@ export default function Account() {
                             <path fillRule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clipRule="evenodd" />
                           </svg>
                           Rendeléseim
-                        </button>
-                        
+                        </button>                        
                         {/* Napi fogyás rögzítése gomb - alkalmazottaknak (vevo) és adminoknak jelenik meg */}
                         {(userData.role === "vevo" || userData.role === "admin") && (
                           <button 
                             className="bg-white border border-red-700 text-red-700 py-3 rounded-md hover:bg-red-50 transition-colors flex items-center justify-center"
-                            onClick={() => navigate('/napi-fogyas')}
+                            onClick={() => navigate('/account/napiFogyas')}
                           >
                             <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
                               <path fillRule="evenodd" d="M6 2a2 2 0 00-2 2v12a2 2 0 002 2h8a2 2 0 002-2V7.414A2 2 0 0015.414 6L12 2.586A2 2 0 0010.586 2H6zm5 6a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V8z" clipRule="evenodd" />
@@ -425,7 +424,6 @@ export default function Account() {
                             Napi fogyás rögzítése
                           </button>
                         )}
-                        
                         {/* Admin database management button - only visible for admins */}
                         {userData.role === "admin" && (
                           <button 

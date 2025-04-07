@@ -79,3 +79,74 @@ exports.deleteUser = async (req, res) => {
     res.status(500).json({ message: 'Szerver hiba történt' });
   }
 };
+exports.getAllNapiFogyas = async (req, res) => {
+  try {
+    const napiFogyasok = await napi_fogyas.findAll({
+      include: [{
+        model: Termek,
+        attributes: ['nev', 'kiszereles', 'kepUrl'],
+        as: 'termekData'
+      }, {
+        model: Raktar,
+        attributes: ['rendszam'],
+        as: 'raktarData'
+      }],
+      order: [['datum', 'DESC']]
+    });
+    res.json(napiFogyasok);
+  } catch (error) {
+    console.error("Hiba a napi fogyás lekérdezésekor:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.getNapiFogyasById = async (req, res) => {
+  try {
+    const napiFogyas = await napi_fogyas.findByPk(req.params.id, {
+      include: [{
+        model: Termek,
+        attributes: ['nev', 'kiszereles', 'kepUrl'],
+        as: 'termekData'
+      }, {
+        model: Raktar,
+        attributes: ['rendszam'],
+        as: 'raktarData'
+      }]
+    });
+    if (!napiFogyas) {
+      return res.status(404).json({ message: "Napi fogyas not found" });
+    }
+    res.json(napiFogyas);
+  } catch (error) {
+    console.error("Hiba a napi fogyás lekérdezésekor:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.updateNapiFogyas = async (req, res) => {
+  try {
+    const napiFogyas = await napi_fogyas.findByPk(req.params.id);
+    if (!napiFogyas) {
+      return res.status(404).json({ message: "Napi fogyas not found" });
+    }
+    await napiFogyas.update(req.body);
+    res.json(napiFogyas);
+  } catch (error) {
+    console.error("Hiba a napi fogyás frissítésekor:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};
+
+exports.deleteNapiFogyas = async (req, res) => {
+  try {
+    const napiFogyas = await napi_fogyas.findByPk(req.params.id);
+    if (!napiFogyas) {
+      return res.status(404).json({ message: "Napi fogyas not found" });
+    }
+    await napiFogyas.destroy();
+    res.json({ message: "Napi fogyas deleted successfully" });
+  } catch (error) {
+    console.error("Hiba a napi fogyás törlésekor:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
+  }
+};

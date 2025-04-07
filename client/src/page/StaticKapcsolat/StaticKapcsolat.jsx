@@ -3,6 +3,18 @@ import { Button } from "../orderpage/Button";
 
 export default function Contact() {
   const [logoAnimated, setLogoAnimated] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    subject: "",
+    message: ""
+  });
+  const [submitStatus, setSubmitStatus] = useState({
+    loading: false,
+    success: false,
+    error: null
+  });
 
   // Animáció indítása késleltetéssel
   useEffect(() => {
@@ -13,31 +25,82 @@ export default function Contact() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Form input változások kezelése
+  const handleChange = (e) => {
+    const { id, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [id]: value
+    }));
+  };
+
+  // Form beküldés kezelése
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    
+    try {
+      setSubmitStatus({ loading: true, success: false, error: null });
+      
+      const response = await fetch("http://localhost:3000/email/contact", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json"
+        },
+        body: JSON.stringify(formData)
+      });
+      
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || "Hiba történt az üzenet küldése során");
+      }
+      
+      setSubmitStatus({ loading: false, success: true, error: null });
+      
+      // Form mezők törlése sikeres küldés után
+      setFormData({
+        name: "",
+        email: "",
+        phone: "",
+        subject: "",
+        message: ""
+      });
+      
+      // Sikeres üzenet eltüntetése 5 másodperc után
+      setTimeout(() => {
+        setSubmitStatus(prev => ({ ...prev, success: false }));
+      }, 5000);
+      
+    } catch (error) {
+      console.error("Kapcsolat űrlap hiba:", error);
+      setSubmitStatus({ loading: false, success: false, error: error.message });
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header - animált MozgoShop felirattal */}
       <header className="bg-red-700 text-white">
-  <div className="container mx-auto px-4 py-4">
-    <div className="flex items-center justify-center overflow-hidden h-10">
-      <a href="/" className="text-white hover:text-gray-200 flex items-center">
-        <img 
-          src="/public/vándorbolt.png" 
-          alt="MozgoShop Logo" 
-          className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
-            logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-          }`}
-        />
-        <h1 
-          className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
-            logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-          }`}
-        >
-          Vándorbolt
-        </h1>
-      </a>
-    </div>
-  </div>
-</header>
+        <div className="container mx-auto px-4 py-4">
+          <div className="flex items-center justify-center overflow-hidden h-10">
+            <a href="/" className="text-white hover:text-gray-200 flex items-center">
+              <img 
+                src="/public/vándorbolt.png" 
+                alt="VándorBolt Logo" 
+                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              />
+              <h1 
+                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+                }`}
+              >
+                Vándorbolt
+              </h1>
+            </a>
+          </div>
+        </div>
+      </header>
 
       {/* Navigation */}
       <nav className="bg-red-800 text-white">
@@ -82,7 +145,6 @@ export default function Contact() {
         </div>
       </nav>
 
-
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
          
@@ -91,7 +153,20 @@ export default function Contact() {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Lépjen kapcsolatba velünk</h2>
           
-          <form className="space-y-4">
+          {/* Státusz üzenetek */}
+          {submitStatus.success && (
+            <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
+              Köszönjük! Üzenetét sikeresen elküldtük. Hamarosan felvesszük Önnel a kapcsolatot.
+            </div>
+          )}
+          
+          {submitStatus.error && (
+            <div className="mb-4 p-3 bg-red-100 text-red-700 rounded-md">
+              Hiba történt: {submitStatus.error}
+            </div>
+          )}
+          
+          <form className="space-y-4" onSubmit={handleSubmit}>
             <div>
               <label htmlFor="name" className="block text-gray-700 mb-1">Név</label>
               <input 
@@ -100,6 +175,8 @@ export default function Contact() {
                 className="w-full p-2 border border-gray-300 rounded-md"
                 placeholder="Teljes név"
                 required
+                value={formData.name}
+                onChange={handleChange}
               />
             </div>
             
@@ -111,6 +188,8 @@ export default function Contact() {
                 className="w-full p-2 border border-gray-300 rounded-md"
                 placeholder="pelda@email.com"
                 required
+                value={formData.email}
+                onChange={handleChange}
               />
             </div>
             
@@ -121,6 +200,8 @@ export default function Contact() {
                 id="phone" 
                 className="w-full p-2 border border-gray-300 rounded-md"
                 placeholder="+36 30 123 4567"
+                value={formData.phone}
+                onChange={handleChange}
               />
             </div>
             
@@ -132,6 +213,8 @@ export default function Contact() {
                 className="w-full p-2 border border-gray-300 rounded-md"
                 placeholder="Üzenet tárgya"
                 required
+                value={formData.subject}
+                onChange={handleChange}
               />
             </div>
             
@@ -143,21 +226,24 @@ export default function Contact() {
                 className="w-full p-2 border border-gray-300 rounded-md"
                 placeholder="Írja le üzenetét..."
                 required
+                value={formData.message}
+                onChange={handleChange}
               ></textarea>
             </div>
             
             <Button 
               type="submit" 
               className="bg-red-700 text-white py-2 px-4 rounded-md hover:bg-red-800 transition-colors"
+              disabled={submitStatus.loading}
             >
-              Üzenet küldése
+              {submitStatus.loading ? "Küldés folyamatban..." : "Üzenet küldése"}
             </Button>
           </form>
           
           <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="text-lg font-semibold mb-2">Elérhetőségeink</h3>
-              <p className="text-gray-700">Email: info@mozgoshop.hu</p>
+              <p className="text-gray-700">Email: info@vandorbolt.hu</p>
               <p className="text-gray-700">Telefon: +36 1 234 5678</p>
               <p className="text-gray-700">Cím: 1234 Budapest, Példa utca 1.</p>
             </div>
@@ -179,7 +265,8 @@ export default function Contact() {
               <p className="text-gray-700">A rendelés visszaigazoló emailben található követési számmal nyomon követheti csomagja útját.</p>
             </div>
             
-            <div>              <h3 className="text-lg font-semibold">Mennyi a szállítási idő?</h3>
+            <div>              
+              <h3 className="text-lg font-semibold">Mennyi a szállítási idő?</h3>
               <p className="text-gray-700">A szállítási idő általában 2-3 munkanap, de ez függ a célállomástól és a rendelés időpontjától.</p>
             </div>
             
@@ -196,14 +283,14 @@ export default function Contact() {
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <h3 className="text-lg font-bold mb-4">VándorBolt</h3>
               <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@mozgoshop.hu</p>
+                <p>Email: info@vandorbolt.hu</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
@@ -234,12 +321,10 @@ export default function Contact() {
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2025 MozgoShop. Minden jog fenntartva.</p>
+            <p>© 2023 VándorBolt. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-
-           

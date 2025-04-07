@@ -69,6 +69,7 @@ app.use('/uploads', express.static(path.join(__dirname, '../public/uploads')));
 app.use('/termek-kepek', express.static(path.join(__dirname, '../public/termek-kepek')));
 app.use("/raktar-keszlet", raktarKeszletRoutes);
 app.use("/raktarkeszlet2", raktarKeszlet2Routes);
+app.use("/api/napi-fogyas", napi_fogyasRoutes);
 
 // Add detailed request logging BEFORE routes
 app.use((req, res, next) => {
@@ -83,6 +84,7 @@ app.use((req, res, next) => {
 // First register the /api prefixed routes
 app.use("/api/rendeles", rendelesRoutes);
 app.use("/api/csoport", csoportRoutes);
+app.use("/api/raktar", raktarRoutes);
 
 // Then register the non-prefixed routes
 app.use("/termek", termekRoutes);

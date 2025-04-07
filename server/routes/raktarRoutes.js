@@ -12,5 +12,6 @@ router.delete("/:id", raktarController.deleteRaktar);
 // Új végpontok
 router.get("/rendszam/:rendszam", raktarController.getRaktarByRendszam);
 router.patch("/:id/max-kapacitas", raktarController.updateMaxKapacitas);
+router.get("/", raktarController.getAllRaktar);
 
 module.exports = router;

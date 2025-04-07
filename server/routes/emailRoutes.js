@@ -38,4 +38,35 @@ router.post('/registration-confirmation', async (req, res) => {
   }
 });
 
+// Kapcsolati űrlap e-mail küldése
+router.post('/contact', async (req, res) => {
+  try {
+    const { name, email, phone, subject, message } = req.body;
+    
+    // Validáció
+    if (!name || !email || !subject || !message) {
+      return res.status(400).json({ message: 'Minden kötelező mezőt ki kell tölteni' });
+    }
+    
+    // E-mail küldése
+    const result = await emailService.sendContactFormEmail({
+      name,
+      email,
+      phone,
+      subject,
+      message
+    });
+    
+    if (result.error) {
+      return res.status(500).json({ message: 'Hiba történt az e-mail küldése során', error: result.error });
+    }
+    
+    res.status(200).json({ message: 'Az üzenetet sikeresen elküldtük' });
+  } catch (error) {
+    console.error('Hiba a kapcsolati űrlap feldolgozása során:', error);
+    res.status(500).json({ message: 'Szerver hiba', error: error.message });
+  }
+});
+
+
 module.exports = router;

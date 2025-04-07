@@ -1,0 +1,12 @@
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (1, '2025-04-07', 'Automatikus feltöltés', 5, 1, 1);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (2, '2025-04-07', 'Automatikus feltöltés', 10, 1, 67);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (3, '2025-04-07', 'Automatikus feltöltés', 2, 1, 3);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (4, '2025-04-07', 'Automatikus feltöltés', 8, 1, 4);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (5, '2025-04-07', 'Automatikus feltöltés', 15, 1, 5);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (6, '2025-04-07', 'Automatikus feltöltés', 7, 1, 6);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (7, '2025-04-07', 'Automatikus feltöltés', 5, 2, 1);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (8, '2025-04-07', 'Automatikus feltöltés', 10, 2, 67);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (9, '2025-04-07', 'Automatikus feltöltés', 2, 2, 3);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (10, '2025-04-07', 'Automatikus feltöltés', 8, 2, 4);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (11, '2025-04-07', 'Automatikus feltöltés', 15, 2, 5);
+insert into `napi_fogyas` (`azonosito`, `datum`, `helyszin`, `mennyiseg`, `raktar`, `termek`) values (12, '2025-04-07', 'Automatikus feltöltés', 7, 2, 6);

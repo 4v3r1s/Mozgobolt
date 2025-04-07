@@ -67,6 +67,9 @@ router.post("/", optionalAuthenticateToken, rendelesController.createRendeles);
 router.get("/my-orders", authenticateToken, rendelesController.getUserOrders);
 router.get("/stats", authenticateToken, rendelesController.getOrderStats);
 
+// Rendelés törlése (állapot módosítása "törölve"-re)
+router.put("/cancel/:id", authenticateToken, rendelesController.cancelOrder);
+
 // 2. Aztán a paraméteres útvonalak
 router.get("/:id", rendelesController.getRendelesById);
 router.put("/:id", rendelesController.updateRendeles);

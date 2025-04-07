@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { ArrowLeft } from "lucide-react";
+import { ArrowLeft, X } from "lucide-react";
 
 export default function Orders() {
   const navigate = useNavigate();
@@ -8,6 +8,8 @@ export default function Orders() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
   const [logoAnimated, setLogoAnimated] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
+  const [orderToCancel, setOrderToCancel] = useState(null);
 
   // Animation effect
   useEffect(() => {
@@ -19,55 +21,106 @@ export default function Orders() {
   }, []);
 
   // Fetch orders
-  useEffect(() => {
-    const fetchOrders = async () => {
-      try {
-        // Get token from localStorage
-        const token = localStorage.getItem('token');
-        
-        if (!token) {
-          // Redirect to login if no token
+  const fetchOrders = async () => {
+    try {
+      // Get token from localStorage
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        // Redirect to login if no token
+        navigate('/login');
+        return;
+      }
+      
+      // Fetch orders from the server
+      const response = await fetch("http://localhost:3000/api/rendeles/my-orders", {
+        method: "GET",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          // Token expired or invalid
           navigate('/login');
           return;
         }
-        
-        // Fetch orders from the server
-        const response = await fetch("http://localhost:3000/api/rendeles/my-orders", {
-          method: "GET",
-          headers: {
-            "Authorization": `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        
-        if (!response.ok) {
-          if (response.status === 401) {
-            // Token expired or invalid
-            navigate('/login');
-            return;
-          }
-          throw new Error(`Error fetching orders: ${response.status}`);
-        }
-        
-        const data = await response.json();
-        console.log("Loaded orders:", data);
-        
-        if (Array.isArray(data)) {
-          setOrders(data);
-        } else {
-          console.error("Response is not an array:", data);
-          setOrders([]);
-        }
-      } catch (error) {
-        console.error("Error fetching orders:", error);
-        setError(error.message);
-      } finally {
-        setLoading(false);
+        throw new Error(`Error fetching orders: ${response.status}`);
       }
-    };
-    
+      
+      const data = await response.json();
+      console.log("Loaded orders:", data);
+      
+      if (Array.isArray(data)) {
+        setOrders(data);
+      } else {
+        console.error("Response is not an array:", data);
+        setOrders([]);
+      }
+    } catch (error) {
+      console.error("Error fetching orders:", error);
+      setError(error.message);
+    } finally {
+      setLoading(false);
+    }
+  };
+  
+  useEffect(() => {
     fetchOrders();
   }, [navigate]);
+
+  // Open confirmation modal
+  const openCancelConfirmation = (orderId) => {
+    setOrderToCancel(orderId);
+    setShowConfirmModal(true);
+  };
+
+  // Close confirmation modal
+  const closeConfirmModal = () => {
+    setShowConfirmModal(false);
+    setOrderToCancel(null);
+  };
+
+  // Cancel order function
+  const cancelOrder = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      
+      if (!token) {
+        navigate('/login');
+        return;
+      }
+      
+      const response = await fetch(`http://localhost:3000/api/rendeles/cancel/${orderToCancel}`, {
+        method: "PUT",
+        headers: {
+          "Authorization": `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      
+      if (!response.ok) {
+        if (response.status === 401) {
+          navigate('/login');
+          return;
+        }
+        throw new Error(`Error canceling order: ${response.status}`);
+      }
+      
+      // Close modal
+      closeConfirmModal();
+      
+      // Refresh orders after cancellation
+      fetchOrders();
+      
+    } catch (error) {
+      console.error("Error canceling order:", error);
+      setError(error.message);
+      closeConfirmModal();
+    }
+  };
 
   // Format date
   const formatDate = (dateString) => {
@@ -101,6 +154,11 @@ export default function Orders() {
       'törölve': 'bg-red-100 text-red-800'
     };
     return colorMap[status] || 'bg-gray-100 text-gray-800';
+  };
+
+  // Check if order can be canceled
+  const canCancelOrder = (status) => {
+    return status === 'feldolgozás alatt';
   };
 
   return (
@@ -189,10 +247,18 @@ export default function Orders() {
                           <span className="text-sm text-gray-500">Rendelés azonosító:</span>
                           <span className="ml-2 font-medium">{order.id}</span>
                         </div>
-                        <div>
+                        <div className="flex items-center space-x-3">
                           <span className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(order.status)}`}>
                             {getStatusText(order.status)}
                           </span>
+                          {canCancelOrder(order.status) && (
+                            <button 
+                              onClick={() => openCancelConfirmation(order.id)}
+                              className="bg-red-600 hover:bg-red-700 text-white text-xs px-3 py-1 rounded-full transition-colors"
+                            >
+                              Rendelés törlése
+                            </button>
+                          )}
                         </div>
                       </div>
                       <div className="p-4">
@@ -275,6 +341,42 @@ export default function Orders() {
         </div>
       </main>
 
+      {/* Confirmation Modal */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg shadow-lg max-w-md w-full p-6 mx-4">
+            <div className="flex justify-between items-center mb-4">
+              <h3 className="text-lg font-medium text-gray-900">Rendelés törlése</h3>
+              <button 
+                onClick={closeConfirmModal}
+                className="text-gray-400 hover:text-gray-500"
+              >
+                <X className="h-5 w-5" />
+              </button>
+              </div>
+            <div className="mb-6">
+              <p className="text-gray-600">
+                Biztosan törölni szeretnéd a rendelést? Ez a művelet nem vonható vissza.
+              </p>
+            </div>
+            <div className="flex justify-end space-x-3">
+              <button
+                onClick={closeConfirmModal}
+                className="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300 transition-colors"
+              >
+                Mégsem
+              </button>
+              <button
+                onClick={cancelOrder}
+                className="px-4 py-2 bg-red-600 text-white rounded hover:bg-red-700 transition-colors"
+              >
+                Törlés megerősítése
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
       {/* Footer */}
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
@@ -309,3 +411,5 @@ export default function Orders() {
     </div>
   );
 }
+           
+            

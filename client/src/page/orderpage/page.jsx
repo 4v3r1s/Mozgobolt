@@ -69,29 +69,43 @@ export default function Home() {
         const data = await response.json();
 
         // Átalakítjuk az adatbázisból érkező adatokat a megfelelő formátumra
-        const formattedProducts = data.map(product => ({
-          id: product.azonosito,
-          name: product.nev,
-          price: parseFloat(product.ar),
-          originalPrice: product.akciosar ? parseFloat(product.ar) : null,
-          discount: product.akciosar ? Math.round(((product.ar - product.akciosar) / product.ar) * 100) : 0,
-          discountPrice: product.akciosar ? parseFloat(product.akciosar) : null,
-          description: product.termekleiras,
-          image: product.hivatkozas,
-          kepUrl: product.kepUrl,
-          category: product.csoport,
-          stock: product.keszlet,
-          unit: product.kiszereles,
-          unitPrice: parseFloat(product.egysegnyiar),
-          discountUnitPrice: product.akcios_egysegnyiar ? parseFloat(product.akcios_egysegnyiar) : null,
-          discountEndDate: product.akcio_vege,
-          discountStartDate: product.akcio_eleje,
-          isAdult: product.tizennyolc ? true : false,
-          vat: product.afa_kulcs,
-          size: product.meret,
-          color: product.szin,
-          barcode: product.vonalkod
-        }));
+        const formattedProducts = data.map(product => {
+          // Kiszámoljuk a kedvezmény százalékát
+          const discount = product.akciosar ? 
+            Math.round(((product.ar - product.akciosar) / product.ar) * 100) : 0;
+            
+          // Ellenőrizzük, hogy az akció aktív-e
+          const currentDate = new Date();
+          const startDate = product.akcio_eleje ? new Date(product.akcio_eleje) : null;
+          const endDate = product.akcio_vege ? new Date(product.akcio_vege) : null;
+          const isPromoActive = startDate && endDate && 
+            currentDate >= startDate && currentDate <= endDate && 
+            product.akciosar && parseFloat(product.akciosar) > 0;
+            
+          return {
+            id: product.azonosito,
+            name: product.nev,
+            price: parseFloat(product.ar),
+            originalPrice: isPromoActive ? parseFloat(product.ar) : null,
+            discount: isPromoActive ? discount : 0,
+            discountPrice: isPromoActive ? parseFloat(product.akciosar) : null,
+            description: product.termekleiras,
+            image: product.hivatkozas,
+            kepUrl: product.kepUrl,
+            category: product.csoport,
+            stock: product.keszlet,
+            unit: product.kiszereles,
+            unitPrice: parseFloat(product.egysegnyiar),
+            discountUnitPrice: product.akcios_egysegnyiar ? parseFloat(product.akcios_egysegnyiar) : null,
+            akcio_eleje: product.akcio_eleje,
+            akcio_vege: product.akcio_vege,
+            isAdult: product.tizennyolc ? true : false,
+            vat: product.afa_kulcs,
+            size: product.meret,
+            color: product.szin,
+            barcode: product.vonalkod
+          };
+        });
 
         setProducts(formattedProducts || []);
         
@@ -106,7 +120,6 @@ export default function Home() {
 
     fetchProducts();
   }, [currentCategory, searchQuery]); // Figyeljük a kategória és keresés változását
-
   // Termékek rendezése a kiválasztott opció alapján
   const sortProducts = (products, option) => {
     const sortedProducts = [...products];

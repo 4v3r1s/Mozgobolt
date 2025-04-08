@@ -1,9 +1,11 @@
 import { useEffect, useState } from "react";
 import { Button } from "../orderpage/Button";
+import { User, ShoppingCart } from "lucide-react";
 
 export default function info() {
   const [towns, setTowns] = useState([]);
   const [logoAnimated, setLogoAnimated] = useState(false);
+  const [cartItemCount, setCartItemCount] = useState(0);
 
   // Animáció indítása késleltetéssel az oldal betöltése után
   useEffect(() => {
@@ -15,31 +17,77 @@ export default function info() {
     return () => clearTimeout(timer);
   }, []);
 
+  // Kosár számláló frissítése
+  useEffect(() => {
+    updateCartCount();
+    window.addEventListener('storage', updateCartCount);
+    window.addEventListener('cartUpdated', updateCartCount);
+    
+    return () => {
+      window.removeEventListener('storage', updateCartCount);
+      window.removeEventListener('cartUpdated', updateCartCount);
+    };
+  }, []);
+  
+  // Kosár számláló frissítése
+  const updateCartCount = () => {
+    const savedCart = localStorage.getItem('cart');
+    if (savedCart) {
+      try {
+        const cartItems = JSON.parse(savedCart);
+        const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
+        setCartItemCount(totalItems);
+      } catch (error) {
+        console.error("Hiba a kosár betöltésekor:", error);
+        setCartItemCount(0);
+      }
+    } else {
+      setCartItemCount(0);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header - animált MozgoShop felirattal és logóval */}
-      <header className="bg-red-700 text-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-center overflow-hidden h-10">
-            <a href="/" className="text-white hover:text-gray-200 flex items-center">
-              <img 
-                src="/public/vándorbolt.png" 
-                alt="MozgoShop Logo" 
-                className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
-              />
-              <h1 
-                className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
-                  logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
-                }`}
-              >
-                Vándorbolt
-              </h1>
-            </a>
-          </div>
-        </div>
-      </header>
+<header className="bg-red-700 text-white">
+  <div className="container mx-auto px-4 py-4">
+    <div className="flex items-center justify-between">
+      <div className="flex-1"></div> {/* Üres div a bal oldalon az egyensúlyért */}
+      <div className="flex items-center justify-center overflow-hidden h-10">
+        <a href="/" className="text-white hover:text-gray-200 flex items-center">
+          <img 
+            src="/public/vándorbolt.png" 
+            alt="MozgoShop Logo" 
+            className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+              logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+            }`}
+          />
+          <h1 
+            className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+              logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+            }`}
+          >
+            Vándorbolt
+          </h1>
+        </a>
+      </div>
+      
+      <div className="flex items-center space-x-3 flex-1 justify-end">
+        <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
+          <User className="h-5 w-5" />
+        </a>
+        <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
+          <ShoppingCart className="h-5 w-5" />
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {cartItemCount}
+            </span>
+          )}
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
       {/* Navigation */}      <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">

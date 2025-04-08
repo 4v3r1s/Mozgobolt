@@ -110,79 +110,48 @@ export default function Sales() {
     return Math.round(((original - discount) / original) * 100);
   };
 
-  // Kép URL helyes formázása
-  const formatImageUrl = (url) => {
-    if (!url) return null;
-    
-    // Ha a kép URL már tartalmazza a http vagy https előtagot, akkor hagyjuk változatlanul
-    if (url.startsWith('http://') || url.startsWith('https://')) {
-      return url;
-    }
-    
-    // Ha a kép URL relatív útvonal, akkor egészítsük ki a szerver URL-jével
-    // Eltávolítjuk a kezdő / jelet, ha van
-    const cleanUrl = url.startsWith('/') ? url.substring(1) : url;
-    return `http://localhost:3000/${cleanUrl}`;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - updated with cart functionality from page.jsx */}
+      {/* Header */}
       <header className="bg-red-700 text-white">
-        <div className="container mx-auto px-4 py-4">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center space-x-4">
-              <Button variant="ghost" size="icon" className="md:hidden text-white hover:bg-red-600">
-                <Menu className="h-6 w-6" />
-              </Button>
-              <div className="flex items-center">
-                <img src="/public/vándorbolt.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
-                <h1 className="text-2xl font-bold">Vándorbolt</h1>
-              </div>
-            </div>
-
-            <div className="hidden md:flex flex-1 max-w-md mx-4">
-              <form className="relative w-full">
-                <Input
-                  placeholder="Keresés..."
-                  className="w-full pl-4 pr-10 py-2 rounded-lg border-0 focus-visible:ring-2 focus-visible:ring-red-500 text-black"
-                  autoComplete="off"
-                />
-                <button type="submit" className="absolute right-3 top-2.5">
-                  <Search className="h-5 w-5 text-gray-500" />
-                </button>
-              </form>
-            </div>
-            <div className="flex items-center space-x-3">
-              <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
-                <User className="h-5 w-5" />
-              </a>
-              <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
-                <ShoppingCart className="h-5 w-5" />
-                {cartItemCount > 0 && (
-                  <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
-                    {cartItemCount}
-                  </span>
-                )}
-              </a>
-            </div>
-          </div>
-
-          <div className="mt-4 md:hidden relative">
-            <form className="relative w-full">
-              <Input
-                placeholder="Keresés..."
-                className="w-full pl-4 pr-10 py-2 rounded-lg border-0 text-black"
-                autoComplete="off"
-              />
-              <button type="submit" className="absolute right-3 top-2.5">
-                <Search className="h-5 w-5 text-gray-500" />
-              </button>
-            </form>
-          </div>
-        </div>
-      </header>
-
+  <div className="container mx-auto px-4 py-4">
+    <div className="flex items-center justify-between">
+      <div className="flex-1"></div> {/* Üres div a bal oldalon az egyensúlyért */}
+      <div className="flex items-center justify-center overflow-hidden h-10">
+        <a href="/" className="text-white hover:text-gray-200 flex items-center">
+          <img 
+            src="/public/vándorbolt.png" 
+            alt="MozgoShop Logo" 
+            className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
+              logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+            }`}
+          />
+          <h1 
+            className={`text-2xl font-bold transition-all duration-1000 ease-in-out transform ${
+              logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
+            }`}
+          >
+            Vándorbolt
+          </h1>
+        </a>
+      </div>
+      
+      <div className="flex items-center space-x-3 flex-1 justify-end">
+        <a href="/account" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center">
+          <User className="h-5 w-5" />
+        </a>
+        <a href="/cart" className="text-white hover:bg-red-600 p-2 rounded-full inline-flex items-center justify-center relative">
+          <ShoppingCart className="h-5 w-5" />
+          {cartItemCount > 0 && (
+            <span className="absolute -top-1 -right-1 bg-white text-red-700 text-xs font-bold rounded-full h-5 w-5 flex items-center justify-center">
+              {cartItemCount}
+            </span>
+          )}
+        </a>
+      </div>
+    </div>
+  </div>
+</header>
       {/* Navigation */}
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
@@ -272,34 +241,33 @@ export default function Sales() {
             <div>
               <h2 className="text-2xl font-bold text-gray-800 mb-6">Aktuális akciók</h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-                {products.map((product) => (
-                  <ProductCard 
-                    key={product.azonosito} 
-                    product={{
-                      id: product.azonosito,
-                      name: product.nev,
-                      price: parseFloat(product.ar),
-                      originalPrice: product.akciosar ? parseFloat(product.ar) : null,
-                      discount: product.akciosar ? Math.round(((product.ar - product.akciosar) / product.ar) * 100) : 0,
-                      discountPrice: product.akciosar ? parseFloat(product.akciosar) : null,
-                      description: product.termekleiras,
-                      image: product.hivatkozas,
-                      kepUrl: product.kepUrl,
-                      category: product.csoport,
-                      stock: product.keszlet,
-                      unit: product.kiszereles,
-                      unitPrice: parseFloat(product.egysegnyiar),
-                      discountUnitPrice: product.akcios_egysegnyiar ? parseFloat(product.akcios_egysegnyiar) : null,
-                      discountEndDate: product.akcio_vege,
-                      discountStartDate: product.akcio_eleje,
-                      isAdult: product.tizennyolc ? true : false,
-                      vat: product.afa_kulcs,
-                      size: product.meret,
-                      color: product.szin,
-                      barcode: product.vonalkod
-                    }} 
-                  />
-                ))}
+                {products.map((product) => {
+                  // Számoljuk ki a kedvezmény százalékát
+                  const discount = calculateDiscount(product.ar, product.akciosar);
+                  
+                  return (
+                    <ProductCard 
+                      key={product.azonosito} 
+                      product={{
+                        id: product.azonosito,
+                        name: product.nev,
+                        price: parseFloat(product.ar),
+                        discountPrice: parseFloat(product.akciosar),
+                        discount: discount,
+                        description: product.termekleiras,
+                        image: product.hivatkozas,
+                        kepUrl: product.kepUrl,
+                        category: product.csoport,
+                        stock: product.keszlet,
+                        unit: product.kiszereles,
+                        unitPrice: parseFloat(product.egysegnyiar),
+                        discountUnitPrice: product.akcios_egysegnyiar ? parseFloat(product.akcios_egysegnyiar) : null,
+                        akcio_eleje: product.akcio_eleje,
+                        akcio_vege: product.akcio_vege
+                      }} 
+                    />
+                  );
+                })}
               </div>
             </div>
           )}
@@ -326,33 +294,33 @@ export default function Sales() {
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
                 <li>
-                <a href="#" className="hover:underline">
-                Általános Szerződési Feltételek
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                Adatvédelmi Tájékoztató
-              </a>
-            </li>
-            <li>
-              <a href="#" className="hover:underline">
-                Szállítási Információk
-              </a>
-            </li>
-            <li>
-              <a href="/StaticKapcsolat" className="hover:underline">
-                Kapcsolat
-              </a>
-            </li>
-          </ul>
+                  <a href="#" className="hover:underline">
+                    Általános Szerződési Feltételek
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:underline">
+                    Adatvédelmi Tájékoztató
+                  </a>
+                </li>
+                <li>
+                  <a href="#" className="hover:underline">
+                    Szállítási Információk
+                  </a>
+                </li>
+                <li>
+                  <a href="/StaticKapcsolat" className="hover:underline">
+                    Kapcsolat
+                  </a>
+                </li>
+              </ul>
+            </div>
+          </div>
+          <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
+            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+          </div>
         </div>
-      </div>
-      <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-        <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
-      </div>
+      </footer>
     </div>
-  </footer>
-</div>
-);
+  );
 }

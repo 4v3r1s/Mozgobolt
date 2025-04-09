@@ -12,7 +12,7 @@ export default function AdminDatabase() {
   const [loading, setLoading] = useState(true);
   const [logoAnimated, setLogoAnimated] = useState(false);
 
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
@@ -24,7 +24,7 @@ export default function AdminDatabase() {
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Get token from cookie
+       
         const token = document.cookie
           .split('; ')
           .find(row => row.startsWith('token='))
@@ -37,7 +37,7 @@ export default function AdminDatabase() {
           return;
         }
 
-        // Verify if user is admin
+        
         const response = await fetch("http://localhost:3000/user/profile", {
           method: "GET",
           headers: {
@@ -79,12 +79,12 @@ export default function AdminDatabase() {
   }
 
   if (!isAdmin) {
-    return null; // Will redirect in useEffect
+    return null; 
   }
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+     
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
@@ -101,7 +101,7 @@ export default function AdminDatabase() {
         </div>
       </header>
 
-      {/* Navigation */}
+      
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -124,7 +124,7 @@ export default function AdminDatabase() {
         </div>
       </nav>
 
-      {/* Main Content */}
+      
       <main className="container mx-auto px-4 py-8">
         <div className="bg-white rounded-lg shadow-md overflow-hidden">
           <div className="bg-red-700 text-white py-4 px-6">
@@ -132,7 +132,7 @@ export default function AdminDatabase() {
           </div>
 
           <div className="p-6">
-            {/* Database Tabs */}
+            
             <div className="border-b border-gray-200 mb-6">
               <nav className="flex -mb-px">
                 <button
@@ -168,7 +168,7 @@ export default function AdminDatabase() {
               </nav>
             </div>
 
-            {/* Tab Content */}
+           
             <div className="tab-content">
               {activeTab === "users" && <UserTable />}
               {activeTab === "products" && <ProductTable />}
@@ -178,7 +178,7 @@ export default function AdminDatabase() {
         </div>
       </main>
 
-      {/* Footer */}
+      
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">

@@ -15,7 +15,7 @@ const napi_fogyas = sequelize.define("napi_fogyas", {
   timestamps: false,
 });
 
-// Kapcsolatok definiálása
+
 napi_fogyas.belongsTo(Raktar, {
   foreignKey: 'raktar',
   targetKey: 'azonosito',

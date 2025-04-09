@@ -14,23 +14,23 @@ export default function Home() {
   const [showSearchInfo, setShowSearchInfo] = useState(false);
   const [currentPage, setCurrentPage] = useState(1);
   const [cartItemCount, setCartItemCount] = useState(0);
-  const [sortOption, setSortOption] = useState("default"); // Új állapot a rendezéshez
+  const [sortOption, setSortOption] = useState("default"); 
   const productsPerPage = 8;
   
-  // Használjuk a useLocation hook-ot a kategória lekérdezéséhez
+  
   const location = useLocation();
   const searchParams = new URLSearchParams(location.search);
   const currentCategory = searchParams.get('category');
 
-  // Kosár számláló frissítése
+  
   useEffect(() => {
-    // Kezdeti betöltés
+    
     updateCartCount();
     
-    // Eseményfigyelő a kosár változásaira
+    
     window.addEventListener('storage', updateCartCount);
     
-    // Egyedi esemény figyelése a kosár frissítésére
+    
     window.addEventListener('cartUpdated', updateCartCount);
     
     return () => {
@@ -39,13 +39,13 @@ export default function Home() {
     };
   }, []);
   
-  // Kosár számláló frissítése
+  
   const updateCartCount = () => {
     const savedCart = localStorage.getItem('cart');
     if (savedCart) {
       try {
         const cartItems = JSON.parse(savedCart);
-        // Összesítjük a termékek mennyiségét
+        
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         setCartItemCount(totalItems);
       } catch (error) {
@@ -57,24 +57,28 @@ export default function Home() {
     }
   };
 
-  // Fetch products from database API 
+  
   useEffect(() => {
+    // Kategória váltáskor visszaállítjuk a rendezési opciót és az oldalszámot
+    setSortOption("default");
+    setCurrentPage(1);
+    
     const fetchProducts = async () => {
       try {
-        // Az adatbázisból kérjük le a termékeket
+       
         const response = await fetch("http://localhost:3000/termek");
         if (!response.ok) {
           throw new Error("Failed to fetch products");
         }
         const data = await response.json();
 
-        // Átalakítjuk az adatbázisból érkező adatokat a megfelelő formátumra
+        
         const formattedProducts = data.map(product => {
-          // Kiszámoljuk a kedvezmény százalékát
+          
           const discount = product.akciosar ? 
             Math.round(((product.ar - product.akciosar) / product.ar) * 100) : 0;
             
-          // Ellenőrizzük, hogy az akció aktív-e
+          
           const currentDate = new Date();
           const startDate = product.akcio_eleje ? new Date(product.akcio_eleje) : null;
           const endDate = product.akcio_vege ? new Date(product.akcio_vege) : null;
@@ -109,7 +113,7 @@ export default function Home() {
 
         setProducts(formattedProducts || []);
         
-        // Szűrjük a termékeket a kiválasztott kategória alapján
+       
         filterProductsByCategory(formattedProducts, currentCategory, searchQuery);
       } catch (error) {
         console.error("Error fetching products:", error);
@@ -119,15 +123,15 @@ export default function Home() {
     };
 
     fetchProducts();
-  }, [currentCategory, searchQuery]); // Figyeljük a kategória és keresés változását
-  // Termékek rendezése a kiválasztott opció alapján
+  }, [currentCategory, searchQuery]); 
+  
   const sortProducts = (products, option) => {
     const sortedProducts = [...products];
     
     switch (option) {
       case "price-asc":
         return sortedProducts.sort((a, b) => {
-          // Akciós árat használunk, ha van, egyébként a normál árat
+          
           const priceA = a.discountPrice !== null ? a.discountPrice : a.price;
           const priceB = b.discountPrice !== null ? b.discountPrice : b.price;
           return priceA - priceB;
@@ -151,7 +155,7 @@ export default function Home() {
         );
       
       default:
-        return sortedProducts; // Alapértelmezett rendezés
+        return sortedProducts; 
     }
   };
 
@@ -164,11 +168,11 @@ export default function Home() {
     
     let filtered = [...allProducts];
     
-    // Kategória szűrés
+   
     if (categoryId) {
       console.log("Szűrés kategória alapján:", categoryId);
       
-      // Debug: Nézzük meg néhány termék kategória értékét
+      
       console.log("Termékek kategória értékei:", 
         allProducts.slice(0, 5).map(p => ({
           id: p.id,
@@ -181,7 +185,7 @@ export default function Home() {
       filtered = filtered.filter(product => {
         const match = product.category && product.category.toString() === categoryId.toString();
         
-        // Debug: Nézzük meg az egyezéseket
+        
         if (match) {
           console.log(`Kategória egyezés: ${product.name} - Kategória: ${product.category} = ${categoryId}`);
         }
@@ -192,7 +196,7 @@ export default function Home() {
       console.log(`Szűrés eredménye: ${filtered.length} termék`);
     }
     
-    // Keresési szűrés
+
     if (query && query.trim() !== "") {
       filtered = filtered.filter(product =>
         product.name?.toLowerCase().includes(query.toLowerCase()) ||
@@ -201,77 +205,77 @@ export default function Home() {
       console.log(`Szűrés keresés alapján: "${query}", találatok: ${filtered.length}`);
     }
     
-    // Rendezés alkalmazása a szűrt termékekre
+
     const sortedFiltered = sortProducts(filtered, sortOption);
     
     setFilteredProducts(sortedFiltered);
   };
   
-  // Rendezési opció változásának kezelése
+ 
   const handleSortChange = (e) => {
     const newSortOption = e.target.value;
     setSortOption(newSortOption);
     
-    // Újrarendezzük a már szűrt termékeket
+    
     const sortedProducts = sortProducts(filteredProducts, newSortOption);
     setFilteredProducts(sortedProducts);
   };
     
-  // Handle search input change
+
   const handleSearchChange = (e) => {
     const query = e.target.value;
     setSearchQuery(query);
     setShowSearchInfo(query.trim() !== "");
-    setCurrentPage(1); // Kereséskor visszaállítjuk az első oldalra
+    setCurrentPage(1); 
 
-    // Szűrjük a termékeket a keresés és a kategória alapján
+   
     filterProductsByCategory(products, currentCategory, query);
   };
 
-  // Handle search form submission
+  
   const handleSearchSubmit = (e) => {
     e.preventDefault();
-    // A szűrés már megtörtént a handleSearchChange-ben
+    
   };
 
-  // Számoljuk ki a megjelenítendő termékeket
+
   const indexOfLastProduct = currentPage * productsPerPage;
   const indexOfFirstProduct = indexOfLastProduct - productsPerPage;
   const currentProducts = filteredProducts.slice(indexOfFirstProduct, indexOfLastProduct);
 
-  // Számoljuk ki az oldalak számát
+
   const totalPages = Math.max(1, Math.ceil(filteredProducts.length / productsPerPage));
 
-  // Oldal váltás kezelése
+ 
   const handlePageChange = (pageNumber) => {
     if (pageNumber < 1 || pageNumber > totalPages) return;
     setCurrentPage(pageNumber);
-    // Görgessük az oldalt a termékek tetejéhez
+    
     window.scrollTo({
       top: document.querySelector('.grid')?.offsetTop - 100 || 0,
       behavior: 'smooth'
     });
   };
 
-  // Előző oldal
+  
   const goToPreviousPage = () => {
     if (currentPage > 1) {
       handlePageChange(currentPage - 1);
     }
   };
 
-  // Következő oldal
+ 
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       handlePageChange(currentPage + 1);
     }
   };
 
-  // Oldalszámok generálása dinamikusan
+ 
   const getPaginationButtons = () => {
     const pageButtons = [];
 
-    // Első oldal mindig megjelenik
+    
     pageButtons.push(
       <Button
         key={1}
@@ -284,28 +288,28 @@ export default function Home() {
       </Button>
     );
 
-    // Ha sok oldal van, akkor ellipszist teszünk
+    
     if (totalPages > 5 && currentPage > 3) {
       pageButtons.push(
         <span key="ellipsis1" className="px-2">...</span>
       );
     }
 
-    // Középső számok
+    
     let startPage = Math.max(2, currentPage - 1);
     let endPage = Math.min(totalPages - 1, currentPage + 1);
 
-    // Speciális eset, ha az aktuális oldal közel van a végéhez
+    
     if (currentPage > totalPages - 3) {
       startPage = Math.max(2, totalPages - 3);
     }
 
-    // Speciális eset, ha az aktuális oldal az elején van
+   
     if (currentPage < 4) {
       endPage = Math.min(totalPages - 1, 4);
     }
 
-    // Közbenső oldalak
+    
     for (let i = startPage; i <= endPage; i++) {
       pageButtons.push(
         <Button
@@ -320,14 +324,14 @@ export default function Home() {
       );
     }
 
-    // Ha sok oldal van, akkor ellipszist teszünk
+    
     if (totalPages > 5 && currentPage < totalPages - 2) {
       pageButtons.push(
         <span key="ellipsis2" className="px-2">...</span>
       );
     }
 
-    // Utolsó oldal (csak ha több mint 1 oldal van)
+    
     if (totalPages > 1) {
       pageButtons.push(
         <Button
@@ -347,7 +351,7 @@ export default function Home() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
@@ -356,7 +360,7 @@ export default function Home() {
                 <Menu className="h-6 w-6" />
               </Button>
               <div className="flex items-center">
-                <img src="/public/vándorbolt.png" alt="MozgoShop Logo" className="h-16 -my-2 mr-3" />
+                <img src="/public/vándorbolt.png" alt="VándorBolt Logo" className="h-16 -my-2 mr-3" />
                 <h1 className="text-2xl font-bold">Vándorbolt</h1>
               </div>
             </div>
@@ -407,7 +411,7 @@ export default function Home() {
         </div>
       </header>
 
-          {/* Navigation */}
+         
           <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -418,7 +422,7 @@ export default function Home() {
             </li>
             <li>
               <a href="/info" className="hover:text-gray-200">
-                BEMUTATKOZÁS
+              BEMUTATKOZÁS
               </a>
             </li>
             <li>
@@ -450,13 +454,12 @@ export default function Home() {
         </div>
       </nav>
 
-      {/* Main Content */}
       <main className="container mx-auto px-4 py-8">
         <div className="flex flex-col md:flex-row gap-8">
-          {/* Sidebar */}
+         
           <CategorySidebar />
 
-          {/* Products */}
+         
           <div className="flex-1">
             <div className="flex justify-between items-center mb-6">             
               <h2 className="text-2xl font-bold text-gray-800">
@@ -509,7 +512,7 @@ export default function Home() {
               </div>
             )}
 
-            {/* Lapozó gombok - dinamikusan generálva */}
+            
             {filteredProducts.length > 0 && (
               <div className="mt-8 flex justify-center">
                 <nav className="flex items-center gap-1">
@@ -526,7 +529,7 @@ export default function Home() {
                     </svg>
                   </Button>
 
-                  {/* Dinamikus oldalszámok */}
+                  
                   {getPaginationButtons()}
 
                   <Button
@@ -548,19 +551,19 @@ export default function Home() {
         </div>
       </main>
 
-      {/* Footer */}
+    
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <h3 className="text-lg font-bold mb-4">VándorBolt</h3>
               <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@mozgoshop.hu</p>
+                <p>Email: info.vandorboltwebaruhaz@gmail.com</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
@@ -568,17 +571,17 @@ export default function Home() {
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/aszf" className="hover:underline">
                     Általános Szerződési Feltételek
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/adatvedelem" className="hover:underline">
                     Adatvédelmi Tájékoztató
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/utvonal" className="hover:underline">
                     Szállítási Információk
                   </a>
                 </li>
@@ -591,11 +594,10 @@ export default function Home() {
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+            <p>© 2025 VándorBolt. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>
     </div>
   );
 }
-

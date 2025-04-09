@@ -3,7 +3,7 @@ const Termek = require("../model/termek");
 const Raktar = require("../model/raktar");
 const { Op } = require("sequelize");
 
-// Get all raktar keszlet
+
 exports.getAllRaktarKeszlet = async (req, res) => {
   try {
     const keszletek = await RaktarKeszlet.findAll({
@@ -26,7 +26,7 @@ exports.getAllRaktarKeszlet = async (req, res) => {
   }
 };
 
-// Get keszlet by ID
+
 exports.getRaktarKeszletById = async (req, res) => {
   try {
     const keszlet = await RaktarKeszlet.findByPk(req.params.id, {
@@ -54,7 +54,7 @@ exports.getRaktarKeszletById = async (req, res) => {
   }
 };
 
-// Get keszlet by raktar ID
+
 exports.getKeszletByRaktarId = async (req, res) => {
   try {
     const keszletek = await RaktarKeszlet.findAll({
@@ -79,7 +79,7 @@ exports.getKeszletByRaktarId = async (req, res) => {
   }
 };
 
-// Get keszlet by termek ID
+
 exports.getKeszletByTermekId = async (req, res) => {
   try {
     const keszletek = await RaktarKeszlet.findAll({
@@ -104,10 +104,10 @@ exports.getKeszletByTermekId = async (req, res) => {
   }
 };
 
-// Create a new keszlet
+
 exports.createRaktarKeszlet = async (req, res) => {
   try {
-    // Ellenőrizzük, hogy létezik-e már ilyen raktarId-termekId kombináció
+    
     const existing = await RaktarKeszlet.findOne({
       where: {
         raktarId: req.body.raktarId,
@@ -122,7 +122,7 @@ exports.createRaktarKeszlet = async (req, res) => {
       });
     }
 
-    // Ellenőrizzük, hogy létezik-e a raktar és a termek
+    
     const raktar = await Raktar.findByPk(req.body.raktarId);
     if (!raktar) {
       return res.status(404).json({ message: "Raktar not found" });
@@ -133,7 +133,7 @@ exports.createRaktarKeszlet = async (req, res) => {
       return res.status(404).json({ message: "Termek not found" });
     }
 
-    // Ellenőrizzük, hogy a mozgóbolt kapacitása elegendő-e
+    
     const osszKeszlet = await RaktarKeszlet.sum('keszlet', {
       where: { raktarId: req.body.raktarId }
     }) || 0;
@@ -152,7 +152,7 @@ exports.createRaktarKeszlet = async (req, res) => {
       utolso_frissites: new Date()
     });
     
-    // Lekérjük a kapcsolódó adatokkal együtt
+    
     const keszletWithRelations = await RaktarKeszlet.findByPk(newKeszlet.azonosito, {
       include: [
         {
@@ -174,7 +174,6 @@ exports.createRaktarKeszlet = async (req, res) => {
   }
 };
 
-// Update an existing keszlet
 exports.updateRaktarKeszlet = async (req, res) => {
   try {
     const keszlet = await RaktarKeszlet.findByPk(req.params.id);
@@ -182,7 +181,7 @@ exports.updateRaktarKeszlet = async (req, res) => {
       return res.status(404).json({ message: "Keszlet not found" });
     }
 
-    // Ha változik a raktarId vagy termekId, ellenőrizzük, hogy nem ütközik-e
+    
     if ((req.body.raktarId && req.body.raktarId !== keszlet.raktarId) || 
         (req.body.termekId && req.body.termekId !== keszlet.termekId)) {
       
@@ -190,7 +189,7 @@ exports.updateRaktarKeszlet = async (req, res) => {
         where: {
           raktarId: req.body.raktarId || keszlet.raktarId,
           termekId: req.body.termekId || keszlet.termekId,
-          azonosito: { [Op.ne]: keszlet.azonosito } // Ne találja meg önmagát
+          azonosito: { [Op.ne]: keszlet.azonosito } 
         }
       });
 
@@ -202,18 +201,18 @@ exports.updateRaktarKeszlet = async (req, res) => {
       }
     }
 
-    // Ha változik a készlet mennyisége, ellenőrizzük a kapacitást
+    
     if (req.body.keszlet && req.body.keszlet !== keszlet.keszlet) {
       const raktar = await Raktar.findByPk(req.body.raktarId || keszlet.raktarId);
       if (!raktar) {
         return res.status(404).json({ message: "Raktar not found" });
       }
 
-      // Összegezzük a többi termék készletét
+      
       const osszKeszlet = await RaktarKeszlet.sum('keszlet', {
         where: { 
           raktarId: req.body.raktarId || keszlet.raktarId,
-          azonosito: { [Op.ne]: keszlet.azonosito } // Ne számoljuk bele önmagát
+          azonosito: { [Op.ne]: keszlet.azonosito } 
         }
       }) || 0;
       
@@ -232,7 +231,7 @@ exports.updateRaktarKeszlet = async (req, res) => {
       utolso_frissites: new Date()
     });
     
-    // Lekérjük a kapcsolódó adatokkal együtt
+    
     const updatedKeszlet = await RaktarKeszlet.findByPk(keszlet.azonosito, {
       include: [
         {
@@ -254,7 +253,7 @@ exports.updateRaktarKeszlet = async (req, res) => {
   }
 };
 
-// Delete a keszlet
+
 exports.deleteRaktarKeszlet = async (req, res) => {
   try {
     const keszlet = await RaktarKeszlet.findByPk(req.params.id);
@@ -268,7 +267,7 @@ exports.deleteRaktarKeszlet = async (req, res) => {
   }
 };
 
-// Update keszlet only
+
 exports.updateKeszletOnly = async (req, res) => {
   try {
     const { id } = req.params;
@@ -283,17 +282,17 @@ exports.updateKeszletOnly = async (req, res) => {
       return res.status(404).json({ message: "Keszlet not found" });
     }
     
-        // Ellenőrizzük a kapacitást
+        
         const raktar = await Raktar.findByPk(raktarKeszlet.raktarId);
         if (!raktar) {
           return res.status(404).json({ message: "Raktar not found" });
         }
     
-        // Összegezzük a többi termék készletét
+        
         const osszKeszlet = await RaktarKeszlet.sum('keszlet', {
           where: { 
             raktarId: raktarKeszlet.raktarId,
-            azonosito: { [Op.ne]: raktarKeszlet.azonosito } // Ne számoljuk bele önmagát
+            azonosito: { [Op.ne]: raktarKeszlet.azonosito } 
           }
         }) || 0;
         
@@ -312,7 +311,7 @@ exports.updateKeszletOnly = async (req, res) => {
           utolso_frissites: new Date()
         });
         
-        // Lekérjük a kapcsolódó adatokkal együtt
+        
         const updatedKeszlet = await RaktarKeszlet.findByPk(id, {
           include: [
             {

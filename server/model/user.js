@@ -75,11 +75,11 @@ const User = sequelize.define("User", {
         defaultValue: false,
     },
 }, {
-    tableName: "users", // Specify the exact table name in the database
+    tableName: "users", 
     timestamps: true,
 });
 
-// Associations remain the same
+
 User.associate = function(models) {
     User.hasMany(models.Rendeles, {
         foreignKey: 'felhasznaloId',

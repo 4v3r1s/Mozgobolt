@@ -3,7 +3,6 @@ import { useState, useEffect } from "react"
 import { useNavigate, useLocation } from "react-router-dom"
 
 
-// Fallback statikus kategóriák, ha a szerver nem válaszol
 const staticCategories = [
   { azonosito: 1, nev: "Pékáruk", termekCount: 42 },
   { azonosito: 2, nev: "Tej-Tejtermékek-Margarinok", termekCount: 68 },
@@ -33,7 +32,7 @@ export default function CategorySidebar() {
         }
         const data = await response.json();
         
-        // Debug: Nézzük meg a kategória adatok szerkezetét
+        
         console.log("Kategória adatok:", data);
         
         setCategories(data);
@@ -94,7 +93,7 @@ export default function CategorySidebar() {
           >
             <span className="line-clamp-1">Összes termék</span>
             <div className="flex items-center">
-              {/* Itt jelenítjük meg az összes termék számát */}
+              
               <span className="text-xs text-gray-500 mr-1">
                 ({categories.reduce((total, cat) => total + (cat.termekCount || 0), 0)})
               </span>
@@ -108,7 +107,7 @@ export default function CategorySidebar() {
               href="#"
               onClick={(e) => {
                 e.preventDefault();
-                // Itt a csoport mezőt adjuk át, nem az azonosito-t
+                
                 handleCategoryClick(category.csoport);
               }}
               className={`flex items-center justify-between py-2 px-3 text-sm ${

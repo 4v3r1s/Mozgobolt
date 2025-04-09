@@ -1,6 +1,6 @@
 const nodemailer = require('nodemailer');
 
-// Transporter létrehozása valós SMTP szerverrel
+
 const transporter = nodemailer.createTransport({
   service: 'gmail',
   auth: {
@@ -9,12 +9,12 @@ const transporter = nodemailer.createTransport({
   },
 });
 
-// Regisztrációs visszaigazoló e-mail küldése
+
 exports.sendRegistrationConfirmation = async (userData) => {
   try {
     console.log("Regisztrációs e-mail küldése:", userData.email);
     
-    // E-mail tartalom
+    
     const mailOptions = {
       from: '"VándorBolt" <info.vandorboltwebaruhaz@gmail.com>',
       subject: `Sikeres regisztráció a VándorBolt oldalán`,
@@ -56,24 +56,22 @@ exports.sendRegistrationConfirmation = async (userData) => {
       `
     };
 
-    // E-mail küldése
     const info = await transporter.sendMail(mailOptions);
     console.log('Regisztrációs e-mail elküldve: %s', info.messageId);
     return info;
   } catch (error) {
     console.error('Hiba a regisztrációs e-mail küldésekor:', error);
-    // Nem dobjuk tovább a hibát, csak naplózzuk
+    
     return { error: error.message };
   }
 };
 
 
-// Rendelés visszaigazoló e-mail küldése
+
 exports.sendOrderConfirmation = async (orderData, rendelesAzonosito) => {
   try {
     console.log("E-mail küldés előkészítése:", orderData.vevoAdatok.email);
     
-    // Termékek listájának összeállítása
     const termekekHTML = orderData.tetelek.map(item => `
       <tr>
         <td style="padding: 8px; border-bottom: 1px solid #ddd;">${item.name}</td>
@@ -83,7 +81,7 @@ exports.sendOrderConfirmation = async (orderData, rendelesAzonosito) => {
       </tr>
     `).join('');
 
-    // E-mail tartalom
+   
     const mailOptions = {
       from: '"VándorBolt" <info.vandorboltwebaruhaz@gmail.com>',
       to: orderData.vevoAdatok.email,
@@ -163,23 +161,23 @@ exports.sendOrderConfirmation = async (orderData, rendelesAzonosito) => {
       `
     };
 
-    // E-mail küldése
+    
     const info = await transporter.sendMail(mailOptions);
     console.log('E-mail elküldve: %s', info.messageId);
     return info;
   } catch (error) {
     console.error('Hiba az e-mail küldésekor:', error);
-    // Nem dobjuk tovább a hibát, csak naplózzuk
+    
     return { error: error.message };
   }
 };
 
-// Rendelés törlés értesítő e-mail küldése
+
 exports.sendOrderCancellationEmail = async (rendelesData) => {
   try {
     console.log("Rendelés törlés e-mail küldése:", rendelesData.vevoEmail);
     
-    // E-mail tartalom
+   
     const mailOptions = {
       from: '"VándorBolt" <info.vandorboltwebaruhaz@gmail.com>',
       to: rendelesData.vevoEmail,
@@ -224,27 +222,27 @@ exports.sendOrderCancellationEmail = async (rendelesData) => {
       `
     };
 
-    // E-mail küldése
+    
     const info = await transporter.sendMail(mailOptions);
     console.log('Rendelés törlés e-mail elküldve: %s', info.messageId);
     return info;
   } catch (error) {
     console.error('Hiba a rendelés törlés e-mail küldésekor:', error);
-    // Nem dobjuk tovább a hibát, csak naplózzuk
+    
     return { error: error.message };
   }
 };
 
-// Kapcsolati űrlap e-mail küldése
+
 exports.sendContactFormEmail = async (contactData) => {
   try {
     console.log("Kapcsolati űrlap e-mail küldése:", contactData.email);
     
-    // E-mail tartalom
+
     const mailOptions = {
       from: '"VándorBolt" <info.vandorboltwebaruhaz@gmail.com>',
-      to: 'info.vandorboltwebaruhaz@gmail.com', // Itt állítsd be a céges e-mail címet
-      replyTo: contactData.email, // A válasz a küldő e-mail címére menjen
+      to: 'info.vandorboltwebaruhaz@gmail.com', 
+      replyTo: contactData.email, 
       subject: `Kapcsolati űrlap: ${contactData.subject}`,
       html: `
         <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto;">
@@ -277,7 +275,6 @@ exports.sendContactFormEmail = async (contactData) => {
       `
     };
 
-    // Automatikus válasz a küldőnek
     const autoReplyOptions = {
       from: '"VándorBolt" <info.vandorboltwebaruhaz@gmail.com>',
       to: contactData.email,
@@ -312,18 +309,18 @@ exports.sendContactFormEmail = async (contactData) => {
       `
     };
 
-    // E-mail küldése a cégnek
+    
     const info = await transporter.sendMail(mailOptions);
     console.log('Kapcsolati űrlap e-mail elküldve: %s', info.messageId);
     
-    // Automatikus válasz küldése a feladónak
+    
     const autoReplyInfo = await transporter.sendMail(autoReplyOptions);
     console.log('Automatikus válasz elküldve: %s', autoReplyInfo.messageId);
     
     return { info, autoReplyInfo };
   } catch (error) {
     console.error('Hiba a kapcsolati űrlap e-mail küldésekor:', error);
-    // Nem dobjuk tovább a hibát, csak naplózzuk
+  
     return { error: error.message };
   }
 };

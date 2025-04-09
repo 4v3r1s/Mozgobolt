@@ -17,7 +17,7 @@ const createUser = async (req, res) => {
 };
 
 
-// Authenticate User (Login)
+
 const authenticateUser = async (req, res) => {
     try {
         const { email, jelszo } = req.body;
@@ -35,7 +35,7 @@ const authenticateUser = async (req, res) => {
             return res.status(401).json({ message: "Érvénytelen email vagy jelszó!" });
         }
 
-        // Ellenőrizzük, hogy a user.id létezik-e
+       
         if (!user.id) {
             console.error("User ID is missing:", user);
             return res.status(500).json({ message: "Hiba a bejelentkezés során: hiányzó felhasználói azonosító" });
@@ -45,21 +45,21 @@ const authenticateUser = async (req, res) => {
             { 
                 userId: user.id, 
                 email: user.email,
-                role: user.szerep // Add user role to token
+                role: user.szerep 
             },
             "secretkey",
             { expiresIn: "1h" }
         );
 
-        // Debug: ellenőrizzük a generált tokent
+       
         console.log("Generated token:", token);
         console.log("Token payload:", { userId: user.id, email: user.email, role: user.szerep });
 
-        // Állítsuk be a token cookie-t
+        
         res.cookie('token', token, {
             httpOnly: true,
-            secure: process.env.NODE_ENV === 'production', // HTTPS csak production környezetben
-            maxAge: 3600000, // 1 óra
+            secure: process.env.NODE_ENV === 'production', 
+            maxAge: 3600000, 
             sameSite: 'lax'
         });
 
@@ -69,11 +69,11 @@ const authenticateUser = async (req, res) => {
         res.status(500).json({ message: "Hiba a bejelentkezés során", error: error.message });
     }
 };
-// Get All Users (Admin only)
+
 const getAllUsers = async (req, res) => {
     try {
         const users = await User.findAll({
-            attributes: { exclude: ["jelszo"] } // Exclude password from the response
+            attributes: { exclude: ["jelszo"] } 
         });
         res.json(users);
     } catch (error) {
@@ -81,7 +81,7 @@ const getAllUsers = async (req, res) => {
         res.status(500).json({ message: "Hiba a felhasználók lekérése során", error: error.message });
     }
 };
-// Get User by ID
+
 const getUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -95,28 +95,28 @@ const getUser = async (req, res) => {
     }
 };
 
-// Update User
+
 const updateUser = async (req, res) => {
     try {
         const { id } = req.params;
         const updates = req.body;
 
-        // If password is being updated, hash it
+        
         if (updates.jelszo) {
             updates.jelszo = await bcrypt.hash(updates.jelszo, 10);
         }
 
-        // Remove any fields that might cause issues
+       
         delete updates.createdAt;
         delete updates.updatedAt;
-        delete updates.id; // Don't try to update the primary key
+        delete updates.id; 
 
-        // Handle date conversion for szuletesidatum if it's a string
+        
         if (updates.szuletesidatum && typeof updates.szuletesidatum === 'string') {
             updates.szuletesidatum = new Date(updates.szuletesidatum);
         }
 
-        // Convert numeric string values to numbers for integer fields
+        
         if (updates.szamlazasi_irsz && typeof updates.szamlazasi_irsz === 'string') {
             updates.szamlazasi_irsz = parseInt(updates.szamlazasi_irsz, 10) || null;
         }
@@ -129,7 +129,7 @@ const updateUser = async (req, res) => {
 
         const [updated] = await User.update(updates, { 
             where: { id },
-            // Return the updated user
+            
             returning: true
         });
 
@@ -148,7 +148,7 @@ const updateUser = async (req, res) => {
     }
 };
 
-// Delete User
+
 const deleteUser = async (req, res) => {
     try {
         const { id } = req.params;
@@ -161,13 +161,10 @@ const deleteUser = async (req, res) => {
         res.status(500).json({ message: "Error deleting user", error });
     }
 };
-// Get Current User Profile
 const getUserProfile = async (req, res) => {
     try {
-        // Debug: ellenőrizzük a req.user objektumot
         console.log("User from token:", req.user);
         
-        // The user ID is extracted from the JWT token in the authenticateToken middleware
         const userId = req.user.userId;
         
         if (!userId) {
@@ -176,7 +173,7 @@ const getUserProfile = async (req, res) => {
         
         const user = await User.findByPk(userId, { 
             attributes: { 
-                exclude: ["jelszo"] // Exclude password from the response
+                exclude: ["jelszo"] 
             } 
         });
 
@@ -193,12 +190,10 @@ const getUserProfile = async (req, res) => {
 
 
 
-// Get User Orders
 const getUserOrders = async (req, res) => {
     try {
       const userId = req.user.userId;
       
-      // Lekérjük a felhasználó rendeléseit
       const rendelesek = await Rendeles.findAll({
         where: { felhasznaloId: userId },
         order: [['rendelesIdeje', 'DESC']],
@@ -219,7 +214,6 @@ const getUserOrders = async (req, res) => {
     }
   };
   
-  // Exportáljuk az új metódust
   module.exports = { 
     createUser, 
     authenticateUser, 

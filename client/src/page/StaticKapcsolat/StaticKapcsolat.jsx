@@ -19,16 +19,15 @@ export default function Contact() {
     error: null
   });
 
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
-    }, 300); // 300ms késleltetés
+    }, 300); 
     
     return () => clearTimeout(timer);
   }, []);
 
-  // Form input változások kezelése
   const handleChange = (e) => {
     const { id, value } = e.target;
     setFormData(prev => ({
@@ -37,7 +36,7 @@ export default function Contact() {
     }));
   };
 
-  // Form beküldés kezelése
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     
@@ -59,7 +58,7 @@ export default function Contact() {
       
       setSubmitStatus({ loading: false, success: true, error: null });
       
-      // Form mezők törlése sikeres küldés után
+      
       setFormData({
         name: "",
         email: "",
@@ -68,7 +67,7 @@ export default function Contact() {
         message: ""
       });
       
-      // Sikeres üzenet eltüntetése 5 másodperc után
+
       setTimeout(() => {
         setSubmitStatus(prev => ({ ...prev, success: false }));
       }, 5000);
@@ -105,16 +104,16 @@ export default function Contact() {
   };
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal */}
+      
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1"></div> {/* Üres div a bal oldalon az egyensúlyért */}
+            <div className="flex-1"></div> 
             <div className="flex items-center justify-center overflow-hidden h-10">
               <a href="/" className="text-white hover:text-gray-200 flex items-center">
                 <img 
                   src="/public/vándorbolt.png" 
-                  alt="MozgoShop Logo" 
+                  alt="VándorBolt Logo" 
                   className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                     logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                   }`}
@@ -146,7 +145,7 @@ export default function Contact() {
         </div>
       </header> 
 
-      {/* Navigation */}
+     
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -197,7 +196,7 @@ export default function Contact() {
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h2 className="text-xl font-bold text-gray-800 mb-4">Lépjen kapcsolatba velünk</h2>
           
-          {/* Státusz üzenetek */}
+          
           {submitStatus.success && (
             <div className="mb-4 p-3 bg-green-100 text-green-700 rounded-md">
               Köszönjük! Üzenetét sikeresen elküldtük. Hamarosan felvesszük Önnel a kapcsolatot.
@@ -322,7 +321,7 @@ export default function Contact() {
         </div>
       </main>
 
-      {/* Footer */}
+      
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
@@ -334,7 +333,7 @@ export default function Contact() {
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@vandorbolt.hu</p>
+                <p>Email: info.vandorboltwebaruhaz@gmail.com</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
@@ -342,17 +341,17 @@ export default function Contact() {
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/aszf" className="hover:underline">
                     Általános Szerződési Feltételek
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/adatvedelem" className="hover:underline">
                     Adatvédelmi Tájékoztató
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/utvonal" className="hover:underline">
                     Szállítási Információk
                   </a>
                 </li>
@@ -365,7 +364,7 @@ export default function Contact() {
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2023 VándorBolt. Minden jog fenntartva.</p>
+            <p>© 2025 VándorBolt. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>

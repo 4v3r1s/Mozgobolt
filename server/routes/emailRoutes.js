@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 const emailService = require('../services/emailService');
 
-// Regisztrációs visszaigazoló e-mail küldése
+
 router.post('/registration-confirmation', async (req, res) => {
   try {
     const { email, username } = req.body;
@@ -38,17 +38,17 @@ router.post('/registration-confirmation', async (req, res) => {
   }
 });
 
-// Kapcsolati űrlap e-mail küldése
+
 router.post('/contact', async (req, res) => {
   try {
     const { name, email, phone, subject, message } = req.body;
     
-    // Validáció
+
     if (!name || !email || !subject || !message) {
       return res.status(400).json({ message: 'Minden kötelező mezőt ki kell tölteni' });
     }
     
-    // E-mail küldése
+
     const result = await emailService.sendContactFormEmail({
       name,
       email,

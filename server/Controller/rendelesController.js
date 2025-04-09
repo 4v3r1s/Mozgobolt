@@ -4,7 +4,7 @@ const Termek = require("../model/termek");
 const sequelize = require("../config/config");
 const emailService = require("../services/emailService");
 
-// Get all rendelesek
+
 exports.getAllRendeles = async (req, res) => {
   try {
     const rendelesek = await Rendeles.findAll({
@@ -17,7 +17,7 @@ exports.getAllRendeles = async (req, res) => {
   }
 };
 
-// Get a rendeles by ID
+
 exports.getRendelesById = async (req, res) => {
   try {
     const rendeles = await Rendeles.findByPk(req.params.id, {
@@ -42,7 +42,7 @@ exports.getRendelesById = async (req, res) => {
   }
 };
 
-// Create a new rendeles
+
 exports.createRendeles = async (req, res) => {
   const transaction = await sequelize.transaction();
   
@@ -55,17 +55,17 @@ exports.createRendeles = async (req, res) => {
       tetelek
     } = req.body;
     
-    // Felhasználói azonosító kinyerése a JWT tokenből, ha van
+    
     let felhasznaloId = null;
     if (req.user && req.user.userId) {
       felhasznaloId = req.user.userId;
       console.log("Felhasználói azonosító beállítva:", felhasznaloId);
     }
     
-    // Rendelés azonosító generálása
+   
     const rendelesAzonosito = `R-${Date.now().toString().slice(-6)}${Math.floor(Math.random() * 1000)}`;
     
-    // Rendelés létrehozása
+    
     const ujRendeles = await Rendeles.create({
       rendelesAzonosito,
       felhasznaloId,
@@ -84,7 +84,7 @@ exports.createRendeles = async (req, res) => {
       rendelesIdeje: new Date()
     }, { transaction });
     
-    // Rendelési tételek létrehozása
+    
     for (const tetel of tetelek) {
       await RendelesTetelek.create({
         rendelesId: ujRendeles.azonosito,
@@ -96,18 +96,17 @@ exports.createRendeles = async (req, res) => {
       }, { transaction });
     }
     
-    // Tranzakció véglegesítése
+    
     await transaction.commit();
     
-    // Válasz küldése a kliensnek
+    
     res.status(201).json({
       success: true,
       rendelesAzonosito,
       rendeles: ujRendeles
     });
     
-    // E-mail küldése a rendelés visszaigazolásáról (a válasz után)
-    // Ez nem blokkolja a választ, mert a res.json() után fut
+   
     try {
       emailService.sendOrderConfirmation(req.body, rendelesAzonosito)
         .then(info => {
@@ -118,18 +117,18 @@ exports.createRendeles = async (req, res) => {
         });
     } catch (emailError) {
       console.error("Hiba az e-mail küldés során:", emailError);
-      // Itt nem dobunk hibát, mert a rendelés már létrejött
+      
     }
     
   } catch (error) {
-    // Hiba esetén visszagörgetjük a tranzakciót
+   
     await transaction.rollback();
     console.error("Hiba a rendelés létrehozásakor:", error);
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
 
-// Update an existing rendeles
+
 exports.updateRendeles = async (req, res) => {
   try {
     const rendeles = await Rendeles.findByPk(req.params.id);
@@ -137,7 +136,7 @@ exports.updateRendeles = async (req, res) => {
       return res.status(404).json({ message: "Rendeles not found" });
     }
     
-          // Csak az állapot frissítése (pl. admin felületen)
+          
           await rendeles.update({
             allapot: req.body.allapot
           });
@@ -153,7 +152,7 @@ exports.updateRendeles = async (req, res) => {
         }
       };
       
-      // Delete a rendeles
+      
       exports.deleteRendeles = async (req, res) => {
         const transaction = await sequelize.transaction();
         
@@ -163,16 +162,16 @@ exports.updateRendeles = async (req, res) => {
             return res.status(404).json({ message: "Rendeles not found" });
           }
           
-          // Először töröljük a tételeket
+          
           await RendelesTetelek.destroy({
             where: { rendelesId: rendeles.azonosito },
             transaction
           });
           
-          // Majd töröljük a rendelést
+        
           await rendeles.destroy({ transaction });
           
-          // Tranzakció véglegesítése
+         
           await transaction.commit();
           
           res.json({ 
@@ -180,7 +179,7 @@ exports.updateRendeles = async (req, res) => {
             message: "Rendeles deleted successfully" 
           });
         } catch (error) {
-          // Hiba esetén visszagörgetjük a tranzakciót
+          
           await transaction.rollback();
           
           console.error("Hiba a rendelés törlésekor:", error);
@@ -188,7 +187,7 @@ exports.updateRendeles = async (req, res) => {
         }
       };
       
-      // Get rendelés tételek by rendelés ID
+      
       exports.getRendelesTetelek = async (req, res) => {
         try {
           const tetelek = await RendelesTetelek.findAll({
@@ -206,24 +205,24 @@ exports.updateRendeles = async (req, res) => {
         }
       };
       
-      // Get user orders
+      
       exports.getUserOrders = async (req, res) => {
         try {
-          // A felhasználó ID-t a JWT tokenből kapjuk
+          
           const userId = req.user.userId;
           
           console.log("Felhasználói rendelések lekérdezése, userId:", userId);
           
-          // Ellenőrizzük, hogy a userId megfelelő formátumú-e
+          
           if (!userId || isNaN(parseInt(userId))) {
             console.error("Érvénytelen userId:", userId);
             return res.status(400).json({ message: "Érvénytelen felhasználói azonosító" });
           }
           
-          // Naplózzuk a lekérdezés paramétereit
+          
           console.log("Lekérdezés paraméterei:", { felhasznaloId: userId });
           
-          // Lekérjük a felhasználó rendeléseit
+          
           const rendelesek = await Rendeles.findAll({
             where: { felhasznaloId: userId },
             order: [['rendelesIdeje', 'DESC']],
@@ -239,18 +238,17 @@ exports.updateRendeles = async (req, res) => {
           
           console.log(`${rendelesek.length} rendelés található a felhasználóhoz (${userId})`);
           
-          // Ha nincs rendelés, akkor is küldjünk vissza egy üres tömböt
+          
           if (rendelesek.length === 0) {
             console.log("Nincsenek rendelések a felhasználóhoz");
             return res.json([]);
           }
           
-          // Naplózzuk az első rendelés adatait
           if (rendelesek.length > 0) {
             console.log("Első rendelés adatai:", JSON.stringify(rendelesek[0].toJSON(), null, 2));
           }
           
-          // Átalakítjuk a rendeléseket a frontend számára megfelelő formátumra
+          
           const formattedOrders = rendelesek.map(rendeles => {
             const rendelesObj = rendeles.toJSON();
             
@@ -277,28 +275,27 @@ exports.updateRendeles = async (req, res) => {
           res.status(500).json({ message: "Hiba a rendelések lekérdezése során", error: error.message });
         }
       };
- // Rendelés statisztikák lekérése
+
 exports.getOrderStats = async (req, res) => {
   try {
-    // Összes rendelés lekérése
+    
     const allOrders = await Rendeles.findAll();
   
-    // Rendelések száma
+   
     const totalOrders = allOrders.length;
   
-    // Feldolgozás alatt lévő rendelések
+
     const pendingOrders = allOrders.filter(order => order.allapot === "feldolgozás alatt").length;
   
-    // Kiszállítás alatt lévő rendelések
+
     const shippingOrders = allOrders.filter(order => order.allapot === "kiszállítás alatt").length;
   
-    // Teljesített rendelések
+   
     const completedOrders = allOrders.filter(order => order.allapot === "teljesítve").length;
   
-    // Törölt rendelések
     const cancelledOrders = allOrders.filter(order => order.allapot === "törölve").length;
   
-    // Legutóbbi 5 rendelés
+
     const recentOrders = await Rendeles.findAll({
       order: [['rendelesIdeje', 'DESC']],
       limit: 5,
@@ -312,12 +309,12 @@ exports.getOrderStats = async (req, res) => {
       }]
     });
   
-    // Összes bevétel - csak a nem törölt rendeléseket vesszük figyelembe
+    
     const totalRevenue = allOrders
       .filter(order => order.allapot !== "törölve")
       .reduce((sum, order) => sum + parseFloat(order.vegosszeg), 0);
   
-    // Válasz küldése
+  
     res.json({
       totalOrders,
       pendingOrders,
@@ -332,20 +329,20 @@ exports.getOrderStats = async (req, res) => {
     res.status(500).json({ message: "Server error", error: error.message });
   }
 };
-// Cancel an order (set status to "törölve")
+
 exports.cancelOrder = async (req, res) => {
   try {
-    // A felhasználó ID-t a JWT tokenből kapjuk
+ 
     const userId = req.user.userId;
     const orderId = req.params.id;
     
     console.log(`Rendelés törlése: ${orderId}, felhasználó: ${userId}`);
     
-    // Ellenőrizzük, hogy a rendelés létezik-e
+    
     const rendeles = await Rendeles.findOne({
       where: { 
         rendelesAzonosito: orderId,
-        felhasznaloId: userId  // Csak a saját rendeléseit törölheti
+        felhasznaloId: userId  
       }
     });
     
@@ -353,25 +350,24 @@ exports.cancelOrder = async (req, res) => {
       return res.status(404).json({ message: "Rendelés nem található vagy nem a felhasználóhoz tartozik" });
     }
     
-    // Ellenőrizzük, hogy a rendelés törölhető állapotban van-e
+    
     if (rendeles.allapot !== "feldolgozás alatt") {
       return res.status(400).json({ 
         message: "A rendelés nem törölhető, mert már feldolgozás alatt van vagy már kiszállították" 
       });
     }
     
-    // Rendelés állapotának módosítása "törölve"-re
+    
     await rendeles.update({ allapot: "törölve" });
     
-    // Válasz küldése a kliensnek
+    
     res.json({ 
       success: true, 
       message: "Rendelés sikeresen törölve",
       rendeles: rendeles
     });
     
-    // E-mail küldése a rendelés törléséről (a válasz után)
-    // Ez nem blokkolja a választ, mert a res.json() után fut
+  
     try {
       emailService.sendOrderCancellationEmail(rendeles)
         .then(info => {
@@ -382,7 +378,7 @@ exports.cancelOrder = async (req, res) => {
         });
     } catch (emailError) {
       console.error("Hiba az e-mail küldés során:", emailError);
-      // Itt nem dobunk hibát, mert a rendelés törlése már megtörtént
+      
     }
     
   } catch (error) {

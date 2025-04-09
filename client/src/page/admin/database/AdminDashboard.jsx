@@ -29,18 +29,18 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
-    }, 300); // 300ms késleltetés
+    }, 300); 
     
     return () => clearTimeout(timer);
   }, []);
 
-  // Check if user is admin
+  
   const checkAdminAuth = async () => {
-    // Get token from cookie
+    
     const token = document.cookie
       .split('; ')
       .find(row => row.startsWith('token='))
@@ -52,7 +52,7 @@ export default function AdminDashboard() {
     }
     
     try {
-      // Ellenőrizzük, hogy a felhasználó admin-e
+     
       const response = await fetch("http://localhost:3000/user/profile", {
         headers: {
           "Authorization": `Bearer ${token}`
@@ -78,12 +78,11 @@ export default function AdminDashboard() {
     }
   };
 
-  // Statisztikák lekérése
 const fetchStats = async () => {
   try {
     setLoading(true);
     
-    // Admin jogosultság ellenőrzése
+    
     const isAdmin = await checkAdminAuth();
     if (!isAdmin) return;
     
@@ -92,7 +91,7 @@ const fetchStats = async () => {
       .find(row => row.startsWith('token='))
       ?.split('=')[1];
 
-    // Felhasználói statisztikák lekérése
+   
     const usersResponse = await fetch("http://localhost:3000/user/all", {
       headers: {
         "Authorization": `Bearer ${token}`
@@ -105,7 +104,7 @@ const fetchStats = async () => {
 
     const usersData = await usersResponse.json();
     
-    // Termék statisztikák lekérése
+    
     const productsResponse = await fetch("http://localhost:3000/termek", {
       headers: {
         "Authorization": `Bearer ${token}`
@@ -118,7 +117,7 @@ const fetchStats = async () => {
 
     const productsData = await productsResponse.json();
     
-    // Rendelés statisztikák lekérése
+    
     const ordersResponse = await fetch("http://localhost:3000/rendeles/stats", {
       headers: {
         "Authorization": `Bearer ${token}`
@@ -131,7 +130,7 @@ const fetchStats = async () => {
 
     const ordersData = await ordersResponse.json();
     
-    // Statisztikák kiszámítása
+    
     const adminUsers = usersData.filter(user => user.szerep === "admin").length;
     const newsletterSubscribers = usersData.filter(user => user.hirlevel).length;
     const lowStockProducts = productsData.filter(product => product.keszlet < 10).length;
@@ -140,14 +139,14 @@ const fetchStats = async () => {
       new Date(product.akcio_vege) > new Date()
     ).length;
     
-    // Módosított bevétel számítás - csak a nem törölt rendeléseket vesszük figyelembe
+    
     const totalRevenue = ordersData.totalOrders > 0 
       ? ordersData.recentOrders
-          .filter(order => order.allapot !== "törölve") // Kiszűrjük a törölt rendeléseket
+          .filter(order => order.allapot !== "törölve") 
           .reduce((sum, order) => sum + parseFloat(order.vegosszeg), 0)
       : 0;
     
-    // Statisztikák beállítása
+    
     setStats({
       totalUsers: usersData.length,
       adminUsers,
@@ -161,7 +160,7 @@ const fetchStats = async () => {
       shippingOrders: ordersData.shippingOrders,
       completedOrders: ordersData.completedOrders,
       cancelledOrders: ordersData.cancelledOrders,
-      totalRevenue: totalRevenue, // Módosított bevétel érték
+      totalRevenue: totalRevenue, 
       recentOrders: ordersData.recentOrders || []
     });
     
@@ -173,12 +172,12 @@ const fetchStats = async () => {
   }
 };
 
-  // Komponens betöltésekor lekérjük a statisztikákat
+  
   useEffect(() => {
     fetchStats();
   }, []);
 
-  // Dátum formázása
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('hu-HU', {
@@ -190,7 +189,6 @@ const fetchStats = async () => {
     });
   };
 
-  // Rendelés állapot formázása
   const formatOrderStatus = (status) => {
     switch (status) {
       case "feldolgozás alatt":
@@ -206,14 +204,14 @@ const fetchStats = async () => {
     }
   };
 
-  // Pénzösszeg formázása
+  
   const formatCurrency = (amount) => {
     return new Intl.NumberFormat('hu-HU', { style: 'currency', currency: 'HUF' }).format(amount);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
@@ -237,7 +235,7 @@ const fetchStats = async () => {
         </div>
       </header>
 
-      {/* Navigation */}
+      
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -260,7 +258,7 @@ const fetchStats = async () => {
         </div>
       </nav>
 
-      {/* Main Content */}
+      
       <main className="container mx-auto px-4 py-8">
         {loading ? (
           <div className="bg-white p-6 rounded-lg shadow-md text-center">
@@ -276,7 +274,6 @@ const fetchStats = async () => {
               <h1 className="text-2xl font-bold">Admin Vezérlőpult</h1>
             </div>
 
-            {/* Admin Tabs */}
             <div className="border-b border-gray-200">
               <nav className="flex -mb-px">
                 <button
@@ -332,13 +329,13 @@ const fetchStats = async () => {
               </nav>
             </div>
 
-            {/* Tab Content */}
+            
             <div className="p-6">
               {activeTab === "dashboard" && (
                 <div className="space-y-8">
-                  {/* Statisztikai kártyák */}
+                  
                   <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    {/* Felhasználói statisztikák */}
+                    
                     <div className="bg-white rounded-lg shadow p-6 border-l-4 border-blue-500">
                       <div className="flex items-center">
                         <div className="p-3 rounded-full bg-blue-100 text-blue-500 mr-4">
@@ -365,7 +362,7 @@ const fetchStats = async () => {
                       </div>
                     </div>
 
-                    {/* Termék statisztikák */}
+                    
                     <div className="bg-white rounded-lg shadow p-6 border-l-4 border-yellow-500">
                       <div className="flex items-center">
                         <div className="p-3 rounded-full bg-yellow-100 text-yellow-500 mr-4">
@@ -392,7 +389,7 @@ const fetchStats = async () => {
                       </div>
                     </div>
 
-                    {/* Rendelés statisztikák */}
+                    
                     <div className="bg-white rounded-lg shadow p-6 border-l-4 border-purple-500">
                       <div className="flex items-center">
                         <div className="p-3 rounded-full bg-purple-100 text-purple-500 mr-4">
@@ -419,7 +416,6 @@ const fetchStats = async () => {
                       </div>
                     </div>
 
-                    {/* Bevétel statisztikák */}
                     <div className="bg-white rounded-lg shadow p-6 border-l-4 border-green-500">
                       <div className="flex items-center">
                         <div className="p-3 rounded-full bg-green-100 text-green-500 mr-4">
@@ -447,7 +443,7 @@ const fetchStats = async () => {
                     </div>
                   </div>
 
-                  {/* Legutóbbi rendelések */}
+                  
                   <div className="bg-white rounded-lg shadow overflow-hidden">
                     <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                       <h2 className="text-lg font-medium text-gray-800">Legutóbbi rendelések</h2>
@@ -523,7 +519,7 @@ const fetchStats = async () => {
                     </div>
                   </div>
 
-                  {/* Gyors műveletek */}
+                  
                   <div className="bg-white rounded-lg shadow overflow-hidden">
                     <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                       <h2 className="text-lg font-medium text-gray-800">Gyors műveletek</h2>
@@ -574,7 +570,7 @@ const fetchStats = async () => {
                     </div>
                   </div>
 
-                  {/* Rendelés állapot összefoglaló */}
+                  
                   <div className="bg-white rounded-lg shadow overflow-hidden">
                     <div className="px-6 py-4 bg-gray-50 border-b border-gray-200">
                       <h2 className="text-lg font-medium text-gray-800">Rendelések állapota</h2>
@@ -636,7 +632,7 @@ const fetchStats = async () => {
                         </div>
                       </div>
                       
-                      {/* Rendelés állapot grafikon */}
+                      
                       <div className="mt-6">
                         <h3 className="text-sm font-medium text-gray-700 mb-2">Rendelések megoszlása</h3>
                         <div className="bg-gray-200 h-4 rounded-full overflow-hidden">
@@ -697,7 +693,7 @@ const fetchStats = async () => {
         )}
       </main>
 
-      {/* Footer */}
+      
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">

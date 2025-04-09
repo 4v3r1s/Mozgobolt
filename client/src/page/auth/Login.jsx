@@ -11,7 +11,7 @@ export default function SignIn() {
   const [alert, setAlert] = useState({
     show: false,
     message: "",
-    type: "success", // success or error
+    type: "success", 
   })
 
   const showAlert = (message, type = "error") => {
@@ -21,7 +21,7 @@ export default function SignIn() {
       type,
     })
 
-    // Auto-hide alert after 5 seconds
+    
     setTimeout(() => {
       setAlert((prev) => ({ ...prev, show: false }))
     }, 5000)
@@ -51,14 +51,14 @@ export default function SignIn() {
         throw new Error("Token nem található")
       }
   
-      // Set token in cookie
+      
       document.cookie = `token=${token}; path=/; ${rememberMe ? "max-age=604800;" : ""}`
       
-      // FONTOS: Tároljuk a tokent a localStorage-ban is
+      
       localStorage.setItem('token', token)
       console.log("Token mentve a localStorage-ba:", token)
       
-      // Opcionálisan: felhasználói adatok lekérése és tárolása
+      
       try {
         const userResponse = await fetch("http://localhost:3000/user/profile", {
           headers: {
@@ -73,15 +73,15 @@ export default function SignIn() {
         }
       } catch (userError) {
         console.error("Hiba a felhasználói adatok lekérésekor:", userError)
-        // Nem szakítjuk meg a folyamatot, ha ez a rész hibás
+       
       }
   
-      // Show success alert instead of using JavaScript alert
+      
       showAlert("Sikeres bejelentkezés!", "success")
   
-      // Optional: redirect after a short delay to allow the user to see the success message
+      
       setTimeout(() => {
-        window.location.href = "/#"; // or any route after login
+        window.location.href = "/#"; 
       }, 1500)
     } catch (err) {
       console.error(err)

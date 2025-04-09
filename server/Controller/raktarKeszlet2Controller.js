@@ -1,9 +1,9 @@
-// A controller fájlban
+
 const RaktarKeszlet2 = require("../model/raktarKeszlet2");
 const Termek = require("../model/termek");
 const Raktar = require("../model/raktar");
 
-// Get all raktarKeszlet2
+
 exports.getAllRaktarKeszlet2 = async (req, res) => {
   try {
     const keszletek = await RaktarKeszlet2.findAll({
@@ -18,7 +18,7 @@ exports.getAllRaktarKeszlet2 = async (req, res) => {
   }
 };
 
-// Get raktarKeszlet2 by raktarId
+
 exports.getByRaktarId = async (req, res) => {
   try {
     const keszletek = await RaktarKeszlet2.findAll({
@@ -34,7 +34,6 @@ exports.getByRaktarId = async (req, res) => {
   }
 };
 
-// Get raktarKeszlet2 by termekId
 exports.getByTermekId = async (req, res) => {
   try {
     const keszletek = await RaktarKeszlet2.findAll({
@@ -50,7 +49,6 @@ exports.getByTermekId = async (req, res) => {
   }
 };
 
-// Get specific raktarKeszlet2 by raktarId and termekId
 exports.getSpecificKeszlet = async (req, res) => {
   try {
     const keszlet = await RaktarKeszlet2.findOne({
@@ -74,10 +72,9 @@ exports.getSpecificKeszlet = async (req, res) => {
   }
 };
 
-// Create a new raktarKeszlet2
 exports.createRaktarKeszlet2 = async (req, res) => {
   try {
-    // Ellenőrizzük, hogy létezik-e a raktár és a termék
+    
     const raktar = await Raktar.findByPk(req.body.raktarId);
     const termek = await Termek.findByPk(req.body.termekId);
     
@@ -96,7 +93,7 @@ exports.createRaktarKeszlet2 = async (req, res) => {
   }
 };
 
-// Update an existing raktarKeszlet2
+
 exports.updateRaktarKeszlet2 = async (req, res) => {
   try {
     const keszlet = await RaktarKeszlet2.findOne({
@@ -117,7 +114,7 @@ exports.updateRaktarKeszlet2 = async (req, res) => {
   }
 };
 
-// Delete a raktarKeszlet2
+
 exports.deleteRaktarKeszlet2 = async (req, res) => {
   try {
     const keszlet = await RaktarKeszlet2.findOne({

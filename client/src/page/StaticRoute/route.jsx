@@ -9,15 +9,15 @@ export default function Towns() {
   const [cartItemCount, setCartItemCount] = useState(0);
 
   useEffect(() => {
-    // Első táblázat települései
+    
     setTowns1(["Zalaszentmárton", "Zalaszentmihály", "Zalaigrice", "Alsórajk", "Kerecseny", "Orosztony", "Zalaszabar", "Esztergályhorváti", "Bókaháza", "Szentgyörgyvár", "Alsópáhok"]);
-    // Második táblázat települései - csak 8 település
+    
     setTowns2(["Kallósd", "Kehidakustány", "Zalaszentlászló", "Zalaszentgrót-Zalakoppány", "Zalavég", "Kisgörbő", "Vindornyafok", "Karmacs"]);
     
-    // Animáció indítása késleltetéssel
+  
     const timer = setTimeout(() => {
       setLogoAnimated(true);
-    }, 300); // 300ms késleltetés
+    }, 300); 
     
     return () => clearTimeout(timer);
   }, []);
@@ -48,16 +48,16 @@ export default function Towns() {
   };
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal és logóval */}
+      
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex-1"></div> {/* Üres div a bal oldalon az egyensúlyért */}
+            <div className="flex-1"></div> 
             <div className="flex items-center justify-center overflow-hidden h-10">
               <a href="/" className="text-white hover:text-gray-200 flex items-center">
                 <img 
                   src="/public/vándorbolt.png" 
-                  alt="MozgoShop Logo" 
+                  alt="VándorBolt Logo" 
                   className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                     logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                   }`}
@@ -88,7 +88,7 @@ export default function Towns() {
           </div>
         </div>
       </header> 
-      {/* Navigation */}
+     
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -131,14 +131,14 @@ export default function Towns() {
         </div>
       </nav>
 
-      {/* Települések cím */}
+
       <div className="container mx-auto text-center py-6">
         <h1 className="text-2xl font-bold">Települések</h1>
       </div>
 
       <main className="container mx-auto px-4 py-8">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-          {/* Kisebb képek fehér kerettel */}
+
           <div className="flex justify-center">
             <img 
               src="ut1.png" 
@@ -155,7 +155,7 @@ export default function Towns() {
           </div>
         </div>
 
-        {/* Kiszállítási információ */}
+        
         <div className="bg-red-100 p-4 rounded-lg shadow-md mb-8 text-center">
           <p className="text-lg font-medium text-red-800">
            A mozgóbolt 8:00-kor érkezik az első faluba, 12:00-kor éri el az utolsó települést.
@@ -163,9 +163,8 @@ export default function Towns() {
           </p>
         </div>
 
-        {/* Két táblázat egymás mellett */}
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-          {/* Első táblázat */}
+
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Útvonalak - 1. körzet</h2>
             <ul className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -177,7 +176,7 @@ export default function Towns() {
             </ul>
           </div>
           
-          {/* Második táblázat */}
+          
           <div className="bg-white p-6 rounded-lg shadow-md">
             <h2 className="text-xl font-bold text-gray-800 mb-4">Útvonalak - 2. körzet</h2>
             <ul className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-2 gap-4">
@@ -191,19 +190,19 @@ export default function Towns() {
         </div>
       </main>
 
-      {/* Footer */}
+
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <h3 className="text-lg font-bold mb-4">VándorBolt</h3>
               <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@mozgoshop.hu</p>
+                <p>Email: info.vandorboltwebaruhaz@gmail.com</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
@@ -211,17 +210,17 @@ export default function Towns() {
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/aszf" className="hover:underline">
                     Általános Szerződési Feltételek
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/adatvedelem" className="hover:underline">
                     Adatvédelmi Tájékoztató
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/utvonal" className="hover:underline">
                     Szállítási Információk
                   </a>
                 </li>
@@ -234,7 +233,7 @@ export default function Towns() {
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2025 MozgoShop. Minden jog fenntartva.</p>
+            <p>© 2025 VándorBolt. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>

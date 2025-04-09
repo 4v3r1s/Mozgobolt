@@ -5,11 +5,11 @@ const multer = require("multer");
 const path = require("path");
 const jwt = require("jsonwebtoken");
 
-// Middleware a token ellenőrzéshez
+
 const authenticateToken = (req, res, next) => {
   try {
     const authHeader = req.header("Authorization");
-    const token = authHeader && authHeader.split(" ")[1]; // Bearer TOKEN formátum
+    const token = authHeader && authHeader.split(" ")[1]; 
     
     if (!token) {
       return res.status(401).json({ message: "Nincs token megadva" });
@@ -29,7 +29,7 @@ const authenticateToken = (req, res, next) => {
   }
 };
 
-// Fájl feltöltés konfigurálása
+
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
     cb(null, path.join(__dirname, "../../uploads/napi-fogyas"));
@@ -41,10 +41,10 @@ const storage = multer.diskStorage({
 
 const upload = multer({ 
   storage: storage,
-  limits: { fileSize: 10 * 1024 * 1024 } // 10MB limit
+  limits: { fileSize: 10 * 1024 * 1024 } 
 });
 
-// Alap CRUD műveletek
+
 router.get("/", authenticateToken, napi_fogyasController.getAllNapiFogyas);
 router.get("/statistics", authenticateToken, napi_fogyasController.getNapiFogyasStatistics);
 router.get("/:id", authenticateToken, napi_fogyasController.getNapiFogyasById);
@@ -52,7 +52,7 @@ router.post("/", authenticateToken, napi_fogyasController.createNapiFogyas);
 router.put("/:id", authenticateToken, napi_fogyasController.updateNapiFogyas);
 router.delete("/:id", authenticateToken, napi_fogyasController.deleteNapiFogyas);
 
-// Fájl feltöltés
+
 router.post("/upload", authenticateToken, upload.single("file"), napi_fogyasController.uploadNapiFogyas);
 
 module.exports = router;

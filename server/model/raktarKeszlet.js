@@ -42,7 +42,7 @@ const RaktarKeszlet = sequelize.define("RaktarKeszlet", {
   ]
 });
 
-// Kapcsolatok beállítása
+
 RaktarKeszlet.belongsTo(Raktar, {
   foreignKey: 'raktarId',
   targetKey: 'azonosito',
@@ -55,7 +55,7 @@ RaktarKeszlet.belongsTo(Termek, {
   as: 'termek'
 });
 
-// Kapcsolatok a másik irányból
+
 Raktar.hasMany(RaktarKeszlet, {
   foreignKey: 'raktarId',
   sourceKey: 'azonosito',

@@ -15,7 +15,7 @@ export default function NapiFogyas() {
   const [raktarak, setRaktarak] = useState([]);
   const [previewData, setPreviewData] = useState(null);
 
-  // Animation effect
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
@@ -24,11 +24,11 @@ export default function NapiFogyas() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Ellenőrizzük, hogy a felhasználó jogosult-e a napi fogyás kezelésére
+ 
   useEffect(() => {
     const checkAuth = async () => {
       try {
-        // Get token from cookie
+        
         const token = document.cookie
           .split('; ')
           .find(row => row.startsWith('token='))
@@ -54,7 +54,7 @@ export default function NapiFogyas() {
 
         const userData = await response.json();
         
-        // Csak admin és vevo szerepkörű felhasználók férhetnek hozzá
+        
         if (userData.szerep !== "admin" && userData.szerep !== "vevo") {
           navigate('/account');
           return;
@@ -68,8 +68,7 @@ export default function NapiFogyas() {
     checkAuth();
   }, [navigate]);
  
-  // Új függvény a termék adatok lekéréséhez
-  // Módosított fetchTermekData függvény
+  
 const fetchTermekData = async (termekIds) => {
     try {
       const token = document.cookie
@@ -81,8 +80,7 @@ const fetchTermekData = async (termekIds) => {
         return {};
       }
   
-      // Csak az egyedi termék azonosítókat kérjük le
-      // Biztosítsuk, hogy minden azonosító szám típusú legyen
+      
       const uniqueIds = [...new Set(termekIds.map(id => parseInt(id)).filter(id => !isNaN(id)))];
       
       console.log("Termék azonosítók lekérése:", uniqueIds);
@@ -91,7 +89,7 @@ const fetchTermekData = async (termekIds) => {
         return {};
       }
       
-      // Lekérjük az összes terméket
+      
       const response = await fetch("http://localhost:3000/termek", {
         headers: {
           "Authorization": `Bearer ${token}`
@@ -105,14 +103,14 @@ const fetchTermekData = async (termekIds) => {
       const termekek = await response.json();
       console.log(`${termekek.length} termék betöltve`);
       
-      // Készítünk egy objektumot, ahol a kulcs a termék azonosító, az érték pedig a termék neve
+      
       const termekMap = {};
       termekek.forEach(termek => {
-        // Biztosítsuk, hogy a termék azonosító szám típusú legyen
+        
         const termekId = parseInt(termek.azonosito);
         if (uniqueIds.includes(termekId)) {
           termekMap[termekId] = termek.nev;
-          // Szöveges formátumban is tároljuk az azonosítót
+          
           termekMap[termekId.toString()] = termek.nev;
         }
       });
@@ -125,7 +123,7 @@ const fetchTermekData = async (termekIds) => {
     }
   };
 
-  // Fetch raktárak (mozgóboltok)
+  
   useEffect(() => {
     const fetchRaktarak = async () => {
       try {
@@ -152,7 +150,7 @@ const fetchTermekData = async (termekIds) => {
         const data = await response.json();
         setRaktarak(data);
         
-        // Ha van raktár, állítsuk be az elsőt alapértelmezettként
+       
         if (data.length > 0) {
           setRaktar(data[0].azonosito.toString());
         }
@@ -165,38 +163,36 @@ const fetchTermekData = async (termekIds) => {
     fetchRaktarak();
   }, [navigate]);
 
-  // Fájl tartalmának előnézete
+  
   const parseFileForPreview = async (file) => {
     try {
       const fileExt = file.name.split('.').pop().toLowerCase();
       
       if (fileExt === 'csv') {
-        // CSV fájl feldolgozása
-        // CSV fájl feldolgozása esetén
+        
     Papa.parse(file, {
         header: true,
             complete: async (results) => {
-            // Csak az első 10 sort mutatjuk
+           
             const previewRows = results.data.slice(0, 10);
             
-            // Termék azonosítók kinyerése
             const termekIds = previewRows.map(row => {
-                // Megpróbáljuk kinyerni a termék azonosítót a különböző lehetséges mezőnevekből
+                
                 const id = row['Termék azonosító'] || row['termek_azonosito'] || row['termek'] || 
                         row['Termék'] || row['TermékID'] || row['ID'] || Object.values(row)[0];
                 console.log("Talált termék azonosító:", id);
                 return id;
             }).filter(id => id);
             
-            // Termék nevek lekérése
+            
             const termekMap = await fetchTermekData(termekIds);
             
-            // Termék nevek hozzáadása az előnézet sorokhoz
+           
             const rowsWithNames = previewRows.map(row => {
                 const termekId = row['Termék azonosító'] || row['termek_azonosito'] || row['termek'] || 
                                 row['Termék'] || row['TermékID'] || row['ID'] || Object.values(row)[0];
                 
-                // Próbáljuk meg különböző formátumokban is keresni a termék nevét
+                
                 const termekNev = termekMap[termekId] || termekMap[parseInt(termekId)] || 
                                 termekMap[termekId.toString()] || 'Ismeretlen termék';
                 
@@ -206,7 +202,7 @@ const fetchTermekData = async (termekIds) => {
                 };
             });
             
-            // Fejlécek frissítése, hogy tartalmazza a "Termék neve" oszlopot is
+            
             const headers = results.meta.fields || [];
             if (!headers.includes('Termék neve')) {
                 headers.push('Termék neve');
@@ -223,7 +219,7 @@ const fetchTermekData = async (termekIds) => {
             }
     });
       } else if (['xlsx', 'xls'].includes(fileExt)) {
-        // Excel fájl feldolgozása
+        
         const reader = new FileReader();
         reader.onload = async (e) => {
           try {
@@ -237,13 +233,13 @@ const fetchTermekData = async (termekIds) => {
               const headers = [...jsonData[0], 'Termék neve'];
               const rows = jsonData.slice(1, 11);
               
-              // Termék azonosítók kinyerése
+              
               const termekIds = rows.map(row => row[0]).filter(id => id);
               
-              // Termék nevek lekérése
+              
               const termekMap = await fetchTermekData(termekIds);
               
-              // Termék nevek hozzáadása az előnézet sorokhoz
+              
               const rowsWithNames = rows.map(row => {
                 const rowData = {};
                 headers.forEach((header, index) => {
@@ -252,7 +248,7 @@ const fetchTermekData = async (termekIds) => {
                   }
                 });
                 
-                // Termék neve hozzáadása
+                
                 const termekId = row[0];
                 rowData['Termék neve'] = termekMap[termekId] || 'Ismeretlen termék';
                 
@@ -289,7 +285,7 @@ const fetchTermekData = async (termekIds) => {
       setSuccess(false);
       setPreviewData(null);
       
-      // Fájl előnézetének generálása
+      
       parseFileForPreview(selectedFile);
     }
   };
@@ -343,7 +339,7 @@ const fetchTermekData = async (termekIds) => {
       setSuccess(true);
       setFile(null);
       setPreviewData(null);
-      // Reset the file input
+      
       document.getElementById('fileInput').value = "";
     } catch (error) {
       console.error("Hiba a fájl feltöltése során:", error);
@@ -353,21 +349,21 @@ const fetchTermekData = async (termekIds) => {
     }
   };
 
-  // Előnézet bezárása
+  
   const closePreview = () => {
     setPreviewData(null);
   };
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
               <img 
                 src="/public/vándorbolt.png" 
-                alt="MozgoShop Logo" 
+                alt="VándorBolt Logo" 
                 className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                 }`}
@@ -384,7 +380,7 @@ const fetchTermekData = async (termekIds) => {
         </div>
       </header>
       
-      {/* Navigation */}
+      
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -399,7 +395,7 @@ const fetchTermekData = async (termekIds) => {
         </div>
       </nav>
 
-      {/* Main Content */}
+      
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-3xl mx-auto">
           <div className="flex items-center mb-6">
@@ -490,7 +486,7 @@ const fetchTermekData = async (termekIds) => {
                   </div>
                 </div>
 
-                {/* Előnézet megjelenítése */}
+                
                 {previewData && (
                   <div className="mt-6 border border-gray-200 rounded-md overflow-hidden">
                     <div className="bg-gray-50 px-4 py-3 border-b border-gray-200 flex justify-between items-center">
@@ -594,34 +590,50 @@ const fetchTermekData = async (termekIds) => {
         </div>
       </main>
 
-      {/* Footer */}
+      
       <footer className="bg-red-700 text-white mt-12">
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <h3 className="text-lg font-bold mb-4">VándorBolt</h3>
               <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@mozgoshop.hu</p>
+                <p>Email: info.vandorboltwebaruhaz@gmail.com</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
-                <li><a href="#" className="hover:underline">Általános Szerződési Feltételek</a></li>
-                <li><a href="#" className="hover:underline">Adatvédelmi Tájékoztató</a></li>
-                <li><a href="#" className="hover:underline">Szállítási Információk</a></li>
-                <li><a href="/StaticKapcsolat" className="hover:underline">Kapcsolat</a></li>
+                <li>
+                  <a href="/aszf" className="hover:underline">
+                    Általános Szerződési Feltételek
+                  </a>
+                </li>
+                <li>
+                  <a href="/adatvedelem" className="hover:underline">
+                    Adatvédelmi Tájékoztató
+                  </a>
+                </li>
+                <li>
+                  <a href="/utvonal" className="hover:underline">
+                    Szállítási Információk
+                  </a>
+                </li>
+                <li>
+                  <a href="/StaticKapcsolat" className="hover:underline">
+                    Kapcsolat
+                  </a>
+                </li>
               </ul>
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+            <p>© 2025 VándorBolt. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>

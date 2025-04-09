@@ -17,7 +17,7 @@ export default function SignUp() {
   const [alert, setAlert] = useState({
     show: false,
     message: "",
-    type: "success", // success or error
+    type: "success", 
   })
 
   const handleChange = (e) => {
@@ -42,7 +42,7 @@ export default function SignUp() {
       type,
     })
 
-    // Auto-hide alert after 5 seconds
+    
     setTimeout(() => {
       setAlert((prev) => ({ ...prev, show: false }))
     }, 5000)
@@ -76,7 +76,7 @@ export default function SignUp() {
         showAlert("Sikeres regisztráció!", "success")
         console.log("User added:", data)
         
-        // Küldünk egy regisztrációs visszaigazoló e-mailt
+        
         try {
           const emailResponse = await fetch("http://localhost:3000/email/registration-confirmation", {
             method: "POST",
@@ -98,7 +98,7 @@ export default function SignUp() {
           console.error("E-mail küldési hiba:", emailError);
         }
 
-        // Redirect to login after short delay
+        
         setTimeout(() => navigate("/login"), 1500)
       } else {
         showAlert(`Hiba: ${data.message}`)

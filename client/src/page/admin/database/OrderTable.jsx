@@ -10,11 +10,11 @@ export default function OrderTable() {
   const [orderDetails, setOrderDetails] = useState(null);
   const [viewingOrderId, setViewingOrderId] = useState(null);
 
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
-    }, 300); // 300ms késleltetés
+    }, 300); 
     
     return () => clearTimeout(timer);
   }, []);
@@ -110,7 +110,6 @@ export default function OrderTable() {
         throw new Error("Nincs bejelentkezve");
       }
 
-      // Csak az állapot frissítése
       const dataToSend = { 
         allapot: formData.allapot 
       };
@@ -128,7 +127,7 @@ export default function OrderTable() {
         throw new Error("Hiba a rendelés frissítése során");
       }
 
-      // Update the orders list
+     
       fetchOrders();
       setEditingOrder(null);
       alert("Rendelés sikeresen frissítve!");
@@ -164,7 +163,7 @@ export default function OrderTable() {
         throw new Error("Hiba a rendelés törlése során");
       }
 
-      // Update the orders list
+      
       fetchOrders();
       alert("Rendelés sikeresen törölve!");
     } catch (error) {
@@ -173,7 +172,7 @@ export default function OrderTable() {
     }
   };
 
-  // Rendelés állapot formázása
+  
   const formatOrderStatus = (status) => {
     switch (status) {
       case "feldolgozás alatt":
@@ -189,7 +188,7 @@ export default function OrderTable() {
     }
   };
 
-  // Dátum formázása
+  
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('hu-HU', {
@@ -218,7 +217,7 @@ export default function OrderTable() {
               <h2 className="text-xl font-bold text-gray-800">Rendelések kezelése</h2>
             </div>
 
-            {/* Rendelés részletek modal */}
+            
             {orderDetails && (
               <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
                 <div className="bg-white rounded-lg shadow-xl max-w-4xl w-full max-h-screen overflow-y-auto">
@@ -278,7 +277,7 @@ export default function OrderTable() {
                                         className="h-10 w-10 object-cover rounded-md mr-3"
                                         onError={(e) => {
                                           e.target.onerror = null;
-                                          e.target.src = "/placeholder.png"; // Helyettesítő kép, ha a termék képe nem tölthető be
+                                          e.target.src = "/placeholder.png"; 
                                         }}
                                       />
                                     ) : (

@@ -13,7 +13,7 @@ export default function Cart() {
   const [discount, setDiscount] = useState(0);
 
   
-  // Animáció indítása késleltetéssel
+ 
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
@@ -22,7 +22,7 @@ export default function Cart() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Kosár tartalmának betöltése
+  
   useEffect(() => {
     const loadCart = () => {
       try {
@@ -53,7 +53,7 @@ export default function Cart() {
     
     loadCart();
     
-    // Eseményfigyelők hozzáadása
+    
     window.addEventListener('storage', loadCart);
     window.addEventListener('cartUpdated', loadCart);
     
@@ -63,7 +63,7 @@ export default function Cart() {
     };
   }, []);
 
-  // Mennyiség növelése
+  
   const increaseQuantity = (id) => {
     setCartItems(prevItems => {
       const updatedItems = prevItems.map(item => 
@@ -75,7 +75,7 @@ export default function Cart() {
     });
   };
 
-  // Mennyiség csökkentése
+  
   const decreaseQuantity = (id) => {
     setCartItems(prevItems => {
       const updatedItems = prevItems.map(item => {
@@ -90,7 +90,7 @@ export default function Cart() {
     });
   };
 
-  // Termék eltávolítása a kosárból
+ 
   const removeItem = (id) => {
     setCartItems(prevItems => {
       const updatedItems = prevItems.filter(item => item.id !== id);
@@ -99,13 +99,13 @@ export default function Cart() {
     });
   };
 
-  // Kupon alkalmazása
+  
   const applyCoupon = () => {
     if (couponCode.toLowerCase() === "mozgo10") {
       setCouponApplied(true);
-      setDiscount(10); // 10% kedvezmény
+      setDiscount(10); // 
       
-      // Save discount information to localStorage
+      
       localStorage.setItem('cartDiscount', JSON.stringify({
         applied: true,
         percent: 10,
@@ -116,7 +116,7 @@ export default function Cart() {
     }
   };
 
-  // Összegek kiszámítása
+  
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => {
       const itemPrice = item.discountPrice || item.price;
@@ -126,10 +126,10 @@ export default function Cart() {
 
   const subtotal = calculateSubtotal();
   const discountAmount = couponApplied ? (subtotal * discount / 100) : 0;
-  const shipping = subtotal > 10000 ? 0 : 990; // Ingyenes szállítás 10000 Ft felett
+  const shipping = subtotal > 10000 ? 0 : 990; 
   const total = subtotal - discountAmount + shipping;
 
-  // Kosár tartalmának törlése (debug célokra)
+  
   const clearCart = () => {
     localStorage.removeItem('cart');
     setCartItems([]);
@@ -138,14 +138,14 @@ export default function Cart() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header - animált MozgoShop felirattal és logóval */}
+      {/* Header - animált VándorBolt felirattal és logóval */}
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
               <img 
                 src="/public/vándorbolt.png" 
-                alt="MozgoShop Logo" 
+                alt="VándorBolt Logo" 
                 className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                 }`}
@@ -400,14 +400,14 @@ export default function Cart() {
         <div className="container mx-auto px-4 py-8">
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div>
-              <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
+              <h3 className="text-lg font-bold mb-4">VándorBolt</h3>
               <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
             <div>
               <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
               <address className="not-italic text-sm">
                 <p>1234 Budapest, Példa utca 123.</p>
-                <p>Email: info@mozgoshop.hu</p>
+                <p>Email: info.vandorboltwebaruhaz@gmail.com</p>
                 <p>Telefon: +36 1 234 5678</p>
               </address>
             </div>
@@ -415,17 +415,17 @@ export default function Cart() {
               <h3 className="text-lg font-bold mb-4">Információk</h3>
               <ul className="text-sm space-y-2">
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/aszf" className="hover:underline">
                     Általános Szerződési Feltételek
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/adatvedelem" className="hover:underline">
                     Adatvédelmi Tájékoztató
                   </a>
                 </li>
                 <li>
-                  <a href="#" className="hover:underline">
+                  <a href="/utvonal" className="hover:underline">
                     Szállítási Információk
                   </a>
                 </li>
@@ -438,7 +438,7 @@ export default function Cart() {
             </div>
           </div>
           <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-            <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+            <p>© 2025 VándorBolt. Minden jog fenntartva.</p>
           </div>
         </div>
       </footer>

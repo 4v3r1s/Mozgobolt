@@ -6,10 +6,10 @@ const multer = require("multer");
 const path = require("path");
 const fs = require("fs");
 
-// Define multer storage configuration
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
-    // Módosítjuk a helyes mappára
+   
     const dir = path.join(__dirname, '../../public/termek-kepek/');
     if (!fs.existsSync(dir)){
       fs.mkdirSync(dir, { recursive: true });
@@ -24,7 +24,7 @@ const storage = multer.diskStorage({
   }
 });
 
-// Create the multer instance
+
 const upload = multer({ 
   storage: storage,
   limits: { fileSize: 5 * 1024 * 1024 },
@@ -40,7 +40,6 @@ const upload = multer({
   }
 }).single('kep');
 
-// Debug middleware to log request details
 router.use((req, res, next) => {
   console.log(`${req.method} ${req.url}`);
   console.log('Headers:', JSON.stringify(req.headers, null, 2));
@@ -50,7 +49,7 @@ router.use((req, res, next) => {
   next();
 });
 
-// Apply upload middleware with proper error handling
+
 router.post("/", function(req, res, next) {
   console.log("Processing POST request to /termek");
   
@@ -71,11 +70,9 @@ router.post("/", function(req, res, next) {
   });
 }, termekController.createTermek);
 
-// Other routes
 router.get("/", termekController.getAllTermek);
 router.get("/:id", termekController.getTermekById);
 
-// Apply the same upload middleware to the PUT route
 router.put("/:id", function(req, res, next) {
   upload(req, res, function(err) {
     if (err) {
@@ -88,7 +85,7 @@ router.put("/:id", function(req, res, next) {
 
 router.delete("/:id", termekController.deleteTermek);
 
-// Kosár kezelő útvonalak
+
 router.get("/cart", cartController.getCart);
 router.post("/cart/add", cartController.addToCart);
 router.put("/cart/update", cartController.updateCartItem);

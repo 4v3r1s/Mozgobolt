@@ -31,11 +31,11 @@ export default function UserTable() {
   });
   const [logoAnimated, setLogoAnimated] = useState(false);
 
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
-    }, 300); // 300ms késleltetés
+    }, 300); 
     
     return () => clearTimeout(timer);
   }, []);
@@ -109,10 +109,10 @@ export default function UserTable() {
         throw new Error("Nincs bejelentkezve");
       }
 
-      // Create a copy of formData to avoid sending unnecessary fields
+      
       const dataToSend = { ...formData };
       
-      // Remove any fields that might cause issues
+      
       delete dataToSend.createdAt;
       delete dataToSend.updatedAt;
       
@@ -129,7 +129,7 @@ export default function UserTable() {
         throw new Error("Hiba a felhasználó frissítése során");
       }
 
-      // Update the users list
+      
       fetchUsers();
       setEditingUser(null);
       alert("Felhasználó sikeresen frissítve!");
@@ -165,7 +165,7 @@ export default function UserTable() {
         throw new Error(errorData.message || "Hiba a felhasználó létrehozása során");
       }
 
-      // Update the users list
+      
       fetchUsers();
       setShowAddForm(false);
       setNewUserData({
@@ -223,7 +223,7 @@ export default function UserTable() {
         throw new Error("Hiba a felhasználó törlése során");
       }
 
-      // Update the users list
+      
       fetchUsers();
       alert("Felhasználó sikeresen törölve!");
     } catch (error) {
@@ -260,7 +260,7 @@ export default function UserTable() {
                 <h3 className="text-lg font-semibold mb-4">Új felhasználó hozzáadása</h3>
                 <form onSubmit={handleAddUser} className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Alapadatok */}
+                    
                     <div className="md:col-span-3">
                       <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Alapadatok</h4>
                     </div>
@@ -363,7 +363,7 @@ export default function UserTable() {
                                               </label>
                                             </div>
                         
-                                            {/* Számlázási adatok */}
+                                            
                                             <div className="md:col-span-3 mt-4">
                                               <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Számlázási adatok</h4>
                                             </div>
@@ -428,7 +428,7 @@ export default function UserTable() {
                                               />
                                             </div>
                         
-                                            {/* Szállítási adatok */}
+                                            
                                             <div className="md:col-span-3 mt-4">
                                               <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Szállítási adatok</h4>
                                             </div>
@@ -514,7 +514,7 @@ export default function UserTable() {
                                                 <td colSpan="8" className="py-4 px-6 border-b">
                                                   <form onSubmit={handleSubmit} className="space-y-4">
                                                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                                      {/* Alapadatok */}
+                                                      
                                                       <div className="md:col-span-3">
                                                         <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Alapadatok</h4>
                                                       </div>
@@ -606,7 +606,7 @@ export default function UserTable() {
                                                         </label>
                                                       </div>
                         
-                                                      {/* Számlázási adatok */}
+                                                      
                                                       <div className="md:col-span-3 mt-4">
                                                         <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Számlázási adatok</h4>
                                                       </div>
@@ -671,7 +671,7 @@ export default function UserTable() {
                                                          />
                                                        </div>
                          
-                                                       {/* Szállítási adatok */}
+                                                      
                                                        <div className="md:col-span-3 mt-4">
                                                          <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Szállítási adatok</h4>
                                                        </div>

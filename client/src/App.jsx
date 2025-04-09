@@ -19,6 +19,9 @@ import ProfileEdit from './page/account/profile-edit';
 import Orders from './page/account/orders';
 import AdminDashboard from './page/admin/database/AdminDashboard';
 import NapiFogyas from './page/account/napiFogyas';
+import ASZF from './page/StaticASZF/staticASZF';
+import Adatvedelem from './page/staticNyilatkozat/staticNyilatkozat';
+
 
 function App() {
   return (
@@ -40,6 +43,8 @@ function App() {
         <Route path="/profile/edit" element={<ProfileEdit />} />
         <Route path="/orders" element={<Orders />} />
         <Route path="/account/napiFogyas" element={<NapiFogyas />} />
+        <Route path="/aszf" element={<ASZF />} />
+        <Route path="/adatvedelem" element={<Adatvedelem />} />
         {/* Admin routes */}
         <Route path="/admin" element={<Navigate to="/admin/dashboard" />} />
         <Route path="/admin/dashboard" element={<AdminDashboard />} />

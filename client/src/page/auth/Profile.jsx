@@ -17,7 +17,7 @@ export default function Profile() {
   const [alert, setAlert] = useState({
     show: false,
     message: "",
-    type: "success", // success or error
+    type: "success", 
   })
 
   const showAlert = (message, type = "error") => {
@@ -27,7 +27,7 @@ export default function Profile() {
       type,
     })
 
-    // Auto-hide alert after 5 seconds
+    
     setTimeout(() => {
       setAlert((prev) => ({ ...prev, show: false }))
     }, 5000)
@@ -35,7 +35,7 @@ export default function Profile() {
 
   useEffect(() => {
     const checkAuth = () => {
-      // Get token from cookie
+      
       const token = document.cookie
         .split('; ')
         .find(row => row.startsWith('token='))
@@ -70,7 +70,7 @@ export default function Profile() {
 
         if (!response.ok) {
           if (response.status === 401) {
-            // Token expired or invalid
+            
             setIsAuthenticated(false)
             return
           }
@@ -98,14 +98,14 @@ export default function Profile() {
   }, [])
 
   const handleLogout = () => {
-    // Clear token cookie
+    
     document.cookie = "token=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;"
     
-    // Show success message
+   
     showAlert("Sikeres kijelentkezés!", "success")
     setIsAuthenticated(false)
     
-    // Redirect to home after short delay
+    
     setTimeout(() => {
       navigate('/')
     }, 1500)

@@ -24,7 +24,7 @@ export default function Payment() {
   const [processingOrder, setProcessingOrder] = useState(false);
   const [discount, setDiscount] = useState(0);
   const [couponApplied, setCouponApplied] = useState(false);
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
@@ -33,7 +33,7 @@ export default function Payment() {
     return () => clearTimeout(timer);
   }, []);
 
-  // Kosár tartalmának betöltése
+  
   useEffect(() => {
     const loadCart = () => {
       try {
@@ -60,7 +60,7 @@ export default function Payment() {
         } else {
           console.log("Nincs kosár vagy érvénytelen formátum");
           setCartItems([]);
-          // Ha üres a kosár, visszairányítjuk a felhasználót a kosár oldalra
+          
           navigate('/cart');
         }
       } catch (error) {
@@ -77,14 +77,14 @@ export default function Payment() {
   useEffect(() => {
     const loadUserData = async () => {
       try {
-        // Check if user is logged in
+        
         const token = localStorage.getItem('token');
         if (!token) {
           console.log("No user logged in");
           return;
         }
         
-        // Fetch user data from server
+        
         const response = await fetch('http://localhost:3000/user/profile', {
           method: 'GET',
           headers: {
@@ -99,7 +99,7 @@ export default function Payment() {
         const userData = await response.json();
         console.log("Loaded user data:", userData);
         
-        // Populate form with user data
+        
         setFormData({
           firstName: userData.keresztnev || '',
           lastName: userData.vezeteknev || '',
@@ -118,7 +118,7 @@ export default function Payment() {
     loadUserData();
   }, []);
 
-  // Form input változás kezelése
+ 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setFormData({
@@ -126,7 +126,7 @@ export default function Payment() {
       [name]: value
     });
     
-    // Töröljük a hibát, ha a felhasználó javítja
+    
     if (errors[name]) {
       setErrors({
         ...errors,
@@ -135,11 +135,11 @@ export default function Payment() {
     }
   };
 
-  // Form validáció
+
   const validateForm = () => {
     const newErrors = {};
     
-    // Személyes adatok validálása
+
     if (!formData.firstName.trim()) newErrors.firstName = "Kötelező mező";
     if (!formData.lastName.trim()) newErrors.lastName = "Kötelező mező";
     if (!formData.email.trim()) {
@@ -156,12 +156,12 @@ export default function Payment() {
     return Object.keys(newErrors).length === 0;
   };
 
-  // Rendelés elküldése
+
   const handleSubmitOrder = async (e) => {
     e.preventDefault();
     
     if (!validateForm()) {
-      // Görgetés az első hibához
+ 
       const firstErrorField = document.querySelector('.error-message');
       if (firstErrorField) {
         firstErrorField.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -172,7 +172,7 @@ export default function Payment() {
     setProcessingOrder(true);
     
     try {
-      // Rendelés adatok összeállítása
+
       const orderData = {
         vevoAdatok: {
           firstName: formData.firstName,
@@ -189,8 +189,8 @@ export default function Payment() {
         osszegek: {
           subtotal: calculateSubtotal(),
           shipping: shipping,
-          discount: discount, // Use the actual discount percentage
-          total: total // This should be the total after discount
+          discount: discount, 
+          total: total 
         },
         tetelek: cartItems.map(item => ({
           id: item.id,
@@ -201,18 +201,18 @@ export default function Payment() {
         }))
       };
       
-      // Token lekérése a localStorage-ból
+    
       const token = localStorage.getItem('token');
       const headers = {
         'Content-Type': 'application/json'
       };
       
-      // Ha van token, hozzáadjuk a kéréshez
+
       if (token) {
         headers['Authorization'] = `Bearer ${token}`;
       }
       
-      // Rendelés elküldése a szervernek
+      
       const response = await fetch('http://localhost:3000/api/rendeles', {
         method: 'POST',
         headers: headers,
@@ -227,23 +227,23 @@ export default function Payment() {
       const responseData = await response.json();
       console.log("Rendelés sikeresen létrehozva:", responseData);
       
-      // Sikeres rendelés esetén
+   
       setOrderPlaced(true);
       
       if (responseData) {
         setOrderPlaced(true);
         
-        // Clear cart and discount
+       
         localStorage.removeItem('cart');
         localStorage.removeItem('cartDiscount');
         
-        // Trigger cart update event
+        
         window.dispatchEvent(new Event('cartUpdated'));
       }
-      // Kosár ürítése
+
       localStorage.removeItem('cart');
       
-      // Esemény kiváltása a kosár frissítéséről
+
       const event = new Event('cartUpdated');
       window.dispatchEvent(event);
       
@@ -255,7 +255,7 @@ export default function Payment() {
     }
   };
 
-  // Összegek kiszámítása
+
   const calculateSubtotal = () => {
     return cartItems.reduce((total, item) => {
       const itemPrice = item.discountPrice || item.price;
@@ -268,18 +268,18 @@ export default function Payment() {
   const shipping = subtotal > 10000 ? 0 : 990;
   const total = subtotal - discountAmount + shipping;
 
-  // Ha a rendelés sikeres volt, megjelenítjük a visszaigazoló képernyőt
+
   if (orderPlaced) {
     return (
       <div className="min-h-screen bg-gray-50">
-        {/* Header */}
+        
         <header className="bg-red-700 text-white">
           <div className="container mx-auto px-4 py-4">
             <div className="flex items-center justify-center overflow-hidden h-10">
               <a href="/" className="text-white hover:text-gray-200 flex items-center">
                 <img 
                   src="/public/vándorbolt.png" 
-                  alt="MozgoShop Logo" 
+                  alt="VándorBolt Logo" 
                   className="h-16 -my-3 mr-3"
                 />
                 <h1 className="text-2xl font-bold">Vándorbolt</h1>
@@ -288,7 +288,7 @@ export default function Payment() {
           </div>
         </header>
 
-        {/* Sikeres rendelés */}
+        
         <main className="container mx-auto px-4 py-12">
           <div className="max-w-2xl mx-auto bg-white rounded-lg shadow-md p-8 text-center">
             <div className="flex justify-center mb-6">
@@ -316,14 +316,14 @@ export default function Payment() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+     
       <header className="bg-red-700 text-white">
         <div className="container mx-auto px-4 py-4">
           <div className="flex items-center justify-center overflow-hidden h-10">
             <a href="/" className="text-white hover:text-gray-200 flex items-center">
               <img 
                 src="/public/vándorbolt.png" 
-                alt="MozgoShop Logo" 
+                alt="VándorBolt Logo" 
                 className={`h-16 -my-3 mr-3 transition-all duration-1000 ease-in-out transform ${
                   logoAnimated ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0"
                 }`}
@@ -340,7 +340,7 @@ export default function Payment() {
         </div>
       </header>
 
-      {/* Navigation */}
+      
       <nav className="bg-red-800 text-white">
         <div className="container mx-auto px-4">
           <ul className="flex overflow-x-auto whitespace-nowrap py-3 gap-6 text-sm font-medium">
@@ -383,7 +383,7 @@ export default function Payment() {
         </div>
       </nav>
 
-      {/* Main Content */}
+      
       <main className="container mx-auto px-4 py-8">
         <div className="max-w-5xl mx-auto">
           <div className="flex items-center mb-6">
@@ -417,10 +417,10 @@ export default function Payment() {
             </div>
           ) : (
             <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-              {/* Fizetési űrlap */}
+              
               <div className="lg:col-span-2">
                 <form onSubmit={handleSubmitOrder}>
-                  {/* Szállítási adatok */}
+                  
                   <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
                     <div className="p-4 bg-gray-50 border-b flex items-center">
                       <Truck className="h-5 w-5 mr-2 text-gray-600" />
@@ -554,7 +554,6 @@ export default function Payment() {
                       </div>
                     </div>
                     
-                    {/* Fizetési mód - csak készpénzes fizetés */}
                     <div className="bg-white rounded-lg shadow-md overflow-hidden mb-6">
                       <div className="p-4 bg-gray-50 border-b">
                         <h2 className="font-semibold text-gray-700">Fizetési mód</h2>
@@ -582,7 +581,7 @@ export default function Payment() {
                       </div>
                     </div>
                     
-                    {/* Rendelés elküldése gomb */}
+                    
                     <div className="mt-6 lg:hidden">
                       <Button 
                         type="submit"
@@ -595,7 +594,7 @@ export default function Payment() {
                   </form>
                 </div>
                 
-                {/* Rendelés összegzése */}
+                
                 <div className="lg:col-span-1">
                   <div className="bg-white rounded-lg shadow-md p-4 sticky top-4">
                     <div className="flex justify-between items-center mb-4">
@@ -609,7 +608,7 @@ export default function Payment() {
                     </div>
                     
                     <div className={`space-y-3 ${orderSummaryOpen ? 'block' : 'hidden lg:block'}`}>
-                      {/* Termékek listája */}
+                      
                       <div className="max-h-60 overflow-y-auto mb-4">
                         {cartItems.map((item) => (
                           <div key={item.id} className="flex items-start py-2 border-b border-gray-200 last:border-0">
@@ -629,14 +628,14 @@ export default function Payment() {
                         ))}
                       </div>
                       
-                      {/* Összegek */}
+                      
                         <div className="space-y-2 pt-2">
                           <div className="flex justify-between text-sm text-gray-600">
                             <span>Részösszeg</span>
                             <span>{subtotal.toLocaleString()} Ft</span>
                           </div>
                           
-                          {/* Add this block to display discount if applied */}
+                          
                           {couponApplied && discount > 0 && (
                             <div className="flex justify-between text-sm text-green-600">
                               <span>Kupon kedvezmény ({discount}%)</span>
@@ -660,7 +659,7 @@ export default function Payment() {
 
                     </div>
                     
-                    {/* Rendelés elküldése gomb - csak asztali nézetben */}
+                    
                     <div className="mt-6 hidden lg:block">
                       <Button 
                         onClick={handleSubmitOrder}
@@ -680,53 +679,53 @@ export default function Payment() {
           </div>
         </main>
   
-        {/* Footer */}
+       
         <footer className="bg-red-700 text-white mt-12">
-          <div className="container mx-auto px-4 py-8">
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-              <div>
-                <h3 className="text-lg font-bold mb-4">MozgoShop</h3>
-                <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
-                <address className="not-italic text-sm">
-                  <p>1234 Budapest, Példa utca 123.</p>
-                  <p>Email: info@mozgoshop.hu</p>
-                  <p>Telefon: +36 1 234 5678</p>
-                </address>
-              </div>
-              <div>
-                <h3 className="text-lg font-bold mb-4">Információk</h3>
-                <ul className="text-sm space-y-2">
-                  <li>
-                    <a href="#" className="hover:underline">
-                      Általános Szerződési Feltételek
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:underline">
-                      Adatvédelmi Tájékoztató
-                    </a>
-                  </li>
-                  <li>
-                    <a href="#" className="hover:underline">
-                      Szállítási Információk
-                    </a>
-                  </li>
-                  <li>
-                    <a href="/StaticKapcsolat" className="hover:underline">
-                      Kapcsolat
-                    </a>
-                  </li>
-                </ul>
-              </div>
+        <div className="container mx-auto px-4 py-8">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div>
+              <h3 className="text-lg font-bold mb-4">VándorBolt</h3>
+              <p className="text-sm">Minőségi élelmiszerek széles választéka, gyors kiszállítással az Ön otthonába.</p>
             </div>
-            <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
-              <p>© 2023 MozgoShop. Minden jog fenntartva.</p>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Kapcsolat</h3>
+              <address className="not-italic text-sm">
+                <p>1234 Budapest, Példa utca 123.</p>
+                <p>Email: info.vandorboltwebaruhaz@gmail.com</p>
+                <p>Telefon: +36 1 234 5678</p>
+              </address>
+            </div>
+            <div>
+              <h3 className="text-lg font-bold mb-4">Információk</h3>
+              <ul className="text-sm space-y-2">
+                <li>
+                  <a href="/aszf" className="hover:underline">
+                    Általános Szerződési Feltételek
+                  </a>
+                </li>
+                <li>
+                  <a href="/adatvedelem" className="hover:underline">
+                    Adatvédelmi Tájékoztató
+                  </a>
+                </li>
+                <li>
+                  <a href="/utvonal" className="hover:underline">
+                    Szállítási Információk
+                  </a>
+                </li>
+                <li>
+                  <a href="/StaticKapcsolat" className="hover:underline">
+                    Kapcsolat
+                  </a>
+                </li>
+              </ul>
             </div>
           </div>
-        </footer>
+          <div className="border-t border-red-600 mt-8 pt-6 text-sm text-center">
+            <p>© 2025 VándorBolt. Minden jog fenntartva.</p>
+          </div>
+        </div>
+      </footer>
       </div>
     );
   }

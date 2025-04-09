@@ -2,7 +2,7 @@ const napi_fogyas = require("../model/napi_fogyas");
 const Termek = require("../model/termek");
 const Raktar = require("../model/raktar");
 
-// Get all napi_fogyas
+
 exports.getAllNapiFogyas = async (req, res) => {
   try {
     const napiFogyasok = await napi_fogyas.findAll({

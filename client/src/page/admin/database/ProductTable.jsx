@@ -26,19 +26,19 @@ export default function ProductTable() {
     meret: "",
     szin: "",
     kepUrl: "",
-    vonalkod: "" // This is the only required field (allowNull: false)
+    vonalkod: "" 
   });
   
   const [logoAnimated, setLogoAnimated] = useState(false);
-  // Új állapot a kiválasztott kép előnézetéhez
+  
   const [selectedImage, setSelectedImage] = useState(null);
   const [editSelectedImage, setEditSelectedImage] = useState(null);
 
-  // Animáció indítása késleltetéssel
+  
   useEffect(() => {
     const timer = setTimeout(() => {
       setLogoAnimated(true);
-    }, 300); // 300ms késleltetés
+    }, 300); 
     
     return () => clearTimeout(timer);
   }, []);
@@ -59,7 +59,7 @@ export default function ProductTable() {
         throw new Error("Nincs bejelentkezve");
       }
 
-      // Módosított végpont a termekRoutes.js alapján
+      
       const response = await fetch("http://localhost:3000/termek", {
         headers: {
           "Authorization": `Bearer ${token}`
@@ -71,7 +71,7 @@ export default function ProductTable() {
       }
 
       const data = await response.json();
-      console.log("Fetched products:", data); // Debug log
+      console.log("Fetched products:", data); 
       setProducts(data);
     } catch (error) {
       console.error("Error fetching products:", error);
@@ -82,9 +82,9 @@ export default function ProductTable() {
   };
 
   const handleEdit = (product) => {
-    setEditingProduct(product.azonosito); // Módosítva 'id'-ről 'azonosito'-ra
+    setEditingProduct(product.azonosito); 
     setFormData({ ...product });
-    setEditSelectedImage(null); // Töröljük az előző szerkesztési kép előnézetet
+    setEditSelectedImage(null); 
   };
 
   const handleChange = (e) => {
@@ -95,37 +95,37 @@ export default function ProductTable() {
     });
   };
 
-  // Új függvény a kép kiválasztásának kezelésére szerkesztés közben
+  
   const handleImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setEditSelectedImage(URL.createObjectURL(file));
-      // Nem állítjuk be a formData-t, mert a képet külön kell kezelni a FormData objektumban
+  
     }
   };
 
-  // Új függvény a kép kiválasztásának kezelésére új termék hozzáadásakor
+  
   const handleNewImageChange = (e) => {
     if (e.target.files && e.target.files[0]) {
       const file = e.target.files[0];
       setSelectedImage(URL.createObjectURL(file));
-      // Nem állítjuk be a newProductData-t, mert a képet külön kell kezelni a FormData objektumban
+      
     }
   };
 
   const handleNewProductChange = (e) => {
   const { name, value, type, checked } = e.target;
   
-  // Special handling for date fields
+  
   if (name === 'akcio_eleje' || name === 'akcio_vege') {
-    // If the value is empty, set it to null
+    
     if (!value) {
       setNewProductData({
         ...newProductData,
         [name]: null
       });
     } else {
-      // Otherwise, ensure it's in YYYY-MM-DD format
+      
       const dateValue = new Date(value);
       if (!isNaN(dateValue.getTime())) {
         const formattedDate = dateValue.toISOString().split('T')[0];
@@ -134,7 +134,7 @@ export default function ProductTable() {
           [name]: formattedDate
         });
       } else {
-        // Invalid date, set to null
+        
         setNewProductData({
           ...newProductData,
           [name]: null
@@ -142,7 +142,7 @@ export default function ProductTable() {
       }
     }
   } else {
-    // Handle other fields as before
+    
     setNewProductData({
       ...newProductData,
       [name]: type === "checkbox" ? checked : type === "number" ? Number(value) : value,
@@ -162,20 +162,20 @@ const handleSubmit = async (e) => {
       throw new Error("Nincs bejelentkezve");
     }
 
-    // FormData objektum létrehozása a fájlfeltöltéshez
+    
     const formDataToSend = new FormData();
     
-    // Adatok hozzáadása a FormData objektumhoz
+    
     Object.keys(formData).forEach(key => {
-      // Kihagyjuk a createdAt és updatedAt mezőket
+      
       if (key !== 'createdAt' && key !== 'updatedAt') {
-        // Convert null values to empty strings to avoid FormData issues
+        
         const value = formData[key] === null ? '' : formData[key];
         formDataToSend.append(key, value);
       }
     });
     
-    // Kép hozzáadása, ha van kiválasztva
+    
     const imageInput = document.querySelector('input[name="kep"]');
     if (imageInput && imageInput.files[0]) {
       formDataToSend.append('kep', imageInput.files[0]);
@@ -184,20 +184,20 @@ const handleSubmit = async (e) => {
     
     console.log("Sending form data to server...");
     
-    // Módosított végpont a termekRoutes.js alapján
+    
     const response = await fetch(`http://localhost:3000/termek/${editingProduct}`, {
       method: "PUT",
       headers: {
         "Authorization": `Bearer ${token}`,
-        // Ne állítsuk be a Content-Type fejlécet, mert a FormData automatikusan beállítja
+        
       },
       body: formDataToSend,
     });
 
-    // Get the response text first
+    
     const responseText = await response.text();
     
-    // Try to parse it as JSON
+    
     let responseData;
     try {
       responseData = JSON.parse(responseText);
@@ -210,7 +210,7 @@ const handleSubmit = async (e) => {
       throw new Error(responseData.message || responseData.error || "Hiba a termék frissítése során");
     }
 
-    // Update the products list
+    
     fetchProducts();
     setEditingProduct(null);
     setEditSelectedImage(null);
@@ -224,7 +224,7 @@ const handleSubmit = async (e) => {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     
-    // Validate required fields
+    
     if (!newProductData.vonalkod) {
       alert("A vonalkód mező kitöltése kötelező!");
       return;
@@ -240,31 +240,30 @@ const handleSubmit = async (e) => {
         throw new Error("Nincs bejelentkezve");
       }
   
-      // Create a new FormData object
+      
       const formDataToSend = new FormData();
       
-      // Add all form fields to FormData
+      
       Object.keys(newProductData).forEach(key => {
-        // Handle special cases
+       
         if (key === 'akcio_eleje' || key === 'akcio_vege') {
-          // Only add date if it's valid
+          
           if (newProductData[key] && newProductData[key] !== 'Invalid date') {
             formDataToSend.append(key, newProductData[key]);
           }
         } else if (newProductData[key] !== null && newProductData[key] !== undefined) {
-          // Add other fields
+          
           formDataToSend.append(key, String(newProductData[key]));
         }
       });
       
-      // Add the image file if selected - use a different approach
+      
       const imageInput = document.getElementById('newProductImage');
       if (imageInput && imageInput.files && imageInput.files.length > 0) {
         const file = imageInput.files[0];
         formDataToSend.append('kep', file, file.name);
         console.log("Image file added to form data:", file.name, "Size:", file.size, "Type:", file.type);
         
-        // Log the FormData contents for debugging
         for (let pair of formDataToSend.entries()) {
           console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
         }
@@ -274,17 +273,17 @@ const handleSubmit = async (e) => {
   
       console.log("Sending form data to server...");
       
-      // Send the request - DO NOT set Content-Type header
+      
       const response = await fetch("http://localhost:3000/termek", {
         method: "POST",
         headers: {
           "Authorization": `Bearer ${token}`
-          // DO NOT set Content-Type here, let the browser set it with the boundary
+          
         },
         body: formDataToSend,
       });
   
-      // Parse the response
+      
       let responseData;
       const responseText = await response.text();
       
@@ -300,7 +299,7 @@ const handleSubmit = async (e) => {
         throw new Error(responseData.message || responseData.error || "Hiba a termék létrehozása során");
       }
   
-      // Success! Update the UI
+      
       fetchProducts();
       setShowAddForm(false);
       setSelectedImage(null);
@@ -348,7 +347,7 @@ const handleSubmit = async (e) => {
         throw new Error("Nincs bejelentkezve");
       }
 
-      // Módosított végpont a termekRoutes.js alapján
+      
       const response = await fetch(`http://localhost:3000/termek/${id}`, {
         method: "DELETE",
         headers: {
@@ -360,7 +359,7 @@ const handleSubmit = async (e) => {
         throw new Error("Hiba a termék törlése során");
       }
 
-      // Update the products list
+      
       fetchProducts();
       alert("Termék sikeresen törölve!");
     } catch (error) {
@@ -397,7 +396,7 @@ const handleSubmit = async (e) => {
                 <h3 className="text-lg font-semibold mb-4">Új termék hozzáadása</h3>
                 <form onSubmit={handleAddProduct} className="space-y-4" encType="multipart/form-data">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    {/* Alapadatok */}
+                    
                     <div className="md:col-span-3">
                       <h4 className="font-medium text-gray-700 mb-2 pb-1">Alapadatok</h4>
                     </div>
@@ -640,7 +639,7 @@ const handleSubmit = async (e) => {
                           <td colSpan="14" className="py-4 px-6 border-b">
                              <form onSubmit={handleSubmit} className="space-y-4" encType="multipart/form-data">
                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                                 {/* Alapadatok */}
+                                 
                                  <div className="md:col-span-3">
                                    <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Alapadatok</h4>
                                  </div>
@@ -709,7 +708,7 @@ const handleSubmit = async (e) => {
                                    />
                                  </div>
                                  
-                                 {/* Akciós adatok */}
+                                 
                                  <div className="md:col-span-3 mt-4">
                                    <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Akciós adatok</h4>
                                  </div>
@@ -754,7 +753,7 @@ const handleSubmit = async (e) => {
                                    />
                                  </div>
                                  
-                                 {/* Egyéb adatok */}
+                                 
                                  <div className="md:col-span-3 mt-4">
                                    <h4 className="font-medium text-gray-700 mb-2 border-b pb-1">Egyéb adatok</h4>
                                  </div>
@@ -832,7 +831,7 @@ const handleSubmit = async (e) => {
                                  ></textarea>
                                </div>
                                
-                               {/* Új képfeltöltő mező */}
+                               
                                <div className="md:col-span-3">
                                  <label className="block text-gray-700 mb-1">Termék képe</label>
                                  <input

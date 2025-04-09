@@ -2,7 +2,7 @@ const Csoport = require("../model/csoport");
 const { Sequelize } = require("sequelize");
 const sequelize = require("../config/config");
 
-// Get all csoportok
+
 exports.getAllCsoport = async (req, res) => {
   try {
     const csoportok = await Csoport.findAll();
@@ -12,7 +12,7 @@ exports.getAllCsoport = async (req, res) => {
   }
 };
 
-// Get a csoport by ID
+
 exports.getCsoportById = async (req, res) => {
   try {
     const csoport = await Csoport.findByPk(req.params.id);
@@ -25,7 +25,7 @@ exports.getCsoportById = async (req, res) => {
   }
 };
 
-// Create a new csoport
+
 exports.createCsoport = async (req, res) => {
   try {
     const newCsoport = await Csoport.create(req.body);
@@ -35,7 +35,7 @@ exports.createCsoport = async (req, res) => {
   }
 };
 
-// Update an existing csoport
+
 exports.updateCsoport = async (req, res) => {
   try {
     const csoport = await Csoport.findByPk(req.params.id);
@@ -49,7 +49,7 @@ exports.updateCsoport = async (req, res) => {
   }
 };
 
-// Delete a csoport
+
 exports.deleteCsoport = async (req, res) => {
   try {
     const csoport = await Csoport.findByPk(req.params.id);
@@ -63,7 +63,7 @@ exports.deleteCsoport = async (req, res) => {
   }
 };
 
-// Get all csoportok with product counts
+
 exports.getAllCsoportWithCounts = async (req, res) => {
   try {
     const csoportokWithCounts = await Csoport.findAll({

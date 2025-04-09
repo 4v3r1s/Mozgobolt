@@ -7,13 +7,13 @@ const Rendeles = sequelize.define("Rendeles", {
     primaryKey: true, 
     autoIncrement: true 
   },
-  // Rendelés azonosító (pl. R-12345)
+  
   rendelesAzonosito: { 
     type: DataTypes.STRING(50), 
     allowNull: false,
     unique: true
   },
-  // Vevő adatok
+ 
   vevoNev: { 
     type: DataTypes.STRING(255), 
     allowNull: false 
@@ -26,7 +26,7 @@ const Rendeles = sequelize.define("Rendeles", {
     type: DataTypes.STRING(50), 
     allowNull: false 
   },
-  // Szállítási adatok
+  
   szallitasiCim: { 
     type: DataTypes.STRING(255), 
     allowNull: false 
@@ -39,19 +39,19 @@ const Rendeles = sequelize.define("Rendeles", {
     type: DataTypes.STRING(20), 
     allowNull: false 
   },
-  // Fizetési adatok
+ 
   fizetesiMod: { 
     type: DataTypes.STRING(50), 
     allowNull: false,
     defaultValue: 'cash' 
   },
-  // Rendelés állapota (pl. feldolgozás alatt, kiszállítva, stb.)
+  
   allapot: { 
     type: DataTypes.STRING(50), 
     allowNull: false,
     defaultValue: 'feldolgozás alatt' 
   },
-  // Rendelés összegzés
+
   osszeg: { 
     type: DataTypes.DECIMAL(10, 2), 
     allowNull: false 
@@ -70,13 +70,13 @@ const Rendeles = sequelize.define("Rendeles", {
     type: DataTypes.DECIMAL(10, 2), 
     allowNull: false 
   },
-  // Időbélyegek
+
   rendelesIdeje: { 
     type: DataTypes.DATE, 
     allowNull: false,
     defaultValue: DataTypes.NOW 
   },
-  // Opcionális felhasználói azonosító, ha be van jelentkezve
+
   felhasznaloId: { 
     type: DataTypes.INTEGER, 
     allowNull: true,

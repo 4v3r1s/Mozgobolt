@@ -12,7 +12,7 @@ const Csoport = sequelize.define("Csoport", {
   timestamps: false,
 });
 
-// Kapcsolatok definiálása
+
 Csoport.associate = function(models) {
   Csoport.hasMany(models.Termek, {
     foreignKey: 'csoport',

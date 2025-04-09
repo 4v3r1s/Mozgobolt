@@ -1,6 +1,6 @@
 const Raktar = require("../model/raktar");
 
-// Get all raktar
+
 exports.getAllRaktar = async (req, res) => {
   try {
     const raktarak = await Raktar.findAll();
@@ -10,7 +10,7 @@ exports.getAllRaktar = async (req, res) => {
   }
 };
 
-// Get a raktar by ID
+
 exports.getRaktarById = async (req, res) => {
   try {
     const raktar = await Raktar.findByPk(req.params.id);
@@ -23,7 +23,7 @@ exports.getRaktarById = async (req, res) => {
   }
 };
 
-// Get raktar by rendszam
+
 exports.getRaktarByRendszam = async (req, res) => {
   try {
     const raktar = await Raktar.findOne({
@@ -40,10 +40,10 @@ exports.getRaktarByRendszam = async (req, res) => {
   }
 };
 
-// Create a new raktar
+
 exports.createRaktar = async (req, res) => {
   try {
-    // Ellenőrizzük, hogy létezik-e már ilyen rendszámú mozgóbolt
+    
     const existing = await Raktar.findOne({
       where: { rendszam: req.body.rendszam }
     });
@@ -62,7 +62,7 @@ exports.createRaktar = async (req, res) => {
   }
 };
 
-// Update an existing raktar
+
 exports.updateRaktar = async (req, res) => {
   try {
     const raktar = await Raktar.findByPk(req.params.id);
@@ -70,7 +70,7 @@ exports.updateRaktar = async (req, res) => {
       return res.status(404).json({ message: "Raktar not found" });
     }
 
-    // Ha változik a rendszám, ellenőrizzük, hogy nem ütközik-e
+    
     if (req.body.rendszam && req.body.rendszam !== raktar.rendszam) {
       const existing = await Raktar.findOne({
         where: { rendszam: req.body.rendszam }
@@ -91,7 +91,7 @@ exports.updateRaktar = async (req, res) => {
   }
 };
 
-// Delete a raktar
+
 exports.deleteRaktar = async (req, res) => {
   try {
     const raktar = await Raktar.findByPk(req.params.id);
@@ -105,7 +105,7 @@ exports.deleteRaktar = async (req, res) => {
   }
 };
 
-// Update max_kapacitas
+
 exports.updateMaxKapacitas = async (req, res) => {
   try {
     const { id } = req.params;

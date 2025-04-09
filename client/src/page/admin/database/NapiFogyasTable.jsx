@@ -16,7 +16,7 @@ export default function NapiFogyasTable() {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage] = useState(10);
 
-  // Adatok lekérése
+  
   useEffect(() => {
     fetchNapiFogyasok();
     fetchRaktarak();
@@ -120,7 +120,7 @@ export default function NapiFogyasTable() {
         throw new Error("Hiba a napi fogyás frissítése során");
       }
 
-      // Frissítjük a listát
+      
       fetchNapiFogyasok();
       setEditingItem(null);
       alert("Napi fogyás sikeresen frissítve!");
@@ -156,7 +156,7 @@ export default function NapiFogyasTable() {
         throw new Error("Hiba a napi fogyás törlése során");
       }
 
-      // Frissítjük a listát
+      
       fetchNapiFogyasok();
       alert("Napi fogyás sikeresen törölve!");
     } catch (error) {
@@ -171,7 +171,7 @@ export default function NapiFogyasTable() {
     setFilterRaktar("");
   };
 
-  // Szűrés és keresés
+  
   const filteredItems = napiFogyasok.filter(item => {
     const termekNev = item.termekData ? item.termekData.nev.toLowerCase() : "";
     const helyszin = item.helyszin ? item.helyszin.toLowerCase() : "";
@@ -185,19 +185,19 @@ export default function NapiFogyasTable() {
     return searchMatch && dateMatch && raktarMatch;
   });
 
-  // Lapozás
+  
   const indexOfLastItem = currentPage * itemsPerPage;
   const indexOfFirstItem = indexOfLastItem - itemsPerPage;
   const currentItems = filteredItems.slice(indexOfFirstItem, indexOfLastItem);
   const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
 
-  // Raktár név lekérése azonosító alapján
+  
   const getRaktarNev = (raktarId) => {
     const raktar = raktarak.find(r => r.azonosito === raktarId);
     return raktar ? raktar.rendszam : "Ismeretlen";
   };
 
-  // Dátum formázása
+  
   const formatDate = (dateString) => {
     try {
       return format(new Date(dateString), 'yyyy. MMMM d.', { locale: hu });
@@ -218,7 +218,7 @@ export default function NapiFogyasTable() {
         </button>
       </div>
 
-      {/* Keresés és szűrés */}
+     
       <div className="mb-6 grid grid-cols-1 md:grid-cols-4 gap-4">
         <div className="relative">
           <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -412,7 +412,7 @@ export default function NapiFogyasTable() {
             </table>
           </div>
 
-          {/* Lapozás */}
+          
           {totalPages > 1 && (
             <div className="flex justify-between items-center mt-4">
               <div>
@@ -444,7 +444,7 @@ export default function NapiFogyasTable() {
                   Előző
                 </button>
                 {Array.from({ length: Math.min(5, totalPages) }, (_, i) => {
-                  // Középre igazított lapozás
+                 
                   let pageNum;
                   if (totalPages <= 5) {
                     pageNum = i + 1;

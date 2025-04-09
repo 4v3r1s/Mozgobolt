@@ -1,7 +1,7 @@
-// Kosár kezelő controller
+
 const Termek = require("../model/termek");
 
-// Kosár lekérése (jelenleg csak egy dummy implementáció, mivel a kosár a kliens oldalon van)
+
 exports.getCart = async (req, res) => {
   try {
     res.json({ message: "Kosár lekérése sikeres", cart: [] });
@@ -10,7 +10,7 @@ exports.getCart = async (req, res) => {
   }
 };
 
-// Termék hozzáadása a kosárhoz
+
 exports.addToCart = async (req, res) => {
   try {
     const { termekId, quantity } = req.body;
@@ -19,13 +19,13 @@ exports.addToCart = async (req, res) => {
       return res.status(400).json({ message: "Termék azonosító megadása kötelező" });
     }
     
-    // Ellenőrizzük, hogy létezik-e a termék
+    
     const termek = await Termek.findByPk(termekId);
     if (!termek) {
       return res.status(404).json({ message: "A megadott termék nem található" });
     }
     
-    // Formázzuk a terméket a kosár számára
+    
     const cartItem = {
       id: termek.azonosito,
       name: termek.nev,
@@ -46,7 +46,7 @@ exports.addToCart = async (req, res) => {
   }
 };
 
-// Termék mennyiségének módosítása a kosárban
+
 exports.updateCartItem = async (req, res) => {
   try {
     const { termekId, quantity } = req.body;
@@ -55,7 +55,7 @@ exports.updateCartItem = async (req, res) => {
       return res.status(400).json({ message: "Termék azonosító és mennyiség megadása kötelező" });
     }
     
-    // Ellenőrizzük, hogy létezik-e a termék
+    
     const termek = await Termek.findByPk(termekId);
     if (!termek) {
       return res.status(404).json({ message: "A megadott termék nem található" });
@@ -71,7 +71,7 @@ exports.updateCartItem = async (req, res) => {
   }
 };
 
-// Termék eltávolítása a kosárból
+
 exports.removeFromCart = async (req, res) => {
   try {
     const termekId = req.params.id;
@@ -89,7 +89,7 @@ exports.removeFromCart = async (req, res) => {
   }
 };
 
-// Kosár ürítése
+
 exports.clearCart = async (req, res) => {
   try {
     res.status(200).json({ message: "Kosár sikeresen ürítve" });

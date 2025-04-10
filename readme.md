@@ -68,12 +68,12 @@ A projekt MySQL adatbázist használ. A docker elindítása után indítsa el a 
 
 
 
-### 6. Admin Panel
+### 6. Admin PanelB1gz1
 
 Az admin panel az adminisztrátorok számára van. Az adminisztrátori jogosultságokhoz az alábbi bejelentkezési információk szükségesek:
 
-- **Felhasználónév**: B1gz1
-- **Jelszó**: igazikristof@gmail.com
+- **Felhasználónév**: igazikristof@gmail.com
+- **Jelszó**: B1gz1
 
 A bejelentkezés után az admin panelen keresztül kezelhetei a termékeket, rendeléseket és felhasználókat.
 

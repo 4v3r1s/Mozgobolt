@@ -60,7 +60,7 @@ export default function NapiFogyas() {
           return;
         }
       } catch (error) {
-        console.error("Hiba a jogosultság ellenőrzése során:", error);
+        
         navigate('/login');
       }
     };
@@ -83,7 +83,7 @@ const fetchTermekData = async (termekIds) => {
       
       const uniqueIds = [...new Set(termekIds.map(id => parseInt(id)).filter(id => !isNaN(id)))];
       
-      console.log("Termék azonosítók lekérése:", uniqueIds);
+      
       
       if (uniqueIds.length === 0) {
         return {};
@@ -101,7 +101,7 @@ const fetchTermekData = async (termekIds) => {
       }
   
       const termekek = await response.json();
-      console.log(`${termekek.length} termék betöltve`);
+      
       
       
       const termekMap = {};
@@ -115,10 +115,10 @@ const fetchTermekData = async (termekIds) => {
         }
       });
       
-      console.log("Termék nevek:", termekMap);
+      
       return termekMap;
     } catch (error) {
-      console.error("Hiba a termékek lekérdezésekor:", error);
+      
       return {};
     }
   };
@@ -155,7 +155,7 @@ const fetchTermekData = async (termekIds) => {
           setRaktar(data[0].azonosito.toString());
         }
       } catch (error) {
-        console.error("Hiba a mozgóboltok lekérdezésekor:", error);
+        
         setError("Nem sikerült betölteni a mozgóboltokat. Kérjük, próbálja újra később.");
       }
     };
@@ -180,7 +180,7 @@ const fetchTermekData = async (termekIds) => {
                 
                 const id = row['Termék azonosító'] || row['termek_azonosito'] || row['termek'] || 
                         row['Termék'] || row['TermékID'] || row['ID'] || Object.values(row)[0];
-                console.log("Talált termék azonosító:", id);
+                
                 return id;
             }).filter(id => id);
             
@@ -214,7 +214,7 @@ const fetchTermekData = async (termekIds) => {
             });
             },
             error: (error) => {
-            console.error("Hiba a CSV fájl feldolgozása során:", error);
+            
             setError("A CSV fájl formátuma nem megfelelő.");
             }
     });
@@ -263,7 +263,7 @@ const fetchTermekData = async (termekIds) => {
               setError("A fájl nem tartalmaz adatokat.");
             }
           } catch (error) {
-            console.error("Hiba az Excel fájl feldolgozása során:", error);
+            
             setError("Az Excel fájl formátuma nem megfelelő.");
           }
         };
@@ -272,7 +272,7 @@ const fetchTermekData = async (termekIds) => {
         setError("Nem támogatott fájlformátum. Csak CSV és Excel fájlok tölthetők fel.");
       }
     } catch (error) {
-      console.error("Hiba a fájl előnézetének generálása során:", error);
+      
       setError("Nem sikerült előnézetet generálni a fájlból.");
     }
   };
@@ -342,7 +342,7 @@ const fetchTermekData = async (termekIds) => {
       
       document.getElementById('fileInput').value = "";
     } catch (error) {
-      console.error("Hiba a fájl feltöltése során:", error);
+      
       setError(error.message || "Hiba történt a fájl feltöltése során. Kérjük, próbálja újra később.");
     } finally {
       setLoading(false);

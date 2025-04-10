@@ -48,7 +48,7 @@ export default function OrderTable() {
       const data = await response.json();
       setOrders(data);
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      
       setError("Nem sikerült betölteni a rendeléseket: " + error.message);
     } finally {
       setLoading(false);
@@ -80,7 +80,7 @@ export default function OrderTable() {
       const data = await response.json();
       setOrderDetails(data);
     } catch (error) {
-      console.error("Error fetching order details:", error);
+      
       alert("Hiba a rendelés részleteinek betöltése során: " + error.message);
     }
   };
@@ -132,7 +132,7 @@ export default function OrderTable() {
       setEditingOrder(null);
       alert("Rendelés sikeresen frissítve!");
     } catch (error) {
-      console.error("Error updating order:", error);
+      
       alert("Hiba a rendelés frissítése során: " + error.message);
     }
   };
@@ -167,7 +167,7 @@ export default function OrderTable() {
       fetchOrders();
       alert("Rendelés sikeresen törölve!");
     } catch (error) {
-      console.error("Error deleting order:", error);
+      
       alert("Hiba a rendelés törlése során: " + error.message);
     }
   };

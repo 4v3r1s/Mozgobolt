@@ -81,7 +81,7 @@ export default function ProfileEdit() {
           }).join(''));
           
           const decodedToken = JSON.parse(jsonPayload);
-          console.log("Decoded token:", decodedToken);
+          
           setUserId(decodedToken.userId); 
           
           
@@ -127,10 +127,10 @@ export default function ProfileEdit() {
           });
           
         } catch (tokenError) {
-          console.error("Error decoding token:", tokenError);
+          
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        
         showAlert("Hiba történt az adatok betöltése során.");
       } finally {
         setLoading(false);
@@ -183,19 +183,19 @@ export default function ProfileEdit() {
       }
       
       if (!userId) {
-        console.error("User ID is missing!");
+        
         showAlert("Hiányzó felhasználói azonosító!");
         return;
       }
       
-      console.log("Updating user with ID:", userId);
+      
       
       
       const dataToSend = { ...userData };
       delete dataToSend.createdAt;
       delete dataToSend.updatedAt;
       
-      console.log("Data to be sent:", dataToSend);
+      
       
       const response = await fetch(`http://localhost:3000/user/updateUser/${userId}`, {
         method: "PUT",
@@ -206,11 +206,11 @@ export default function ProfileEdit() {
         body: JSON.stringify(dataToSend),
       });
       
-      console.log("Response status:", response.status);
+      
       
       
       if (response.status === 404) {
-        console.log("Received 404 but assuming data was updated successfully");
+       
         showAlert("Adatok sikeresen frissítve!", "success");
         
         
@@ -222,7 +222,7 @@ export default function ProfileEdit() {
       
       if (!response.ok) {
         const errorData = await response.json().catch(() => ({}));
-        console.error("Server error details:", errorData);
+        
         throw new Error("Hiba a felhasználói adatok frissítése során");
       }
       
@@ -234,7 +234,7 @@ export default function ProfileEdit() {
         navigate('/account');
       }, 2000);
     } catch (error) {
-      console.error("Error updating user data:", error);
+      
       showAlert("Hiba történt az adatok frissítése során.");
     } finally {
       setSaving(false);

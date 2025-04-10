@@ -47,7 +47,7 @@ export default function NapiFogyasTable() {
       const data = await response.json();
       setNapiFogyasok(data);
     } catch (error) {
-      console.error("Error fetching napi fogyas data:", error);
+      
       setError("Nem sikerült betölteni a napi fogyás adatokat: " + error.message);
     } finally {
       setLoading(false);
@@ -78,7 +78,7 @@ export default function NapiFogyasTable() {
       const data = await response.json();
       setRaktarak(data);
     } catch (error) {
-      console.error("Error fetching raktarak:", error);
+     
     }
   };
 
@@ -125,7 +125,7 @@ export default function NapiFogyasTable() {
       setEditingItem(null);
       alert("Napi fogyás sikeresen frissítve!");
     } catch (error) {
-      console.error("Error updating napi fogyas:", error);
+      
       alert("Hiba a napi fogyás frissítése során: " + error.message);
     }
   };
@@ -160,7 +160,7 @@ export default function NapiFogyasTable() {
       fetchNapiFogyasok();
       alert("Napi fogyás sikeresen törölve!");
     } catch (error) {
-      console.error("Error deleting napi fogyas:", error);
+      
       alert("Hiba a napi fogyás törlése során: " + error.message);
     }
   };

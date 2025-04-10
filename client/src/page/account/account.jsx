@@ -137,7 +137,7 @@ export default function Account() {
           role: data.szerep || "user" 
         });
       } catch (error) {
-        console.error("Error fetching user data:", error);
+        
         showAlert("Hiba történt az adatok betöltése során.");
       } finally {
         setLoading(false);
@@ -187,7 +187,7 @@ export default function Account() {
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         setCartItemCount(totalItems);
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
+        
         setCartItemCount(0);
       }
     } else {

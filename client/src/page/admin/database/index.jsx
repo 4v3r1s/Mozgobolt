@@ -60,7 +60,7 @@ export default function AdminDatabase() {
         
         setIsAdmin(true);
       } catch (error) {
-        console.error("Error checking auth:", error);
+       
         navigate('/login');
       } finally {
         setLoading(false);

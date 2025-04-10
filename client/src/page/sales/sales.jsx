@@ -47,7 +47,6 @@ export default function Sales() {
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         setCartItemCount(totalItems);
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
         setCartItemCount(0);
       }
     } else {
@@ -67,7 +66,6 @@ export default function Sales() {
         }
         
         const allProducts = await response.json();
-        console.log("Összes lekért termék:", allProducts);
         
         
         const currentDate = new Date();
@@ -85,10 +83,8 @@ export default function Sales() {
           product.akcio_vege >= currentDateString
         );
         
-        console.log("Szűrt akciós termékek:", discountedProducts);
         setProducts(discountedProducts || []);
       } catch (error) {
-        console.error("Hiba a termékek lekérése közben:", error);
         setError(error.message);
       } finally {
         setLoading(false);

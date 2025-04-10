@@ -71,10 +71,10 @@ export default function ProductTable() {
       }
 
       const data = await response.json();
-      console.log("Fetched products:", data); 
+      
       setProducts(data);
     } catch (error) {
-      console.error("Error fetching products:", error);
+      
       setError("Nem sikerült betölteni a termékeket: " + error.message);
     } finally {
       setLoading(false);
@@ -179,10 +179,10 @@ const handleSubmit = async (e) => {
     const imageInput = document.querySelector('input[name="kep"]');
     if (imageInput && imageInput.files[0]) {
       formDataToSend.append('kep', imageInput.files[0]);
-      console.log("Image file added to form data:", imageInput.files[0].name);
+      
     }
     
-    console.log("Sending form data to server...");
+   
     
     
     const response = await fetch(`http://localhost:3000/termek/${editingProduct}`, {
@@ -202,7 +202,7 @@ const handleSubmit = async (e) => {
     try {
       responseData = JSON.parse(responseText);
     } catch (e) {
-      console.error("Failed to parse response as JSON:", responseText);
+      
       throw new Error("Invalid server response format");
     }
 
@@ -216,7 +216,7 @@ const handleSubmit = async (e) => {
     setEditSelectedImage(null);
     alert("Termék sikeresen frissítve!");
   } catch (error) {
-    console.error("Error updating product:", error);
+    
     alert("Hiba a termék frissítése során: " + error.message);
   }
 };
@@ -262,16 +262,16 @@ const handleSubmit = async (e) => {
       if (imageInput && imageInput.files && imageInput.files.length > 0) {
         const file = imageInput.files[0];
         formDataToSend.append('kep', file, file.name);
-        console.log("Image file added to form data:", file.name, "Size:", file.size, "Type:", file.type);
+       
         
         for (let pair of formDataToSend.entries()) {
-          console.log(pair[0] + ': ' + (pair[1] instanceof File ? pair[1].name : pair[1]));
+          
         }
       } else {
-        console.log("No image file selected");
+        
       }
   
-      console.log("Sending form data to server...");
+      
       
       
       const response = await fetch("http://localhost:3000/termek", {
@@ -290,12 +290,12 @@ const handleSubmit = async (e) => {
       try {
         responseData = JSON.parse(responseText);
       } catch (e) {
-        console.error("Failed to parse response:", responseText);
+        
         throw new Error("Invalid server response");
       }
       
       if (!response.ok) {
-        console.error("Server error details:", responseData);
+        
         throw new Error(responseData.message || responseData.error || "Hiba a termék létrehozása során");
       }
   
@@ -326,7 +326,7 @@ const handleSubmit = async (e) => {
       });
       alert("Termék sikeresen létrehozva!");
     } catch (error) {
-      console.error("Error adding product:", error);
+     
       alert("Hiba a termék létrehozása során: " + error.message);
     }
   };
@@ -363,7 +363,7 @@ const handleSubmit = async (e) => {
       fetchProducts();
       alert("Termék sikeresen törölve!");
     } catch (error) {
-      console.error("Error deleting product:", error);
+      
       alert("Hiba a termék törlése során: " + error.message);
     }
   };
@@ -859,7 +859,7 @@ const handleSubmit = async (e) => {
                                       alt="Jelenlegi kép" 
                                       className="h-32 object-contain border border-gray-300 rounded-md p-1" 
                                       onError={(e) => {
-                                        console.log("Failed to load current image:", `http://localhost:3000${formData.kepUrl}`);
+                                       
                                         e.target.onerror = null;
                                         e.target.parentNode.innerHTML = `
                                           <div class="h-32 bg-gray-200 rounded-md flex items-center justify-center border border-gray-300 p-1">
@@ -911,7 +911,6 @@ const handleSubmit = async (e) => {
                                 alt={product.nev} 
                                 className="h-12 w-12 object-cover rounded-md"
                                 onError={(e) => {
-                                  console.log("Failed to load image from:", `http://localhost:3000${product.kepUrl}`);
                                   e.target.onerror = null;                                  
                                   e.target.parentNode.innerHTML = `
                                     <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">
@@ -926,7 +925,6 @@ const handleSubmit = async (e) => {
                                 alt={product.nev} 
                                 className="h-12 w-12 object-cover rounded-md"
                                 onError={(e) => {
-                                  console.log("Failed to load image from hivatkozas:", product.hivatkozas);
                                   e.target.onerror = null;
                                   e.target.parentNode.innerHTML = `
                                     <div class="h-12 w-12 bg-gray-200 rounded-md flex items-center justify-center">

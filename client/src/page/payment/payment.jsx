@@ -38,7 +38,6 @@ export default function Payment() {
     const loadCart = () => {
       try {
         const savedCart = localStorage.getItem('cart');
-        console.log("Betöltött kosár:", savedCart);
         const savedDiscount = localStorage.getItem('cartDiscount');
         if (savedDiscount) {
           const discountData = JSON.parse(savedDiscount);
@@ -49,22 +48,18 @@ export default function Payment() {
         }
         if (savedCart && savedCart !== "undefined" && savedCart !== "null") {
           const parsedCart = JSON.parse(savedCart);
-          console.log("Feldolgozott kosár:", parsedCart);
           
           if (Array.isArray(parsedCart)) {
             setCartItems(parsedCart);
           } else {
-            console.error("A kosár nem tömb formátumú:", parsedCart);
             setCartItems([]);
           }
         } else {
-          console.log("Nincs kosár vagy érvénytelen formátum");
           setCartItems([]);
           
           navigate('/cart');
         }
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
         setCartItems([]);
       } finally {
         setLoading(false);
@@ -80,7 +75,6 @@ export default function Payment() {
         
         const token = localStorage.getItem('token');
         if (!token) {
-          console.log("No user logged in");
           return;
         }
         
@@ -97,7 +91,6 @@ export default function Payment() {
         }
         
         const userData = await response.json();
-        console.log("Loaded user data:", userData);
         
         
         setFormData({
@@ -111,7 +104,6 @@ export default function Payment() {
           zipCode: userData.szallitasi_irsz ? userData.szallitasi_irsz.toString() : '',
         });
       } catch (error) {
-        console.error("Error loading user data:", error);
       }
     };
     
@@ -225,7 +217,6 @@ export default function Payment() {
       }
       
       const responseData = await response.json();
-      console.log("Rendelés sikeresen létrehozva:", responseData);
       
    
       setOrderPlaced(true);
@@ -248,7 +239,6 @@ export default function Payment() {
       window.dispatchEvent(event);
       
     } catch (error) {
-      console.error("Hiba a rendelés feldolgozásakor:", error);
       alert("Hiba történt a rendelés feldolgozása során: " + error.message);
     } finally {
       setProcessingOrder(false);

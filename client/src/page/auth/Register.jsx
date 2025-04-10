@@ -74,7 +74,6 @@ export default function SignUp() {
 
       if (response.ok) {
         showAlert("Sikeres regisztráció!", "success")
-        console.log("User added:", data)
         
         
         try {
@@ -90,12 +89,9 @@ export default function SignUp() {
           });
           
           if (emailResponse.ok) {
-            console.log("Regisztrációs e-mail elküldve");
           } else {
-            console.error("Hiba a regisztrációs e-mail küldésekor");
           }
         } catch (emailError) {
-          console.error("E-mail küldési hiba:", emailError);
         }
 
         
@@ -105,7 +101,6 @@ export default function SignUp() {
       }
     } catch (error) {
       showAlert("Hálózati hiba történt.")
-      console.error("API error:", error)
     }
   }
 

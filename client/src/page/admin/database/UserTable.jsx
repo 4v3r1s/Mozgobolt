@@ -69,7 +69,6 @@ export default function UserTable() {
       const data = await response.json();
       setUsers(data);
     } catch (error) {
-      console.error("Error fetching users:", error);
       setError("Nem sikerült betölteni a felhasználókat: " + error.message);
     } finally {
       setLoading(false);
@@ -134,7 +133,6 @@ export default function UserTable() {
       setEditingUser(null);
       alert("Felhasználó sikeresen frissítve!");
     } catch (error) {
-      console.error("Error updating user:", error);
       alert("Hiba a felhasználó frissítése során: " + error.message);
     }
   };
@@ -192,7 +190,6 @@ export default function UserTable() {
       });
       alert("Felhasználó sikeresen létrehozva!");
     } catch (error) {
-      console.error("Error adding user:", error);
       alert("Hiba a felhasználó létrehozása során: " + error.message);
     }
   };
@@ -227,7 +224,6 @@ export default function UserTable() {
       fetchUsers();
       alert("Felhasználó sikeresen törölve!");
     } catch (error) {
-      console.error("Error deleting user:", error);
       alert("Hiba a felhasználó törlése során: " + error.message);
     }
   };

@@ -49,7 +49,6 @@ export default function Home() {
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         setCartItemCount(totalItems);
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
         setCartItemCount(0);
       }
     } else {
@@ -116,7 +115,6 @@ export default function Home() {
        
         filterProductsByCategory(formattedProducts, currentCategory, searchQuery);
       } catch (error) {
-        console.error("Error fetching products:", error);
       } finally {
         setLoading(false);
       }
@@ -160,40 +158,25 @@ export default function Home() {
   };
 
   const filterProductsByCategory = (allProducts, categoryId, query) => {
-    console.log("Szűrési paraméterek:", { 
-      categoryId, 
-      query, 
-      categoryIdType: typeof categoryId 
-    });
+    
+    
     
     let filtered = [...allProducts];
     
    
     if (categoryId) {
-      console.log("Szűrés kategória alapján:", categoryId);
-      
-      
-      console.log("Termékek kategória értékei:", 
-        allProducts.slice(0, 5).map(p => ({
-          id: p.id,
-          name: p.name,
-          category: p.category,
-          categoryType: typeof p.category
-        }))
-      );
-      
+
       filtered = filtered.filter(product => {
         const match = product.category && product.category.toString() === categoryId.toString();
         
         
         if (match) {
-          console.log(`Kategória egyezés: ${product.name} - Kategória: ${product.category} = ${categoryId}`);
         }
         
         return match;
       });
       
-      console.log(`Szűrés eredménye: ${filtered.length} termék`);
+      
     }
     
 
@@ -202,7 +185,7 @@ export default function Home() {
         product.name?.toLowerCase().includes(query.toLowerCase()) ||
         product.description?.toLowerCase().includes(query.toLowerCase())
       );
-      console.log(`Szűrés keresés alapján: "${query}", találatok: ${filtered.length}`);
+      
     }
     
 

@@ -27,24 +27,19 @@ export default function Cart() {
     const loadCart = () => {
       try {
         const savedCart = localStorage.getItem('cart');
-        console.log("Betöltött kosár:", savedCart);
         
         if (savedCart && savedCart !== "undefined" && savedCart !== "null") {
           const parsedCart = JSON.parse(savedCart);
-          console.log("Feldolgozott kosár:", parsedCart);
           
           if (Array.isArray(parsedCart)) {
             setCartItems(parsedCart);
           } else {
-            console.error("A kosár nem tömb formátumú:", parsedCart);
             setCartItems([]);
           }
         } else {
-          console.log("Nincs kosár vagy érvénytelen formátum");
           setCartItems([]);
         }
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
         setCartItems([]);
       } finally {
         setLoading(false);
@@ -377,7 +372,6 @@ export default function Cart() {
 <div className="mt-6">
   <Button 
     onClick={() => {
-      console.log("Navigálás a payment oldalra");
       navigate('/payment');
     }}
     className="w-full bg-red-700 text-white py-3 rounded-md hover:bg-red-800 transition-colors"

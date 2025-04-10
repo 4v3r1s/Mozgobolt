@@ -72,7 +72,7 @@ export default function AdminDashboard() {
       
       return true;
     } catch (error) {
-      console.error("Hiba a jogosultság ellenőrzése során:", error);
+      
       navigate('/login');
       return false;
     }
@@ -166,7 +166,7 @@ const fetchStats = async () => {
     
     setLoading(false);
   } catch (error) {
-    console.error("Hiba a statisztikák lekérése során:", error);
+    
     setError(error.message);
     setLoading(false);
   }

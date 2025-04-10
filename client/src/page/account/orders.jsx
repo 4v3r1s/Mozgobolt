@@ -51,16 +51,16 @@ export default function Orders() {
       }
       
       const data = await response.json();
-      console.log("Loaded orders:", data);
+      
       
       if (Array.isArray(data)) {
         setOrders(data);
       } else {
-        console.error("Response is not an array:", data);
+        
         setOrders([]);
       }
     } catch (error) {
-      console.error("Error fetching orders:", error);
+      
       setError(error.message);
     } finally {
       setLoading(false);
@@ -116,7 +116,7 @@ export default function Orders() {
       fetchOrders();
       
     } catch (error) {
-      console.error("Error canceling order:", error);
+      
       setError(error.message);
       closeConfirmModal();
     }

@@ -41,7 +41,6 @@ const ProductOrder = () => {
     fetch(`http://localhost:3000/api/inventory/${id}`)  
       .then((response) => response.json())
       .then((data) => setProduct(data))
-      .catch((error) => console.error('Error fetching product:', error));
   }, [id]);
 
   if (!product) {

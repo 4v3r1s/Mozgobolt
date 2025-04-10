@@ -33,12 +33,10 @@ export default function CategorySidebar() {
         const data = await response.json();
         
         
-        console.log("Kategória adatok:", data);
         
         setCategories(data);
         setLoading(false);
       } catch (error) {
-        console.error('Hiba a kategóriák betöltésekor:', error);
         setLoading(false);
       }
     };
@@ -47,7 +45,6 @@ export default function CategorySidebar() {
   }, []);
 
   const handleCategoryClick = (categoryId) => {
-    console.log("Kategória kattintás:", categoryId);
     
     const newSearchParams = new URLSearchParams(location.search);
     
@@ -57,7 +54,6 @@ export default function CategorySidebar() {
       newSearchParams.delete('category');
     }
     
-    console.log("Új URL paraméterek:", newSearchParams.toString());
     
     navigate({
       pathname: location.pathname,

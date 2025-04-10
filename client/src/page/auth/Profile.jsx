@@ -87,7 +87,6 @@ export default function Profile() {
             : "Nincs adat"
         })
       } catch (error) {
-        console.error("Error fetching user data:", error)
         showAlert("Hiba történt az adatok betöltése során.")
       } finally {
         setLoading(false)

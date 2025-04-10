@@ -38,7 +38,6 @@ export default function info() {
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         setCartItemCount(totalItems);
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
         setCartItemCount(0);
       }
     } else {

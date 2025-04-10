@@ -56,7 +56,6 @@ export default function SignIn() {
       
       
       localStorage.setItem('token', token)
-      console.log("Token mentve a localStorage-ba:", token)
       
       
       try {
@@ -69,10 +68,8 @@ export default function SignIn() {
         if (userResponse.ok) {
           const userData = await userResponse.json()
           localStorage.setItem('user', JSON.stringify(userData))
-          console.log("Felhasználói adatok mentve:", userData)
         }
       } catch (userError) {
-        console.error("Hiba a felhasználói adatok lekérésekor:", userError)
        
       }
   
@@ -84,7 +81,6 @@ export default function SignIn() {
         window.location.href = "/#"; 
       }, 1500)
     } catch (err) {
-      console.error(err)
       setError("Hiba történt a bejelentkezés során.")
       showAlert("Hiba történt a bejelentkezés során.")
     }

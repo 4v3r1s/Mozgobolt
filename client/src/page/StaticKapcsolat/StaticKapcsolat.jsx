@@ -73,7 +73,6 @@ export default function Contact() {
       }, 5000);
       
     } catch (error) {
-      console.error("Kapcsolat űrlap hiba:", error);
       setSubmitStatus({ loading: false, success: false, error: error.message });
     }
   };
@@ -95,7 +94,6 @@ export default function Contact() {
         const totalItems = cartItems.reduce((total, item) => total + item.quantity, 0);
         setCartItemCount(totalItems);
       } catch (error) {
-        console.error("Hiba a kosár betöltésekor:", error);
         setCartItemCount(0);
       }
     } else {

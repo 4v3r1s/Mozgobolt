@@ -91,7 +91,7 @@ npm test
 ## Linkek
 
 
-- **Dokumentáció**: [Dokumentáció Link](https://github.com/4v3r1s/Mozgobolt/blob/main/Projektmunka%20dokument%C3%A1l%C3%A1sa.docx)
+- **Dokumentáció**: [Dokumentáció Link](https://github.com/4v3r1s/Mozgobolt/blob/main/Projektmunka%20dokument%C3%A1l%C3%A1sa.pdf)
 
 ## Fejlesztők
 

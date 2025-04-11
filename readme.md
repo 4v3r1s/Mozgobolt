@@ -68,12 +68,12 @@ A projekt MySQL adatbázist használ. A docker elindítása után indítsa el a 
 
 
 
-### 6. Admin PanelB1gz1
+### 6. Admin Panel (Ricsi200)
 
 Az admin panel az adminisztrátorok számára van. Az adminisztrátori jogosultságokhoz az alábbi bejelentkezési információk szükségesek:
 
-- **Felhasználónév**: igazikristof@gmail.com
-- **Jelszó**: B1gz1
+- **Felhasználónév**: Ricsi200@gmail.com
+- **Jelszó**: Ricsi200
 
 A bejelentkezés után az admin panelen keresztül kezelhetei a termékeket, rendeléseket és felhasználókat.
 
@@ -91,7 +91,7 @@ npm test
 ## Linkek
 
 
-- **Dokumentáció**: [Dokumentáció Link](https://github.com/HetBalint/evvegiprojekt2025/blob/main/Projektmunka%20dokument%C3%A1l%C3%A1sa.docx)
+- **Dokumentáció**: [Dokumentáció Link]((https://github.com/4v3r1s/Mozgobolt/blob/main/Projektmunka%20dokument%C3%A1l%C3%A1sa.docx))
 
 ## Fejlesztők
 
